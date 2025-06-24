@@ -1,8 +1,8 @@
-import { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import './index.css';
-import Dashboard from './pages/Dashboard';
-import Wishlist from './pages/Wishlist.tsx';
+import { useState } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import "./index.css";
+import Dashboard from "./pages/Dashboard";
+import Wishlist from "./pages/Wishlist.tsx";
 
 // Define the Product type
 type Product = {
@@ -20,9 +20,9 @@ const App = () => {
 
   // Function to add product to wishlist
   const addToWishlist = (product: Product) => {
-    setWishlist(prev => {
+    setWishlist((prev) => {
       // Check if product already exists in wishlist
-      if (!prev.some(item => item.id === product.id)) {
+      if (!prev.some((item) => item.id === product.id)) {
         return [...prev, product];
       }
       return prev;
@@ -31,31 +31,32 @@ const App = () => {
 
   // Function to remove product from wishlist
   const removeFromWishlist = (productId: number) => {
-    setWishlist(prev => prev.filter(item => item.id !== productId));
+    setWishlist((prev) => prev.filter((item) => item.id !== productId));
   };
 
   return (
     <Router>
       <div>
         <Routes>
-          <Route 
-            path="/" 
+          <Route
+            path="/"
             element={
-              <Dashboard 
-                wishlist={wishlist} 
-                addToWishlist={addToWishlist} 
-                removeFromWishlist={removeFromWishlist} 
+              <Dashboard
+                wishlist={wishlist}
+                addToWishlist={addToWishlist}
+                removeFromWishlist={removeFromWishlist}
               />
-            } 
+            }
           />
-          <Route 
-            path="/wishlist" 
+          <Route
+            path="/wishlist"
             element={
-              <Wishlist 
-                wishlist={wishlist} 
-                removeFromWishlist={removeFromWishlist} 
+              <Wishlist
+                wishlist={wishlist}
+                removeFromWishlist={removeFromWishlist}
+                addToCart={addToWishlist}
               />
-            } 
+            }
           />
         </Routes>
       </div>

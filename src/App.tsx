@@ -1,35 +1,66 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import './index.css';
+import Dashboard from './pages/Dashboard';
+import Wishlist from './pages/Wishlist.tsx';
 
-function App() {
-  const [count, setCount] = useState(0)
+// Define the Product type
+type Product = {
+  id: number;
+  name: string;
+  image: string;
+  price: number;
+  rating: number;
+  originalPrice?: number;
+};
+
+const App = () => {
+  // State for wishlist
+  const [wishlist, setWishlist] = useState<Product[]>([]);
+
+  // Function to add product to wishlist
+  const addToWishlist = (product: Product) => {
+    setWishlist(prev => {
+      // Check if product already exists in wishlist
+      if (!prev.some(item => item.id === product.id)) {
+        return [...prev, product];
+      }
+      return prev;
+    });
+  };
+
+  // Function to remove product from wishlist
+  const removeFromWishlist = (productId: number) => {
+    setWishlist(prev => prev.filter(item => item.id !== productId));
+  };
 
   return (
-    <>
+    <Router>
       <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+        <Routes>
+          <Route 
+            path="/" 
+            element={
+              <Dashboard 
+                wishlist={wishlist} 
+                addToWishlist={addToWishlist} 
+                removeFromWishlist={removeFromWishlist} 
+              />
+            } 
+          />
+          <Route 
+            path="/wishlist" 
+            element={
+              <Wishlist 
+                wishlist={wishlist} 
+                removeFromWishlist={removeFromWishlist} 
+              />
+            } 
+          />
+        </Routes>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    </Router>
+  );
+};
 
-export default App
+export default App;

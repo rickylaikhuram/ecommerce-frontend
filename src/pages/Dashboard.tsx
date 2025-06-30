@@ -2,6 +2,7 @@ import { useRef, useState, useEffect } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import LandingHeader from "../components/layout/LandingHeader";
 import Product from "../components/Product";
+// import SigIn from "./auth/SignIn.tsx"
 
 type ProductType = {
   id: number;
@@ -252,6 +253,7 @@ const Dashboard = ({
             />
           ))}
         </div>
+      
       </div>
     </div>
   );

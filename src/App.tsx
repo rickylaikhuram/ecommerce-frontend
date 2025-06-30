@@ -3,8 +3,8 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "./index.css";
 import Dashboard from "./pages/Dashboard";
 import Wishlist from "./pages/Wishlist.tsx";
+import SignIn from "./pages/auth/SignIn.tsx"; // <== added
 
-// Define the Product type
 type Product = {
   id: number;
   name: string;
@@ -15,13 +15,10 @@ type Product = {
 };
 
 const App = () => {
-  // State for wishlist
   const [wishlist, setWishlist] = useState<Product[]>([]);
 
-  // Function to add product to wishlist
   const addToWishlist = (product: Product) => {
     setWishlist((prev) => {
-      // Check if product already exists in wishlist
       if (!prev.some((item) => item.id === product.id)) {
         return [...prev, product];
       }
@@ -29,7 +26,6 @@ const App = () => {
     });
   };
 
-  // Function to remove product from wishlist
   const removeFromWishlist = (productId: number) => {
     setWishlist((prev) => prev.filter((item) => item.id !== productId));
   };
@@ -58,6 +54,7 @@ const App = () => {
               />
             }
           />
+          <Route path="/signin" element={<SignIn />} />
         </Routes>
       </div>
     </Router>

@@ -9,19 +9,21 @@ import {
 } from "react-icons/fa";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useCart } from "../context/CartContext"; // ✅ make sure path is correct
 
 interface LandingHeaderProps {
   wishlistCount: number;
-  cartCount: number;
 }
 
-const LandingHeader = ({ wishlistCount, cartCount }: LandingHeaderProps) => {
+const LandingHeader = ({ wishlistCount }: LandingHeaderProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
+  const { cartItems } = useCart();
+  const cartCount = cartItems.reduce((total, item) => total + (item.quantity || 1), 0);
+
   return (
     <>
-      {/* Overlay when sidebar is open */}
       {isMenuOpen && (
         <div
           className="fixed inset-0 bg-opacity-30 backdrop-blur-sm z-30"
@@ -29,7 +31,6 @@ const LandingHeader = ({ wishlistCount, cartCount }: LandingHeaderProps) => {
         />
       )}
 
-      {/* Sidebar Menu */}
       <div
         className={`fixed top-0 left-0 h-full w-64 bg-white z-40 transform transition-transform duration-300 ${
           isMenuOpen ? "translate-x-0" : "-translate-x-full"
@@ -68,7 +69,6 @@ const LandingHeader = ({ wishlistCount, cartCount }: LandingHeaderProps) => {
         </div>
       </div>
 
-      {/* Top Navbar for Desktop */}
       <div className="fixed top-0 left-0 w-full z-50 bg-white shadow-md hidden sm:flex">
         <div className="flex items-center justify-between w-full py-4 px-4 sm:px-6 lg:px-8">
           <button
@@ -114,7 +114,6 @@ const LandingHeader = ({ wishlistCount, cartCount }: LandingHeaderProps) => {
         </div>
       </div>
 
-      {/* Top Navbar for Mobile */}
       <div className="fixed top-0 left-0 w-full z-50 bg-white shadow-md flex sm:hidden">
         <div className="flex items-center justify-between w-full py-4 px-4">
           <button
@@ -134,9 +133,8 @@ const LandingHeader = ({ wishlistCount, cartCount }: LandingHeaderProps) => {
         </div>
       </div>
 
-      {/* Bottom Navbar for Mobile */}
-      <div className="fixed bottom-0 left-0 w-full bg-white shadow-md border-t border-gray-200 sm:hidden z-50">
-        <div className="flex justify-around items-center py-2">
+      <div className="fixed bottom-0 left-0 w-full bg-white shadow-md border-t border-gray-200 sm:hidden z-50 ">
+        <div className="flex justify-around items-center py-2 ">
           <Link
             to="/"
             className="flex flex-col items-center text-gray-700 hover:text-orange-500 text-sm"

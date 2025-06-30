@@ -196,13 +196,12 @@ const Dashboard = ({
             </p>
           </div>
         </div>
-        <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 flex space-x-2">
+        <div className=" transform -translate-x-1/2 flex space-x-2">
           {promoSlides.map((_, index) => (
             <span
               key={index}
-              className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                index === currentPromo ? "bg-orange-500" : "bg-gray-300"
-              }`}
+              className={`w-3 h-3 rounded-full transition-all duration-300 ${index === currentPromo ? "bg-orange-500" : "bg-gray-300"
+                }`}
             />
           ))}
         </div>
@@ -218,9 +217,8 @@ const Dashboard = ({
         <button
           onClick={() => scroll("left")}
           disabled={isAtStart}
-          className={`hidden md:flex items-center justify-center absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white border rounded-full shadow z-10 ${
-            isAtStart ? "opacity-40 cursor-not-allowed" : ""
-          }`}
+          className={`hidden md:flex items-center justify-center absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white border rounded-full shadow z-10 ${isAtStart ? "opacity-40 cursor-not-allowed" : ""
+            }`}
         >
           <FaChevronLeft className="text-gray-600" />
         </button>
@@ -228,9 +226,8 @@ const Dashboard = ({
         <button
           onClick={() => scroll("right")}
           disabled={isAtEnd}
-          className={`hidden md:flex items-center justify-center absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white border rounded-full shadow z-10 ${
-            isAtEnd ? "opacity-40 cursor-not-allowed" : ""
-          }`}
+          className={`hidden md:flex items-center justify-center absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white border rounded-full shadow z-10 ${isAtEnd ? "opacity-40 cursor-not-allowed" : ""
+            }`}
         >
           <FaChevronRight className="text-gray-600" />
         </button>
@@ -238,7 +235,7 @@ const Dashboard = ({
         {/* Scrollable product list */}
         <div
           ref={scrollRef}
-          className="flex flex-nowrap gap-4 overflow-x-auto scroll-smooth pb-4 px-4 md:px-10 scrollbar-hide"
+          className="flex flex-nowrap gap-4 overflow-x-auto scroll-smooth pb-10 px-4 md:px-10  scrollbar-hide"
         >
           {newArrivals.map((product) => (
             <Product
@@ -253,7 +250,8 @@ const Dashboard = ({
             />
           ))}
         </div>
-      
+        
+
       </div>
     </div>
   );

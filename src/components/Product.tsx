@@ -1,5 +1,6 @@
 // src/components/Product.tsx
 import { FaHeart, FaStar } from "react-icons/fa";
+import { useCart } from "./context/CartContext"; // ✅ Adjust path if needed
 
 export type ProductType = {
   id: number;
@@ -17,6 +18,18 @@ interface ProductProps {
 }
 
 const Product = ({ product, isWishlisted, onWishlistToggle }: ProductProps) => {
+  const { addToCart } = useCart(); // ✅ Get addToCart from context
+
+  const handleAddToCart = () => {
+    addToCart({
+      id: product.id,
+      name: product.name,
+      image: product.image,
+      price: product.price,
+      quantity: 1,
+    });
+  };
+
   return (
     <div className="min-w-[260px] bg-white rounded-xl shadow hover:shadow-lg transition-all">
       <div className="relative pb-[120%]">
@@ -67,7 +80,12 @@ const Product = ({ product, isWishlisted, onWishlistToggle }: ProductProps) => {
             )}
           </div>
         </div>
-        <button className="mt-3 py-2 bg-black text-white rounded-md hover:bg-gray-800 text-sm font-medium w-full">
+
+        {/* ✅ Add to Cart Button with Handler */}
+        <button
+          onClick={handleAddToCart}
+          className="mt-3 py-2 bg-black text-white rounded-md hover:bg-gray-800 text-sm font-medium w-full cursor-pointer"
+        >
           Add to Cart
         </button>
       </div>

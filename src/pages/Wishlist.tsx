@@ -127,10 +127,7 @@
 
 
 
-
-
-
-import { FaHeart, FaTrash, FaShoppingBag, FaArrowLeft } from "react-icons/fa";
+import { FaHeart, FaTrash, FaShoppingBag } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
 type Product = {
@@ -156,18 +153,30 @@ const Wishlist = ({
   return (
     <div className="w-screen min-h-screen bg-white text-gray-800 overflow-x-hidden">
       <div className="relative px-4 sm:px-6 lg:px-8 py-6">
-        {/* Header with back button */}
-        <div className="flex items-center mb-8">
-          <Link
-            to="/"
-            className="flex items-center text-gray-600 hover:text-gray-900 mr-4"
-          >
-            <FaArrowLeft className="mr-2 cursor-pointer" />
-            Back to Shop
-          </Link>
-          <h1 className="text-3xl font-bold text-gray-900 flex-grow text-center">
-            Saved Items
-            <span className="ml-2 text-orange-500">({wishlist.length})</span>
+
+        {/* Breadcrumb Navigation */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-2 text-sm text-gray-600">
+            <Link
+              to="/"
+              className="text-blue-600 hover:underline font-medium cursor-pointer"
+            >
+              Home
+            </Link>
+            <svg
+              className="w-3 h-3 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+            <span className="text-gray-500 font-semibold">Wishlist</span>
+          </div>
+
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+            Saved Items <span className="ml-2 text-orange-500">({wishlist.length})</span>
           </h1>
         </div>
 
@@ -272,3 +281,4 @@ const Wishlist = ({
 };
 
 export default Wishlist;
+

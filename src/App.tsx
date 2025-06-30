@@ -3,7 +3,9 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "./index.css";
 import Dashboard from "./pages/Dashboard";
 import Wishlist from "./pages/Wishlist.tsx";
-import SignIn from "./pages/auth/SignIn.tsx"; // <== added
+import SignIn from "./pages/auth/SignIn.tsx";
+import CartPage from "./pages/CartPage"; // ✅ correct
+import { CartProvider } from "./components/context/CartContext";
 
 type Product = {
   id: number;
@@ -18,21 +20,18 @@ const App = () => {
   const [wishlist, setWishlist] = useState<Product[]>([]);
 
   const addToWishlist = (product: Product) => {
-    setWishlist((prev) => {
-      if (!prev.some((item) => item.id === product.id)) {
-        return [...prev, product];
-      }
-      return prev;
-    });
+    setWishlist((prev) =>
+      prev.find((p) => p.id === product.id) ? prev : [...prev, product]
+    );
   };
 
-  const removeFromWishlist = (productId: number) => {
-    setWishlist((prev) => prev.filter((item) => item.id !== productId));
+  const removeFromWishlist = (id: number) => {
+    setWishlist((prev) => prev.filter((p) => p.id !== id));
   };
 
   return (
-    <Router>
-      <div>
+    <CartProvider>
+      <Router>
         <Routes>
           <Route
             path="/"
@@ -54,10 +53,11 @@ const App = () => {
               />
             }
           />
+          <Route path="/cart" element={<CartPage />} />
           <Route path="/signin" element={<SignIn />} />
         </Routes>
-      </div>
-    </Router>
+      </Router>
+    </CartProvider>
   );
 };
 

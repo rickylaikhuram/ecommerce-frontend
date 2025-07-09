@@ -1,11 +1,30 @@
 @import "tailwindcss";
 
 
-/* Tailwind Utility to Hide Scrollbar */
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
-}
+/* styles/globals.css or App.css */
 .scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari and Opera */
+}
+
+/* Optional: Add custom xs breakpoint if using Tailwind */
+/* @media (min-width: 475px) {
+  .xs\:w-48 {
+    width: 12rem;
+  }
+} */
+
+/* styles/globals.css */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
+  20%, 40%, 60%, 80% { transform: translateX(2px); }
+}
+
+.animate-shake {
+  animation: shake 0.5s ease-in-out;
 }

@@ -2,8 +2,17 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { Phone, LogIn, CheckCircle2, XCircle, Lock, Chrome ,Volleyball} from "lucide-react";
+import {
+  Phone,
+  LogIn,
+  CheckCircle2,
+  XCircle,
+  Lock,
+  Volleyball,
+} from "lucide-react";
 import { OTPVerification } from "./OTPVerification";
+import instance from "../../utils/axios";
+import { useAuth } from "../../context/AuthContext";
 
 type FormData = {
   phone: string;
@@ -13,6 +22,7 @@ const SignInOTP = () => {
   const [loading, setLoading] = useState(false);
   const [showOTPScreen, setShowOTPScreen] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
+  const { refreshAuth } = useAuth();
   const navigate = useNavigate();
 
   const {
@@ -25,21 +35,23 @@ const SignInOTP = () => {
     mode: "onChange",
     defaultValues: {
       phone: "",
-    }
+    },
   });
 
   const watchedPhone = watch("phone");
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/\D/g, '').slice(0, 10);
-    setValue('phone', value, { shouldValidate: true });
+    const value = e.target.value.replace(/\D/g, "").slice(0, 10);
+    setValue("phone", value, { shouldValidate: true });
   };
 
   const onSubmitPhone = async (data: FormData) => {
     setLoading(true);
     try {
-      await new Promise((res) => setTimeout(res, 1500));
-      // Send OTP via SMS
+      // Send OTP to phone number
+      const response = await instance.post("/api/auth/signin/otp/initiate", {
+        phone: data.phone,
+      });
       console.log("Sending OTP to:", `+91${data.phone}`);
       setPhoneNumber(data.phone);
       setShowOTPScreen(true);
@@ -52,9 +64,14 @@ const SignInOTP = () => {
 
   const handleOTPVerify = async (otp: string) => {
     // Verify OTP with backend
+    const response = await instance.post("/api/auth/signin/otp/verify", {
+      phone: phoneNumber,
+      otp,
+    });
     console.log("Verifying OTP:", { phone: `+91${phoneNumber}`, otp });
     // On success, navigate to dashboard
-    navigate("/dashboard");
+    await refreshAuth();
+    navigate("/");
   };
 
   const handleResendOTP = async () => {
@@ -103,48 +120,61 @@ const SignInOTP = () => {
                 Phone Number
               </label>
               <div className="relative">
-                <Phone className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 transition-colors ${
-                  errors.phone ? "text-red-400" : 
-                  touchedFields.phone && !errors.phone ? "text-emerald-500" : 
-                  "text-gray-400 group-focus-within:text-blue-500"
-                }`} />
-                
+                <Phone
+                  className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 transition-colors ${
+                    errors.phone
+                      ? "text-red-400"
+                      : touchedFields.phone && !errors.phone
+                      ? "text-emerald-500"
+                      : "text-gray-400 group-focus-within:text-blue-500"
+                  }`}
+                />
+
                 <div className="absolute left-10 top-1/2 transform -translate-y-1/2 flex items-center pointer-events-none">
-                  <span className="text-gray-600 font-medium select-none border-r pr-2 mr-2">+91</span>
+                  <span className="text-gray-600 font-medium select-none border-r pr-2 mr-2">
+                    +91
+                  </span>
                 </div>
-                
+
                 <input
                   type="text"
                   inputMode="numeric"
                   placeholder="9876543210"
                   maxLength={10}
                   className={`w-full pl-20 pr-10 py-3 bg-gray-50 border rounded-xl focus:border-transparent focus:bg-white transition-all duration-200 outline-none focus:ring-2 ${
-                    errors.phone ? 'border-red-300 focus:ring-red-400' : 
-                    touchedFields.phone && !errors.phone ? 'border-emerald-300 focus:ring-emerald-400' : 
-                    'border-gray-200 focus:ring-blue-400'
+                    errors.phone
+                      ? "border-red-300 focus:ring-red-400"
+                      : touchedFields.phone && !errors.phone
+                      ? "border-emerald-300 focus:ring-emerald-400"
+                      : "border-gray-200 focus:ring-blue-400"
                   }`}
                   {...register("phone", {
                     required: "Phone number is required",
                     pattern: {
                       value: /^[6-9][0-9]{9}$/,
-                      message: "Phone number must be 10 digits starting with 6-9"
+                      message:
+                        "Phone number must be 10 digits starting with 6-9",
                     },
-                    onChange: handlePhoneChange
+                    onChange: handlePhoneChange,
                   })}
                 />
-                
+
                 {touchedFields.phone && (
                   <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
                     {errors.phone ? (
                       <XCircle className="w-5 h-5 text-red-500" />
-                    ) : watchedPhone.length === 10 && (
-                      <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                    ) : (
+                      watchedPhone.length === 10 && (
+                        <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                      )
                     )}
                   </div>
                 )}
               </div>
               {errors.phone && (
-                <p className="mt-1 text-xs text-red-500">{errors.phone.message}</p>
+                <p className="mt-1 text-xs text-red-500">
+                  {errors.phone.message}
+                </p>
               )}
             </div>
 
@@ -176,18 +206,25 @@ const SignInOTP = () => {
               className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 hover:shadow-md transition-all duration-200 group"
             >
               <Lock className="w-5 h-5 text-gray-600 group-hover:text-blue-600 transition-colors" />
-              <span className="text-gray-700 font-medium">Sign in with Password</span>
+              <span className="text-gray-700 font-medium">
+                Sign in with Password
+              </span>
             </Link>
 
             <button className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 hover:shadow-md transition-all duration-200 group">
               <Volleyball className="w-5 h-5 text-gray-600 group-hover:text-blue-600 transition-colors" />
-              <span className="text-gray-700 font-medium">Sign in with Google</span>
+              <span className="text-gray-700 font-medium">
+                Sign in with Google
+              </span>
             </button>
           </div>
 
           <p className="text-sm text-center text-gray-600 mt-8">
             Don't have an account?{" "}
-            <Link to="/signup" className="text-blue-600 font-medium hover:text-blue-700 hover:underline">
+            <Link
+              to="/signup"
+              className="text-blue-600 font-medium hover:text-blue-700 hover:underline"
+            >
               Sign up
             </Link>
           </p>

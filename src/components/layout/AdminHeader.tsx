@@ -1,12 +1,13 @@
 import React from 'react';
 import { Menu, User, LogOut, Search } from 'lucide-react';
+import useLogout from "../../hooks/useLogout";
 
 interface HeaderProps {
   onSidebarToggle: () => void;
   title: string;
 }
-
 const AdminHeader: React.FC<HeaderProps> = ({ onSidebarToggle, title }) => {
+  const logout = useLogout(); // ✅ Call the hook here
   return (
     <header className="bg-white shadow-sm border-b border-gray-200 h-16 flex items-center justify-between px-6">
       <div className="flex items-center">
@@ -39,7 +40,7 @@ const AdminHeader: React.FC<HeaderProps> = ({ onSidebarToggle, title }) => {
             <div className="text-sm font-medium text-gray-700">Admin User</div>
             <div className="text-xs text-gray-500">admin@store.com</div>
           </div>
-          <button className="p-2 rounded-lg hover:bg-gray-100 transition-colors">
+          <button onClick={logout} className="p-2 rounded-lg hover:bg-gray-100 transition-colors">
             <LogOut className="w-4 h-4 text-gray-500" />
           </button>
         </div>

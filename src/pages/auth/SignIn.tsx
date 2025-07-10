@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { 
-  Eye, 
-  EyeOff, 
-  Mail, 
+import {
+  Eye,
+  EyeOff,
+  Mail,
   Phone,
   Lock,
   LogIn,
@@ -12,6 +12,7 @@ import {
   XCircle,
   Volleyball,
 } from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
 
 type FormData = {
   emailOrPhone: string;
@@ -21,7 +22,8 @@ type FormData = {
 const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [inputType, setInputType] = useState<'email' | 'phone' | null>(null);
+  const [inputType, setInputType] = useState<"email" | "phone" | null>(null);
+  const { refreshAuth } = useAuth();
   const navigate = useNavigate();
 
   const {
@@ -34,29 +36,29 @@ const SignIn = () => {
     mode: "onChange",
     defaultValues: {
       emailOrPhone: "",
-      password: ""
-    }
+      password: "",
+    },
   });
 
   const watchedFields = watch();
 
   // Detect if input is email or phone
   const detectInputType = (value: string) => {
-    const cleanValue = value.replace(/\s/g, '');
-    
+    const cleanValue = value.replace(/\s/g, "");
+
     if (!cleanValue) {
       setInputType(null);
       return value;
     }
-    
+
     // Check if it starts with a number or +
     if (/^[+0-9]/.test(cleanValue)) {
-      setInputType('phone');
+      setInputType("phone");
       // Remove any non-digits and limit to 10 digits
-      const digitsOnly = cleanValue.replace(/\D/g, '').slice(-10);
+      const digitsOnly = cleanValue.replace(/\D/g, "").slice(-10);
       return digitsOnly;
-    } else if (cleanValue.includes('@') || /^[a-zA-Z]/.test(cleanValue)) {
-      setInputType('email');
+    } else if (cleanValue.includes("@") || /^[a-zA-Z]/.test(cleanValue)) {
+      setInputType("email");
       return value;
     } else {
       setInputType(null);
@@ -66,24 +68,25 @@ const SignIn = () => {
 
   const handleEmailOrPhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const processedValue = detectInputType(e.target.value);
-    setValue('emailOrPhone', processedValue, { shouldValidate: true });
+    setValue("emailOrPhone", processedValue, { shouldValidate: true });
   };
 
   const onSubmit = async (data: FormData) => {
     setLoading(true);
     try {
       await new Promise((res) => setTimeout(res, 1500));
-      
+
       // Prepare data for backend
       const loginData = {
-        [inputType === 'phone' ? 'phone' : 'email']: 
-          inputType === 'phone' ? `+91${data.emailOrPhone}` : data.emailOrPhone,
+        [inputType === "phone" ? "phone" : "email"]:
+          inputType === "phone" ? `+91${data.emailOrPhone}` : data.emailOrPhone,
         password: data.password,
-        loginType: inputType
+        loginType: inputType,
       };
-      
+
       console.log("Login data:", loginData);
-      navigate("/dashboard");
+      await refreshAuth();
+      navigate("/");
     } catch (err) {
       console.error("Sign in failed:", err);
     } finally {
@@ -98,9 +101,9 @@ const SignIn = () => {
   // Custom validation for email or phone
   const validateEmailOrPhone = (value: string) => {
     if (!value) return "Email or phone number is required";
-    
-    const cleanValue = value.replace(/\s/g, '');
-    
+
+    const cleanValue = value.replace(/\s/g, "");
+
     // Check if it looks like a phone number
     if (/^[0-9]+$/.test(cleanValue)) {
       if (cleanValue.length !== 10) {
@@ -111,13 +114,13 @@ const SignIn = () => {
       }
       return true;
     }
-    
+
     // Otherwise validate as email
     const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
     if (!emailRegex.test(value)) {
       return "Please enter a valid email address";
     }
-    
+
     return true;
   };
 
@@ -157,7 +160,10 @@ const SignIn = () => {
             Sign in to continue to your account
           </p>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 sm:space-y-5">
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="space-y-4 sm:space-y-5"
+          >
             {/* Email or Phone Input */}
             <div className="group">
               <label
@@ -169,54 +175,75 @@ const SignIn = () => {
               <div className="relative">
                 {/* Dynamic icon based on input type - only show when user has typed */}
                 {watchedFields.emailOrPhone && (
-                  <div className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 transition-all duration-200 ${
-                    getFieldState("emailOrPhone") === "error" ? "text-red-400" : 
-                    getFieldState("emailOrPhone") === "success" ? "text-emerald-500" : 
-                    "text-gray-400 group-focus-within:text-blue-500"
-                  }`}>
-                    {inputType === 'phone' && <Phone />}
-                    {inputType === 'email' && <Mail />}
+                  <div
+                    className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 transition-all duration-200 ${
+                      getFieldState("emailOrPhone") === "error"
+                        ? "text-red-400"
+                        : getFieldState("emailOrPhone") === "success"
+                        ? "text-emerald-500"
+                        : "text-gray-400 group-focus-within:text-blue-500"
+                    }`}
+                  >
+                    {inputType === "phone" && <Phone />}
+                    {inputType === "email" && <Mail />}
                   </div>
                 )}
-                
+
                 {/* Show +91 prefix when phone is detected */}
-                {inputType === 'phone' && watchedFields.emailOrPhone && (
+                {inputType === "phone" && watchedFields.emailOrPhone && (
                   <div className="absolute left-10 top-1/2 transform -translate-y-1/2 flex items-center pointer-events-none animate-fadeIn">
-                    <span className="text-gray-600 font-medium select-none border-r pr-2 mr-2">+91</span>
+                    <span className="text-gray-600 font-medium select-none border-r pr-2 mr-2">
+                      +91
+                    </span>
                   </div>
                 )}
-                
+
                 <input
                   id="emailOrPhone"
                   type="text"
                   placeholder="you@example.com or 9876543210"
                   className={`w-full ${
-                    inputType === 'phone' && watchedFields.emailOrPhone ? 'pl-20' : 
-                    watchedFields.emailOrPhone ? 'pl-10' : 
-                    'pl-4'
-                  } pr-10 py-3 bg-gray-50 border rounded-xl focus:border-transparent focus:bg-white transition-all duration-200 outline-none focus:ring-2 ${getFieldBorderClass("emailOrPhone")}`}
+                    inputType === "phone" && watchedFields.emailOrPhone
+                      ? "pl-20"
+                      : watchedFields.emailOrPhone
+                      ? "pl-10"
+                      : "pl-4"
+                  } pr-10 py-3 bg-gray-50 border rounded-xl focus:border-transparent focus:bg-white transition-all duration-200 outline-none focus:ring-2 ${getFieldBorderClass(
+                    "emailOrPhone"
+                  )}`}
                   {...register("emailOrPhone", {
                     validate: validateEmailOrPhone,
-                    onChange: handleEmailOrPhoneChange
+                    onChange: handleEmailOrPhoneChange,
                   })}
                 />
-                
+
                 {touchedFields.emailOrPhone && (
                   <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
                     {errors.emailOrPhone ? (
                       <XCircle className="w-5 h-5 text-red-500" />
-                    ) : watchedFields.emailOrPhone && (
-                      <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                    ) : (
+                      watchedFields.emailOrPhone && (
+                        <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                      )
                     )}
                   </div>
                 )}
               </div>
               {errors.emailOrPhone && (
-                <p className="mt-1 text-xs text-red-500 animate-fadeIn">{errors.emailOrPhone.message}</p>
+                <p className="mt-1 text-xs text-red-500 animate-fadeIn">
+                  {errors.emailOrPhone.message}
+                </p>
               )}
-              {inputType === 'phone' && watchedFields.emailOrPhone && !errors.emailOrPhone && watchedFields.emailOrPhone.length > 0 && watchedFields.emailOrPhone.length < 10 && (
-                <p className="mt-1 text-xs text-gray-500">{10 - watchedFields.emailOrPhone.length} more digits required</p>
-              )}
+              {inputType === "phone" &&
+                watchedFields.emailOrPhone &&
+                !errors.emailOrPhone &&
+                watchedFields.emailOrPhone.length > 0 &&
+                watchedFields.emailOrPhone.length < 10 && (
+                  <p className="mt-1 text-xs text-gray-500">
+                    {10 - watchedFields.emailOrPhone.length} more digits
+                    required
+                  </p>
+                )}
             </div>
 
             {/* Password Input */}
@@ -228,22 +255,28 @@ const SignIn = () => {
                 Password
               </label>
               <div className="relative">
-                <Lock className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 transition-colors duration-200 ${
-                  getFieldState("password") === "error" ? "text-red-400" : 
-                  getFieldState("password") === "success" ? "text-emerald-500" : 
-                  "text-gray-400 group-focus-within:text-blue-500"
-                }`} />
+                <Lock
+                  className={`absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 transition-colors duration-200 ${
+                    getFieldState("password") === "error"
+                      ? "text-red-400"
+                      : getFieldState("password") === "success"
+                      ? "text-emerald-500"
+                      : "text-gray-400 group-focus-within:text-blue-500"
+                  }`}
+                />
                 <input
                   id="password"
                   type={showPassword ? "text" : "password"}
                   placeholder="Enter your password"
-                  className={`w-full pl-10 pr-12 py-3 bg-gray-50 border rounded-xl focus:border-transparent focus:bg-white transition-all duration-200 outline-none focus:ring-2 ${getFieldBorderClass("password")}`}
+                  className={`w-full pl-10 pr-12 py-3 bg-gray-50 border rounded-xl focus:border-transparent focus:bg-white transition-all duration-200 outline-none focus:ring-2 ${getFieldBorderClass(
+                    "password"
+                  )}`}
                   {...register("password", {
                     required: "Password is required",
                     minLength: {
                       value: 6,
-                      message: "Password must be at least 6 characters"
-                    }
+                      message: "Password must be at least 6 characters",
+                    },
                   })}
                 />
                 <div className="absolute right-3 top-1/2 transform -translate-y-1/2 flex items-center gap-2">
@@ -251,8 +284,10 @@ const SignIn = () => {
                     <>
                       {errors.password ? (
                         <XCircle className="w-5 h-5 text-red-500" />
-                      ) : watchedFields.password && (
-                        <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                      ) : (
+                        watchedFields.password && (
+                          <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                        )
                       )}
                     </>
                   )}
@@ -261,26 +296,32 @@ const SignIn = () => {
                     onClick={() => setShowPassword(!showPassword)}
                     className="text-gray-400 hover:text-gray-600 transition-colors"
                   >
-                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    {showPassword ? (
+                      <EyeOff className="w-5 h-5" />
+                    ) : (
+                      <Eye className="w-5 h-5" />
+                    )}
                   </button>
                 </div>
               </div>
               {errors.password && (
-                <p className="mt-1 text-xs text-red-500 animate-fadeIn">{errors.password.message}</p>
+                <p className="mt-1 text-xs text-red-500 animate-fadeIn">
+                  {errors.password.message}
+                </p>
               )}
             </div>
 
             {/* Remember me and Forgot password */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
               <label className="flex items-center cursor-pointer">
-                <input 
-                  type="checkbox" 
+                <input
+                  type="checkbox"
                   className="w-4 h-4 text-blue-600 bg-gray-50 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
                 />
                 <span className="ml-2 text-sm text-gray-600">Remember me</span>
               </label>
-              <Link 
-                to="/forgot-password" 
+              <Link
+                to="/forgot-password"
                 className="text-sm text-blue-600 hover:text-blue-700 hover:underline transition-colors"
               >
                 Forgot password?
@@ -299,9 +340,24 @@ const SignIn = () => {
             >
               {loading ? (
                 <span className="flex items-center justify-center">
-                  <svg className="animate-spin h-5 w-5 mr-2" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  <svg
+                    className="animate-spin h-5 w-5 mr-2"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                      fill="none"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    />
                   </svg>
                   Signing in...
                 </span>
@@ -311,13 +367,15 @@ const SignIn = () => {
             </button>
           </form>
 
-                    {/* Divider */}
+          {/* Divider */}
           <div className="relative my-6 sm:my-8">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-gray-200"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-white text-gray-500">Or continue with</span>
+              <span className="px-4 bg-white text-gray-500">
+                Or continue with
+              </span>
             </div>
           </div>
 
@@ -328,12 +386,19 @@ const SignIn = () => {
               className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 hover:shadow-md transition-all duration-200 group"
             >
               <Lock className="w-5 h-5 text-gray-600 group-hover:text-blue-600 transition-colors" />
-              <span className="text-gray-700 font-medium">Sign in without Password</span>
+              <span className="text-gray-700 font-medium">
+                Sign in without Password
+              </span>
             </Link>
 
-            <button className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 hover:shadow-md transition-all duration-200 group">
+            <button
+              onClick={handleGoogleSignIn}
+              className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 hover:shadow-md transition-all duration-200 group"
+            >
               <Volleyball className="w-5 h-5 text-gray-600 group-hover:text-blue-600 transition-colors" />
-              <span className="text-gray-700 font-medium">Sign in with Google</span>
+              <span className="text-gray-700 font-medium">
+                Sign in with Google
+              </span>
             </button>
           </div>
 
@@ -351,10 +416,10 @@ const SignIn = () => {
 
         {/* Help text */}
         <p className="text-xs text-center text-gray-500 mt-4 sm:mt-6 px-4">
-          You can sign in using your email address or phone number registered with us
+          You can sign in using your email address or phone number registered
+          with us
         </p>
       </div>
-
     </div>
   );
 };

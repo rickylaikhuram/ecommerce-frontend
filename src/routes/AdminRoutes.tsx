@@ -12,9 +12,9 @@ import Settings from "../pages/admin/Setting";
 import Error from "../pages/Error";
 
 const AdminRoutes = (
-  <Routes>
     <Route path="/" element={<AdminMainLayout />}>
       <Route index element={<Dashboard />} />
+      <Route path="dashboard" element={<Dashboard />} />
       <Route path="products" element={<Products />} />
       <Route path="orders" element={<Orders />} />
       <Route path="customers" element={<Customers />} />
@@ -24,7 +24,6 @@ const AdminRoutes = (
       <Route path="settings" element={<Settings />} />
       <Route path="*" element={<Error />} />
     </Route>
-  </Routes>
 );
 
 export default AdminRoutes;

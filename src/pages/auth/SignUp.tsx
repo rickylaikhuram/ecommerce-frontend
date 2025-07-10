@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { OTPVerification } from "./OTPVerification"; // Import the OTP component
 import instance from "../../utils/axios";
+import { useAuth } from "../../context/AuthContext";
 
 type FormData = {
   fullName: string;
@@ -29,6 +30,7 @@ const SignUp = () => {
   const [formData, setFormData] = useState<FormData | null>(null); // Store form data
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { refreshAuth } = useAuth();
   const navigate = useNavigate();
 
   const {
@@ -58,7 +60,7 @@ const SignUp = () => {
       setUserPhone(data.phone);
 
       // Send OTP to phone number
-      const response = await instance.post("/api/user/signup/initiate", {
+      const response = await instance.post("/api/auth/signup/initiate", {
         email: data.email,
         phone: data.phone,
         name: data.fullName,
@@ -69,7 +71,7 @@ const SignUp = () => {
       // Show OTP verification screen
       setShowOTPScreen(true);
     } catch (err) {
-      console.error("Failed to send OTP:", err?.response?.data);
+      console.error("Failed to send OTP:", err);
     } finally {
       setLoading(false);
     }
@@ -80,19 +82,11 @@ const SignUp = () => {
 
     try {
       // Simulate OTP verification and account creation
-      const response = await instance.post("/api/user/signup/confirm", {
-      phone: formData.phone, // Don't prefix with +91 unless your backend expects it
-      otp,
-    });
-      // Complete registration with verified phone
-      const registrationData = {
-        ...formData,
-        phone: `+91${formData.phone}`,
+      const response = await instance.post("/api/auth/signup/confirm", {
+        phone: formData.phone, // Don't prefix with +91 unless your backend expects it
         otp,
-        phoneVerified: true,
-      };
-
-      console.log("Account created with verified phone:", registrationData);
+      });
+      await refreshAuth();
       navigate("/");
     } catch (err) {
       console.error("Registration failed:", err);
@@ -101,22 +95,21 @@ const SignUp = () => {
   };
 
   const handleResendOTP = async () => {
-  if (!userPhone) return;
+    if (!userPhone) return;
 
-  try {
-    console.log("📲 Resending OTP to:", `+91${userPhone}`);
+    try {
+      console.log("📲 Resending OTP to:", `+91${userPhone}`);
 
-    await instance.post("/api/user/signup/resend", {
-      phone: userPhone,
-    });
+      await instance.post("/api/auth/signup/resend", {
+        phone: userPhone,
+      });
 
-    console.log("✅ OTP resent successfully");
-  } catch (error) {
-    console.error("❌ Failed to resend OTP:", error);
-    // Optionally show error to user (e.g. toast or alert)
-  }
-};
-
+      console.log("✅ OTP resent successfully");
+    } catch (error) {
+      console.error("❌ Failed to resend OTP:", error);
+      // Optionally show error to user (e.g. toast or alert)
+    }
+  };
 
   const handleGoogleSignIn = () => {
     console.log("Google Sign In clicked");
@@ -426,7 +419,7 @@ const SignUp = () => {
                     },
                     pattern: {
                       value:
-                        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
+                        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&]/,
                       message:
                         "Password must contain uppercase, lowercase, number and special character",
                     },

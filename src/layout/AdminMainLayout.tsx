@@ -1,18 +1,25 @@
-// layout/MainLayout.tsx
-import { Outlet, useLocation } from "react-router-dom";
+// layout/AdminMainLayout.tsx
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import Sidebar from "../components/layout/AdminSidebar";
 import Header from "../components/layout/AdminHeader";
 import { useState } from "react";
 
 const AdminMainLayout = () => {
-  const [activeTab, setActiveTab] = useState("dashboard");
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+
+  // Extract tab name from URL (e.g., /products -> 'products')
+  const path = location.pathname.split("/")[1] || "dashboard";
+
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const onTabChange = (tab: string) => {
+    navigate(`/${tab}`);
+  };
 
   const getPageTitle = () => {
-    const path = location.pathname.split("/")[1];
     const titles: { [key: string]: string } = {
-      "": "Dashboard",
+      dashboard: "Dashboard",
       products: "Products",
       orders: "Orders",
       customers: "Customers",
@@ -30,8 +37,8 @@ const AdminMainLayout = () => {
         <Sidebar
           isOpen={sidebarOpen}
           onToggle={() => setSidebarOpen(!sidebarOpen)}
-          activeTab={activeTab}
-          onTabChange={(tab) => setActiveTab(tab)}
+          activeTab={path}
+          onTabChange={onTabChange}
         />
         <div className="flex-1 flex flex-col min-w-0">
           <Header

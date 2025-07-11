@@ -32,31 +32,31 @@ const CategoryShowcase = () => {
           {
             id: '2',
             name: 'Real Madrid',
-            imageUrl: 'https://upload.wikimedia.org/wikipedia/en/thumb/5/56/Real_Madrid_CF.svg/250px-Real_Madrid_CF.svg.png',
+            imageUrl: 'https://i.pinimg.com/736x/6e/6e/ea/6e6eea736d90f505c04b49ed1bb3cde5.jpg',
             teamColor: '#FEBE10',
           },
           {
             id: '3',
             name: 'Barcelona',
-            imageUrl: 'https://images.unsplash.com/photo-1622495488223-3b0b3b0b3b3b?w=400&h=400&fit=crop',
+            imageUrl: 'https://i.pinimg.com/736x/38/81/b8/3881b8768bcb70aa0e2222228b619cb3.jpg',
             teamColor: '#A50044',
           },
           {
             id: '4',
             name: 'Bayern Munich',
-            imageUrl: 'https://images.unsplash.com/photo-1622495507775-3b0c3b1b9b3b?w=400&h=400&fit=crop',
+            imageUrl: 'https://i.pinimg.com/1200x/7a/f0/57/7af0574b2c3ad619a2d8921878a4d402.jpg',
             teamColor: '#DC052D',
           },
           {
             id: '5',
             name: 'Liverpool',
-            imageUrl: 'https://images.unsplash.com/photo-1622495507997-3b0c3b1b9b3b?w=400&h=400&fit=crop',
+            imageUrl: 'https://i.pinimg.com/736x/86/a7/08/86a7085581395cc0685ac8304e6701e4.jpg',
             teamColor: '#C8102E',
           },
           {
             id: '6',
             name: 'Chelsea',
-            imageUrl: 'https://images.unsplash.com/photo-1622495508111-3b0c3b1b9b3b?w=400&h=400&fit=crop',
+            imageUrl: 'https://i.pinimg.com/736x/ac/4a/ce/ac4ace2a9a1c7329c464ac83bfe3e30b.jpg',
             teamColor: '#034694',
           }
         ];
@@ -110,8 +110,70 @@ const CategoryShowcase = () => {
           </p>
         </div>
 
-        {/* Category Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 justify-items-center">
+        {/* Category Grid - Mobile horizontal scroll */}
+        <div className="md:hidden overflow-x-auto pb-4 -mx-6 px-6">
+          <div className="flex space-x-8 w-max">
+            {categories.map((category, index) => (
+              <div
+                key={category.id}
+                className="group cursor-pointer transform transition-all duration-300 hover:scale-110 flex-shrink-0"
+                style={{
+                  animation: `fadeInUp 0.5s ease-out ${index * 0.1}s forwards`,
+                  opacity: 0
+                }}
+              >
+                {/* Circular Image Container */}
+                <div className="relative">
+                  {/* Colored Ring */}
+                  <div 
+                    className="absolute -inset-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-lg"
+                    style={{ backgroundColor: category.teamColor }}
+                  />
+                  
+                  {/* Image Container */}
+                  <div className="relative w-28 h-28 rounded-full overflow-hidden ring-2 ring-gray-200 group-hover:ring-4 transition-all duration-300"
+                      style={{ '--ring-color': category.teamColor } as any}>
+                    <img
+                      src={category.imageUrl}
+                      alt={`${category.name} Jersey`}
+                      className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+                      onError={(e) => {
+                        // Fallback image if loading fails
+                        (e.target as HTMLImageElement).src = `https://via.placeholder.com/400x400/f3f4f6/9ca3af?text=${category.name.charAt(0)}`;
+                      }}
+                    />
+                    
+                    {/* Overlay on hover */}
+                    <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity duration-300" />
+                  </div>
+
+                  {/* Badge */}
+                  {category.itemCount && (
+                    <div 
+                      className="absolute -top-1 -right-1 w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-md"
+                      style={{ backgroundColor: category.teamColor }}
+                    >
+                      {category.itemCount}
+                    </div>
+                  )}
+                </div>
+
+                {/* Category Name */}
+                <div className="mt-4 text-center">
+                  <h3 className="text-sm font-semibold text-gray-800 group-hover:text-gray-900 transition-colors">
+                    {category.name}
+                  </h3>
+                  <p className="text-xs text-gray-500 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    View Collection →
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Category Grid - Desktop */}
+        <div className="hidden md:grid grid-cols-3 lg:grid-cols-6 gap-8 justify-items-center">
           {categories.map((category, index) => (
             <div
               key={category.id}
@@ -130,8 +192,8 @@ const CategoryShowcase = () => {
                 />
                 
                 {/* Image Container */}
-                <div className="relative w-28 h-28 md:w-32 md:h-32 rounded-full overflow-hidden ring-2 ring-gray-200 group-hover:ring-4 transition-all duration-300"
-                     style={{ '--ring-color': category.teamColor } as any}>
+                <div className="relative w-32 h-32 rounded-full overflow-hidden ring-2 ring-gray-200 group-hover:ring-4 transition-all duration-300"
+                    style={{ '--ring-color': category.teamColor } as any}>
                   <img
                     src={category.imageUrl}
                     alt={`${category.name} Jersey`}
@@ -159,7 +221,7 @@ const CategoryShowcase = () => {
 
               {/* Category Name */}
               <div className="mt-4 text-center">
-                <h3 className="text-sm md:text-base font-semibold text-gray-800 group-hover:text-gray-900 transition-colors">
+                <h3 className="text-base font-semibold text-gray-800 group-hover:text-gray-900 transition-colors">
                   {category.name}
                 </h3>
                 <p className="text-xs text-gray-500 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">

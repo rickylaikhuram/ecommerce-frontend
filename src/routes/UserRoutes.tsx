@@ -4,11 +4,13 @@ import MainLayout from "../layout/MainLayout";
 import Home from "../pages/home";
 import Error from "../pages/Error";
 import CartPage from "../pages/CartPage";
+import Wishlist from "../pages/Wishlist";
 
 const UserRoutes = (
   <Route element={<MainLayout />}>
     <Route path="/" element={<Home />} />
     <Route path="/cart" element={<CartPage />} />
+    <Route path="/wishlist" element={<Wishlist />} />
     <Route path="*" element={<Error />} />
   </Route>
 );

@@ -1,12 +1,12 @@
 // components/sections/HeroSection.tsx
 import HeroBanner from "./HeroBanner";
-import CategoryShowcase from "./CategoryShowcase";
+// import CategoryShowcase from "./CategoryShowcase";
 
 const HeroSection = () => {
   return (
     <div>
       <HeroBanner />
-      <CategoryShowcase />
+      {/* <CategoryShowcase /> */}
     </div>
   );
 };

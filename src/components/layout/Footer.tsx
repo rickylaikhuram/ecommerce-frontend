@@ -21,9 +21,10 @@ const Footer = () => {
       </div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
-          {/* Company Info */}
-          <div className="space-y-4 sm:space-y-6">
+        {/* Modified grid for better mobile view */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-8 mb-12">
+          {/* Company Info - Full width on mobile */}
+          <div className="col-span-2 md:col-span-1 space-y-4 sm:space-y-6">
             <div className="flex items-center space-x-3">
               <div className="relative flex-shrink-0">
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-xl blur-lg opacity-30"></div>
@@ -61,7 +62,7 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Quick Links */}
+          {/* Quick Links - 1st column on mobile */}
           <div className="space-y-4">
             <h3 className="text-base sm:text-lg font-semibold text-gray-800 flex items-center">
               <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500 mr-1 flex-shrink-0" />
@@ -82,7 +83,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Customer Service */}
+          {/* Customer Service - 2nd column on mobile */}
           <div className="space-y-4">
             <h3 className="text-base sm:text-lg font-semibold text-gray-800 flex items-center">
               <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500 mr-1 flex-shrink-0" />
@@ -103,8 +104,8 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Contact Info & Newsletter */}
-          <div className="space-y-4">
+          {/* Contact Info & Newsletter - Full width below on mobile */}
+          <div className="col-span-2 md:col-span-1 space-y-4">
             <h3 className="text-base sm:text-lg font-semibold text-gray-800 flex items-center">
               <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500 mr-1 flex-shrink-0" />
               Get in Touch

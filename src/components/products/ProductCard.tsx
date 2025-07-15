@@ -1,7 +1,7 @@
 // components/ProductCard.tsx
 import React, { useState } from "react";
 import { Heart, ShoppingCart, Eye } from "lucide-react";
-import type { ProductCardProps } from "../../types/products";
+import type { ProductCardProps } from "../../types/products.types";
 
 const ProductCard: React.FC<ProductCardProps> = ({
   product,

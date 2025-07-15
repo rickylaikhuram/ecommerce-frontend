@@ -5,7 +5,7 @@ import Button from '../../components/ui/Button';
 import Badge from '../../components/ui/Badge';
 import Modal from '../../components/ui/Modal';
 import { mockSupportTickets } from '../../data/mockData';
-import type{ SupportTicket } from '../../types/temp';
+import type{ SupportTicket } from '../../types/temp.types';
 
 const Support: React.FC = () => {
   const [tickets, setTickets] = useState<SupportTicket[]>(mockSupportTickets);

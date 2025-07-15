@@ -1,4 +1,4 @@
-import type{ Product, Order, Customer, User, SalesData, ChartData, Notification, SupportTicket, Settings } from '../types/temp';
+import type{ Product, Order, Customer, User, SalesData, ChartData, Notification, SupportTicket, Settings } from '../types/temp.types';
 
 export const mockProducts: Product[] = [
   {

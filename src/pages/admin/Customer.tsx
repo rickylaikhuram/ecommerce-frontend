@@ -5,7 +5,7 @@ import Button from '../../components/ui/Button';
 import Badge from '../../components/ui/Badge';
 import Modal from '../../components/ui/Modal';
 import { mockCustomers, mockUsers } from '../../data/mockData';
-import type{ Customer, User as UserType } from '../../types/temp';
+import type{ Customer, User as UserType } from '../../types/temp.types';
 
 const Customers: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'customers' | 'users'>('customers');

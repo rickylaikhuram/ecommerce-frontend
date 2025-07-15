@@ -4,7 +4,7 @@ import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Badge from '../../components/ui/Badge';
 import { mockSettings } from '../../data/mockData';
-import type{ Settings as SettingsType } from '../../types/temp';
+import type{ Settings as SettingsType } from '../../types/temp.types';
 
 const Settings: React.FC = () => {
   const [settings, setSettings] = useState<SettingsType>(mockSettings);

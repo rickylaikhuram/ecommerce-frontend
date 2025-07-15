@@ -5,7 +5,7 @@ import Button from '../../components/ui/Button';
 import Badge from '../../components/ui/Badge';
 import Modal from '../../components/ui/Modal';
 import { mockOrders } from '../../data/mockData';
-import type{ Order } from '../../types/temp';
+import type{ Order } from '../../types/temp.types';
 
 const Orders: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>(mockOrders);

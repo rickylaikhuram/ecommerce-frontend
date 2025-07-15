@@ -1,7 +1,7 @@
 // components/sections/ProductSection.tsx
 import React from "react";
 import ProductCarousel from "../products/ProductCarousel";
-import type { ProductWithDetails } from "../../types/products";
+import type { ProductWithDetails } from "../../types/products.types";
 
 interface ProductSectionProps {
   title: string;

@@ -4,7 +4,7 @@ import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Badge from '../../components/ui/Badge';
 import { mockNotifications } from '../../data/mockData';
-import type{ Notification } from '../../types/temp';
+import type{ Notification } from '../../types/temp.types';
 
 const Notifications: React.FC = () => {
   const [notifications, setNotifications] = useState<Notification[]>(mockNotifications);

@@ -3,7 +3,7 @@ import { Suspense, useState } from "react";
 import HeroSection from "../../components/section/HeroSection";
 import ProductSection from "../../components/section/ProductSection";
 import Loading from "../../components/common/Loading";
-import type { ProductWithDetails } from "../../types/products";
+import type { ProductWithDetails } from "../../types/products.types.ts";
 import CategoryShowcase from '../../components/section/CategoryShowcase.tsx'
 
 // Predefined product data for testing

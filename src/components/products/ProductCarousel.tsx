@@ -2,7 +2,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import ProductCard from './ProductCard';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import type { ProductWithDetails } from "../../types/products"
+import type { ProductWithDetails } from "../../types/products.types"
 
 interface ProductCarouselProps {
   title?: string;

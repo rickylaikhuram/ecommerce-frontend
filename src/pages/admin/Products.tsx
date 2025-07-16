@@ -1,10 +1,7 @@
-// Products.tsx
 import React, { useState } from "react";
-import { Plus, Search, Filter } from "lucide-react";
-import Card from "../../components/ui/Card";
+import { Plus, Search, Edit, Trash2, Filter, Package, AlertCircle } from "lucide-react";
 import Button from "../../components/ui/Button";
-import Modal from "../../components/ui/Modal";
-import AdminProductCard from "../../components/admin/ProductCard";
+import Badge from "../../components/ui/Badge";
 import ProductForm from "../../components/admin/ProductForm";
 import { mockProducts } from "../../data/mockData";
 import type { Product } from "../../types/temp.types";
@@ -12,256 +9,337 @@ import type { Product } from "../../types/temp.types";
 const Products: React.FC = () => {
   const [products, setProducts] = useState<Product[]>(mockProducts);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalType, setModalType] = useState<"view" | "edit" | "add">("view");
+  const [currentView, setCurrentView] = useState<"list" | "add" | "edit">("list");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
-  const categories = [
-    "Electronics",
-    "Clothing",
-    "Home & Garden",
-    "Accessories",
-  ];
-
+  // Calculate filtered products
   const filteredProducts = products.filter((product) => {
     const matchesSearch =
       product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.category.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory =
-      selectedCategory === "all" || product.category === selectedCategory;
-    return matchesSearch && matchesCategory;
+      product.sku?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus =
+      statusFilter === "all" || 
+      (statusFilter === "active" && product.status === "active") ||
+      (statusFilter === "low stock" && product.stock <= 10) ||
+      (statusFilter === "inactive" && product.status === "inactive");
+    return matchesSearch && matchesStatus;
   });
 
-  const handleOpenModal = (
-    type: "view" | "edit" | "add",
-    product?: Product
-  ) => {
-    setModalType(type);
-    setSelectedProduct(product || null);
-    setIsModalOpen(true);
+  // Get paginated products
+  const paginatedProducts = filteredProducts.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const handleAddProduct = () => {
+    setSelectedProduct(null);
+    setCurrentView("add");
   };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
+  const handleEditProduct = (product: Product) => {
+    setSelectedProduct(product);
+    setCurrentView("edit");
+  };
+
+  const handleBackToList = () => {
+    setCurrentView("list");
     setSelectedProduct(null);
   };
 
-  const handleDeleteProduct = (productId: string) => {
+  const handleDeleteProduct = async (productId: string) => {
     if (window.confirm("Are you sure you want to delete this product?")) {
-      setProducts(products.filter((p) => p.id !== productId));
+      try {
+        setProducts(products.filter((p) => p.id !== productId));
+      } catch (error) {
+        console.error("Error deleting product:", error);
+      }
     }
-  };
-
-  const handleToggleStatus = (productId: string) => {
-    setProducts(
-      products.map((p) =>
-        p.id === productId
-          ? {
-              ...p,
-              status:
-                p.status === "active"
-                  ? "inactive"
-                  : ("active" as "active" | "inactive"),
-            }
-          : p
-      )
-    );
   };
 
   const handleProductSubmit = async (productData: any) => {
     try {
-      if (modalType === "add") {
-        // Create new product
+      if (currentView === "add") {
         const newProduct: Product = {
-          id: Date.now().toString(),
           name: productData.name,
           category: productData.category,
           price: productData.price,
           stock: productData.stock,
-          sku: productData.sku,
-          status: productData.status,
           description: productData.description,
-          image: productData.images[0] || '',
-          fakePrice: productData.fakePrice,
-          weight: productData.weight
+          image: productData.image,
         };
         
         setProducts([...products, newProduct]);
-        
-        // In real app, make API call here
-        // await createProduct(productData);
-      } else if (modalType === "edit" && selectedProduct) {
-        // Update existing product
+      } else if (currentView === "edit" && selectedProduct) {
         const updatedProduct: Product = {
           ...selectedProduct,
-          name: productData.name,
-          category: productData.category,
-          price: productData.price,
-          stock: productData.stock,
-          sku: productData.sku,
-          status: productData.status,
-          description: productData.description,
-          image: productData.images[0] || selectedProduct.image,
-          fakePrice: productData.fakePrice,
-          weight: productData.weight
+          ...productData,
         };
         
         setProducts(products.map(p => 
           p.id === selectedProduct.id ? updatedProduct : p
         ));
-        
-        // In real app, make API call here
-        // await updateProduct(selectedProduct.id, productData);
       }
       
-      handleCloseModal();
+      handleBackToList();
     } catch (error) {
       console.error('Error saving product:', error);
       throw error;
     }
   };
 
+  const getStockStatus = (stock: number) => {
+    if (stock === 0) return { label: "Out of Stock", variant: "error" as const };
+    if (stock <= 10) return { label: "Low Stock", variant: "warning" as const };
+    return { label: "In Stock", variant: "success" as const };
+  };
+
+  // Render Add/Edit Form
+  if (currentView === "add" || currentView === "edit") {
+    return (
+      <ProductForm
+        mode={currentView}
+        initialData={selectedProduct}
+        onSubmit={handleProductSubmit}
+        onCancel={handleBackToList}
+      />
+    );
+  }
+
+  // Render Product List
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900">Products</h2>
-          <p className="text-gray-600">Manage your product catalog</p>
+      {/* Header Section */}
+      <div className="bg-white rounded-xl shadow-sm p-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-slate-800">Products</h1>
+            <p className="text-slate-600 mt-1">Manage your product inventory</p>
+          </div>
+          <Button
+            onClick={handleAddProduct}
+            className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2 px-5"
+          >
+            <Plus className="w-4 h-4" />
+            Add Product
+          </Button>
         </div>
-        <Button onClick={() => handleOpenModal("add")}>
-          <Plus className="w-4 h-4 mr-2" />
-          Add Product
-        </Button>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+          <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-slate-600">Total Products</p>
+                <p className="text-2xl font-bold text-slate-800 mt-1">{products.length}</p>
+              </div>
+              <div className="bg-blue-100 p-3 rounded-lg">
+                <Package className="w-6 h-6 text-blue-600" />
+              </div>
+            </div>
+          </div>
+          <div className="bg-amber-50 rounded-lg p-4 border border-amber-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-slate-600">Low Stock</p>
+                <p className="text-2xl font-bold text-amber-600 mt-1">
+                  {products.filter(p => p.stock <= 10 && p.stock > 0).length}
+                </p>
+              </div>
+              <div className="bg-amber-100 p-3 rounded-lg">
+                <AlertCircle className="w-6 h-6 text-amber-600" />
+              </div>
+            </div>
+          </div>
+          <div className="bg-red-50 rounded-lg p-4 border border-red-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-slate-600">Out of Stock</p>
+                <p className="text-2xl font-bold text-red-600 mt-1">
+                  {products.filter(p => p.stock === 0).length}
+                </p>
+              </div>
+              <div className="bg-red-100 p-3 rounded-lg">
+                <Package className="w-6 h-6 text-red-600" />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Filters */}
-      <Card>
-        <div className="flex flex-col lg:flex-row gap-4">
+      {/* Search and Filter Section */}
+      <div className="bg-white rounded-xl shadow-sm p-6">
+        <div className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
             <input
               type="text"
-              placeholder="Search products..."
+              placeholder="Search by product name or SKU..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full pl-10 pr-4 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
             />
           </div>
-          <div className="flex items-center gap-4">
+          <div className="relative">
+            <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="pl-10 pr-10 py-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white appearance-none cursor-pointer"
+            >
+              <option value="all">All Status</option>
+              <option value="active">In Stock</option>
+              <option value="low stock">Low Stock</option>
+              <option value="inactive">Out of Stock</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      {/* Products Table */}
+      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="bg-slate-50 border-b border-slate-200">
+                <th className="text-left px-6 py-4 text-sm font-semibold text-slate-700">
+                  Product
+                </th>
+                <th className="text-left px-6 py-4 text-sm font-semibold text-slate-700">
+                  Category
+                </th>
+                <th className="text-left px-6 py-4 text-sm font-semibold text-slate-700">
+                  Price
+                </th>
+                <th className="text-left px-6 py-4 text-sm font-semibold text-slate-700">
+                  Stock
+                </th>
+                <th className="text-left px-6 py-4 text-sm font-semibold text-slate-700">
+                  Status
+                </th>
+                <th className="text-right px-6 py-4 text-sm font-semibold text-slate-700">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-200">
+              {paginatedProducts.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="px-6 py-12 text-center">
+                    <div className="flex flex-col items-center">
+                      <Package className="w-12 h-12 text-slate-300 mb-3" />
+                      <p className="text-slate-500">No products found</p>
+                    </div>
+                  </td>
+                </tr>
+              ) : (
+                paginatedProducts.map((product) => {
+                  const stockStatus = getStockStatus(product.stock);
+                  return (
+                    <tr 
+                      key={product.id}
+                      className="hover:bg-slate-50 transition-colors"
+                    >
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-12 h-12 rounded-lg overflow-hidden bg-slate-100 flex-shrink-0">
+                            <img
+                              src={product.image}
+                              alt={product.name}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                          <div>
+                            <p className="font-semibold text-slate-800">
+                              {product.name}
+                            </p>
+                            <p className="text-sm text-slate-500">
+                              SKU: {product.sku || product.id}
+                            </p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="text-slate-700 capitalize">
+                          {product.category}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="font-semibold text-slate-800">
+                          ${product.price.toFixed(2)}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className={`font-semibold ${
+                          product.stock === 0 ? "text-red-600" :
+                          product.stock <= 10 ? "text-amber-600" :
+                          "text-slate-800"
+                        }`}>
+                          {product.stock}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <Badge variant={stockStatus.variant}>
+                          {stockStatus.label}
+                        </Badge>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center justify-end gap-1">
+                          <button
+                            onClick={() => handleEditProduct(product)}
+                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200"
+                            title="Edit product"
+                          >
+                            <Edit className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteProduct(product.id)}
+                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
+                            title="Delete product"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Table Footer */}
+        <div className="px-6 py-4 bg-slate-50 border-t border-slate-200">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+            <p className="text-sm text-slate-600">
+              Showing <span className="font-semibold">{paginatedProducts.length}</span> of{" "}
+              <span className="font-semibold">{filteredProducts.length}</span> products
+            </p>
             <div className="flex items-center gap-2">
-              <Filter className="w-4 h-4 text-gray-400" />
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              <button
+                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                disabled={currentPage === 1}
+                className="px-3 py-1 text-sm border border-slate-300 rounded-lg hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <option value="all">All Categories</option>
-                {categories.map((category) => (
-                  <option key={category} value={category}>
-                    {category}
-                  </option>
-                ))}
-              </select>
+                Previous
+              </button>
+              <span className="text-sm text-slate-600">
+                Page {currentPage} of {Math.ceil(filteredProducts.length / itemsPerPage)}
+              </span>
+              <button
+                onClick={() => setCurrentPage(Math.min(Math.ceil(filteredProducts.length / itemsPerPage), currentPage + 1))}
+                disabled={currentPage === Math.ceil(filteredProducts.length / itemsPerPage)}
+                className="px-3 py-1 text-sm border border-slate-300 rounded-lg hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Next
+              </button>
             </div>
           </div>
         </div>
-      </Card>
-
-      {/* Products Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {filteredProducts.map((product) => (
-          <AdminProductCard
-            key={product.id}
-            product={product}
-            onEdit={(product) => handleOpenModal("edit", product)}
-            onView={(product) => handleOpenModal("view", product)}
-            onDelete={handleDeleteProduct}
-            onToggleStatus={handleToggleStatus}
-          />
-        ))}
       </div>
-
-      {/* Modal */}
-      <Modal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        title={
-          modalType === "add"
-            ? "Add New Product"
-            : modalType === "edit"
-            ? "Edit Product"
-            : "Product Details"
-        }
-        size={modalType === "view" ? "lg" : "xl"}
-      >
-        {modalType === "view" && selectedProduct && (
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <img
-                  src={selectedProduct.image}
-                  alt={selectedProduct.name}
-                  className="w-full h-64 object-cover rounded-lg"
-                />
-              </div>
-              <div className="space-y-4">
-                <div>
-                  <h3 className="text-xl font-bold text-gray-900">
-                    {selectedProduct.name}
-                  </h3>
-                  <p className="text-gray-600">{selectedProduct.category}</p>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <span className="text-sm text-gray-500">Price</span>
-                    <p className="text-lg font-semibold">
-                      ${selectedProduct.price}
-                    </p>
-                  </div>
-                  <div>
-                    <span className="text-sm text-gray-500">Stock</span>
-                    <p className="text-lg font-semibold">
-                      {selectedProduct.stock}
-                    </p>
-                  </div>
-                  <div>
-                    <span className="text-sm text-gray-500">SKU</span>
-                    <p className="text-lg font-semibold">
-                      {selectedProduct.sku}
-                    </p>
-                  </div>
-                  <div>
-                    <span className="text-sm text-gray-500">Status</span>
-                    <p className="text-lg font-semibold capitalize">
-                      {selectedProduct.status}
-                    </p>
-                  </div>
-                </div>
-                <div>
-                  <span className="text-sm text-gray-500">Description</span>
-                  <p className="text-gray-900 mt-1">
-                    {selectedProduct.description}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {(modalType === "edit" || modalType === "add") && (
-          <div className="max-h-[80vh] overflow-y-auto px-1">
-            <ProductForm
-              mode={modalType}
-              initialData={selectedProduct}
-              categories={categories}
-              onSubmit={handleProductSubmit}
-              onCancel={handleCloseModal}
-            />
-          </div>
-        )}
-      </Modal>
     </div>
   );
 };

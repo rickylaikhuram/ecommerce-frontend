@@ -5,6 +5,7 @@ import ProductSection from "../../components/section/ProductSection";
 import Loading from "../../components/common/Loading";
 import type { ProductWithDetails } from "../../types/products.types.ts";
 import CategoryShowcase from '../../components/section/CategoryShowcase.tsx'
+// import  {Link}  from "react-router-dom";
 
 // Predefined product data for testing
 const bestSellerProducts: ProductWithDetails[] = [
@@ -249,6 +250,9 @@ const Home = () => {
 
   return (
     <main className="flex flex-col">
+      {/* <Link to="/location" className="text-sm text-gray-600 hover:text-blue-600">
+  Change Delivery Location
+</Link> */}
       <HeroSection />
 
       {/* New Arrivals Section */}

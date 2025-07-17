@@ -236,10 +236,25 @@ const LandingHeader = () => {
                     fill={isActive("/signin") ? "currentColor" : "none"}
                   />
                 </Link>
+                <Link
+                  to="/location"
+                  className={`p-2.5 rounded-lg transition-colors relative ${
+                    isActive("/location")
+                      ? "bg-blue-100 text-blue-600"
+                      : "hover: text-gray-700"
+                  }`}
+                  onClick={(e) => handleNavClick(e, "/location")}
+                >
+                  <MapPin
+                    size={20}
+                    fill={isActive("/location") ? "currentColor" : "none"}
+                  />
+                </Link>
 
-                <button className="p-2.5 hover:bg-gray-100 rounded-lg transition-colors hidden md:block">
+
+                {/* <button className="p-2.5 hover:bg-gray-100 rounded-lg transition-colors hidden md:block">
                   <MapPin size={20} className="text-gray-700" />
-                </button>
+                </button> */}
 
                 <Link
                   to="/wishlist"

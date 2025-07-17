@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
 type PromoSlide = {
-  id: number; // Added ID for better key management
+  id: number;
   discount: number;
   subtitle: string;
   title: string;
@@ -42,7 +42,6 @@ const HeroBanner = () => {
     },
   ];
 
-  // Promo Auto-Change
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentPromo((prev) =>
@@ -58,33 +57,26 @@ const HeroBanner = () => {
 
   return (
     <div className="relative overflow-hidden mb-10 bg-gradient-to-r from-zinc-200 to-green-600">
-      {/* Background with football pattern */}
       <div className="absolute inset-0 opacity-25">
         <div className="absolute top-0 left-0 w-full h-full bg-[url('https://i.pinimg.com/1200x/99/a4/bc/99a4bcb0275ab1ff90d461539eaf2ebb.jpg')]"></div>
       </div>
 
-      {/* Content */}
       <div className="relative z-10 px-8 py-12 md:px-12 md:py-16">
         <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-12">
-          {/* Discount badge */}
-          <div className="group">
-            <div className="bg-white/90 backdrop-blur-md p-6 rounded-full shadow-xl transform transition-all duration-500 hover:scale-105 hover:shadow-2xl w-32 h-32 flex items-center justify-center">
-              <div className="text-center">
-                <p className="text-4xl font-bold bg-gradient-to-r from-green-700 to-yellow-400 bg-clip-text text-transparent">
-                  {promoSlides[currentPromo].discount}%
-                </p>
-                <p className="text-sm font-semibold uppercase tracking-wider text-gray-600 mt-1">
-                  OFF
-                </p>
-              </div>
-              {/* Animated ring */}
-              <div className="absolute -inset-2 bg-gradient-to-r from-green-400 to-yellow-300 rounded-full opacity-0 group-hover:opacity-20 blur transition-opacity duration-500"></div>
+          {/* Discount badge WITHOUT animated ring */}
+          <div className="bg-white/90 backdrop-blur-md p-6 rounded-full shadow-xl transform transition-all duration-500 hover:scale-105 hover:shadow-2xl w-32 h-32 flex items-center justify-center">
+            <div className="text-center">
+              <p className="text-4xl font-bold bg-gradient-to-r from-green-700 to-yellow-400 bg-clip-text text-transparent">
+                {promoSlides[currentPromo].discount}%
+              </p>
+              <p className="text-sm font-semibold uppercase tracking-wider text-gray-600 mt-1">
+                OFF
+              </p>
             </div>
           </div>
 
-          {/* Promo content */}
+          {/* Promo text */}
           <div className="text-center md:text-left max-w-lg">
-            {/* Fixed subtitle animation */}
             <div className="overflow-hidden h-8 mb-3">
               {promoSlides.map((slide, index) => (
                 <h3
@@ -100,7 +92,6 @@ const HeroBanner = () => {
               ))}
             </div>
 
-            {/* Title animation */}
             <div className="overflow-hidden h-32 mb-4">
               {promoSlides.map((slide, index) => (
                 <h2
@@ -134,7 +125,6 @@ const HeroBanner = () => {
               Official licensed products with free shipping on orders over $75
             </p>
 
-            {/* CTA Button */}
             <button className="mt-6 px-6 py-3 bg-yellow-400 text-green-900 font-bold rounded-full shadow-lg hover:shadow-xl transform transition-all duration-300 hover:scale-105 hover:bg-yellow-300 flex items-center">
               Shop Now
               <svg
@@ -152,7 +142,7 @@ const HeroBanner = () => {
             </button>
           </div>
 
-          {/* Jersey images that change with slides */}
+          {/* Jersey image */}
           <div className="hidden lg:block relative w-64 h-64 transform transition-all duration-500 hover:scale-110">
             {promoSlides.map((slide, index) => (
               <div
@@ -196,7 +186,7 @@ const HeroBanner = () => {
         </div>
       </div>
 
-      {/* Progress bar styled like a football field line */}
+      {/* Progress bar */}
       <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20">
         <div
           className="h-full bg-yellow-400 transition-all duration-700 ease-linear"
@@ -207,20 +197,6 @@ const HeroBanner = () => {
             animation: "progress 4s linear infinite",
           }}
         />
-      </div>
-
-      {/* Football elements */}
-      <div className="absolute top-1/4 right-8 w-12 h-12 opacity-20 animate-bounce">
-        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-          <path
-            d="M50 5a45 45 0 100 90 45 45 0 000-90zm0 5a40 40 0 110 80 40 40 0 010-80zm0 5a35 35 0 100 70 35 35 0 000-70zm0 5a30 30 0 110 60 30 30 0 010-60z"
-            fill="white"
-          />
-          <path
-            d="M50 20a30 30 0 100 60 30 30 0 000-60zm0 5a25 25 0 110 50 25 25 0 010-50z"
-            fill="black"
-          />
-        </svg>
       </div>
 
       <style jsx>{`

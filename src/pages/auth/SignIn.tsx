@@ -13,6 +13,7 @@ import {
   Volleyball,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
+import instance from "../../utils/axios";
 
 type FormData = {
   emailOrPhone: string;
@@ -72,27 +73,29 @@ const SignIn = () => {
   };
 
   const onSubmit = async (data: FormData) => {
-    setLoading(true);
-    try {
-      await new Promise((res) => setTimeout(res, 1500));
+  setLoading(true);
+  try {
+    // Prepare payload based on detected inputType
+    const payload = {
+      identifierType: inputType, // "email" or "phone
+      identifier:
+        inputType === "phone" ? data.emailOrPhone : data.emailOrPhone,
+      password: data.password,
+    };
 
-      // Prepare data for backend
-      const loginData = {
-        [inputType === "phone" ? "phone" : "email"]:
-          inputType === "phone" ? `+91${data.emailOrPhone}` : data.emailOrPhone,
-        password: data.password,
-        loginType: inputType,
-      };
+    console.log("Login payload:", payload);
 
-      console.log("Login data:", loginData);
-      await refreshAuth();
-      navigate("/");
-    } catch (err) {
-      console.error("Sign in failed:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+    await instance.post("/api/auth/signin/password", payload);
+
+    await refreshAuth();
+    navigate("/");
+  } catch (err) {
+    console.error("Sign in failed:", err);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const handleGoogleSignIn = () => {
     console.log("Google Sign In clicked");

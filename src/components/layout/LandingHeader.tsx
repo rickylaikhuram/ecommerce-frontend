@@ -10,9 +10,15 @@ import {
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 // import { useCart } from "../context/CartContext";
 
+/* …inside the component … */
 const LandingHeader = () => {
+  const { authStatus } = useAuth(); // <── who am I?
+  const isGuest = authStatus?.role === "guest";
+  const profileHref = isGuest ? "/signin" : "/account"; // dynamic path
+  const profileLabel = isGuest ? "Sign in" : "Profile"; // optional text
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [shouldFixHeader, setShouldFixHeader] = useState(false);
@@ -65,7 +71,14 @@ const LandingHeader = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
-  const navItems = ["MEN", "WOMEN", "SNEAKERS", "NEW ARRIVALS", "CLEARANCE"];
+  const navItems = [
+    { name: "HOME", path: "/" },
+    { name: "MEN", path: "/men" },
+    { name: "WOMEN", path: "/women" },
+    { name: "SNEAKERS", path: "/sneakers" },
+    { name: "NEW ARRIVALS", path: "/new" },
+    { name: "CLEARANCE", path: "/clearance" },
+  ];
 
   // Check if route is active
   const isActive = (path: any) => location.pathname === path;
@@ -125,12 +138,16 @@ const LandingHeader = () => {
         <div className="p-4 space-y-1 overflow-y-auto h-[calc(100%-73px)]">
           {navItems.map((item) => (
             <Link
-              key={item}
-              to="#"
-              className="block py-2.5 px-3 text-sm font-medium text-gray-800 hover:bg-gray-50 hover:text-blue-600 rounded-lg transition-all duration-200"
-              onClick={toggleMenu}
+              key={item.name}
+              to={item.path}
+              className="block py-2.5 px-3 text-sm font-medium rounded-lg transition-all
+               duration-200 text-gray-800 hover:bg-gray-50 hover:text-blue-600"
+              onClick={(e) => {
+                handleNavClick(e, item.path);
+                toggleMenu();
+              }}
             >
-              {item}
+              {item.name}
             </Link>
           ))}
 
@@ -151,19 +168,21 @@ const LandingHeader = () => {
               Wishlist
             </Link>
             <Link
-              to="/signin"
-              className={`flex items-center gap-3 py-2.5 px-3 text-sm font-medium rounded-lg transition-all duration-200 ${
-                isActive("/signin")
+              to={profileHref}
+              className={`flex items-center gap-3 py-2.5 px-3 text-sm font-medium
+              rounded-lg transition-all duration-200
+              ${
+                isActive(profileHref)
                   ? "bg-blue-50 text-blue-600"
                   : "text-gray-800 hover:bg-gray-50 hover:text-blue-600"
               }`}
-              onClick={(e) => handleNavClick(e, "/signin")}
+              onClick={(e) => handleNavClick(e, profileHref)}
             >
               <User
                 size={16}
-                fill={isActive("/signin") ? "currentColor" : "none"}
+                fill={isActive(profileHref) ? "currentColor" : "none"}
               />
-              Sign In
+              {profileLabel}
             </Link>
           </div>
         </div>
@@ -195,11 +214,17 @@ const LandingHeader = () => {
               <nav className="hidden lg:flex items-center gap-8">
                 {navItems.map((item) => (
                   <Link
-                    key={item}
-                    to="#"
-                    className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
+                    key={item.name}
+                    to={item.path}
+                    className={`text-sm font-medium transition-colors
+             ${
+               isActive(item.path)
+                 ? "text-blue-600"
+                 : "text-gray-700 hover:text-blue-600"
+             }`}
+                    onClick={(e) => handleNavClick(e, item.path)}
                   >
-                    {item}
+                    {item.name}
                   </Link>
                 ))}
               </nav>
@@ -223,17 +248,18 @@ const LandingHeader = () => {
               {/* Icons */}
               <div className="flex items-center gap-2">
                 <Link
-                  to="/signin"
-                  className={`p-2.5 rounded-lg transition-colors ${
-                    isActive("/signin")
-                      ? "bg-blue-100 text-blue-600"
-                      : "hover:bg-gray-100 text-gray-700"
-                  }`}
-                  onClick={(e) => handleNavClick(e, "/signin")}
+                  to={profileHref} // <<— dynamic
+                  className={`p-2.5 rounded-lg transition-colors
+                    ${
+                      isActive(profileHref)
+                        ? "bg-blue-100 text-blue-600"
+                        : "hover:bg-gray-100 text-gray-700"
+                    }`}
+                  onClick={(e) => handleNavClick(e, profileHref)}
                 >
                   <User
                     size={20}
-                    fill={isActive("/signin") ? "currentColor" : "none"}
+                    fill={isActive(profileHref) ? "currentColor" : "none"}
                   />
                 </Link>
                 <Link
@@ -250,7 +276,6 @@ const LandingHeader = () => {
                     fill={isActive("/location") ? "currentColor" : "none"}
                   />
                 </Link>
-
 
                 {/* <button className="p-2.5 hover:bg-gray-100 rounded-lg transition-colors hidden md:block">
                   <MapPin size={20} className="text-gray-700" />
@@ -407,28 +432,31 @@ const LandingHeader = () => {
           </Link>
 
           <Link
-            to="/signin"
-            className={`flex flex-col items-center py-2 transition-colors relative ${
-              isActive("/signin")
-                ? "text-blue-600"
-                : "text-gray-600 hover:text-blue-600"
-            }`}
-            onClick={(e) => handleNavClick(e, "/signin")}
+            to={profileHref}
+            className={`flex flex-col items-center py-2 transition-colors relative
+       ${
+         isActive(profileHref)
+           ? "text-blue-600"
+           : "text-gray-600 hover:text-blue-600"
+       }`}
+            onClick={(e) => handleNavClick(e, profileHref)}
           >
             <User
               size={20}
               strokeWidth={1.5}
-              fill={isActive("/signin") ? "currentColor" : "none"}
+              fill={isActive(profileHref) ? "currentColor" : "none"}
             />
             <span
-              className={`text-[10px] font-medium mt-1 ${
-                isActive("/signin") ? "font-semibold" : ""
-              }`}
+              className={`text-[10px] font-medium mt-1
+          ${isActive(profileHref) ? "font-semibold" : ""}`}
             >
-              Account
+              {profileLabel}
             </span>
-            {isActive("/signin") && (
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-10 h-0.5 bg-blue-600 rounded-full" />
+            {isActive(profileHref) && (
+              <div
+                className="absolute top-0 left-1/2 -translate-x-1/2
+                    w-10 h-0.5 bg-blue-600 rounded-full"
+              />
             )}
           </Link>
         </div>

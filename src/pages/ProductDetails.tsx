@@ -12,7 +12,6 @@ import {
   Truck,
   Shield,
   RotateCcw,
-  Star,
   Minus,
   Plus,
   Package,

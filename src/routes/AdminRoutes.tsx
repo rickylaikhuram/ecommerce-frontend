@@ -1,5 +1,5 @@
 // routes/AdminRoutes.tsx
-import { Route, Routes } from "react-router-dom";
+import { Route } from "react-router-dom";
 import AdminMainLayout from "../layout/AdminMainLayout";
 import Dashboard from "../pages/admin/Dashboard";
 import Products from "../pages/admin/Products";
@@ -9,7 +9,7 @@ import Analytics from "../pages/admin/Analytic";
 import Notifications from "../pages/admin/Notification";
 import Support from "../pages/admin/Support";
 import Settings from "../pages/admin/Setting";
-import Error from "../pages/Error";
+import Error from "../pages/error/index";
 
 const AdminRoutes = (
     <Route path="/" element={<AdminMainLayout />}>

@@ -2,11 +2,11 @@
 import React, { useRef, useState, useEffect } from 'react';
 import ProductCard from './ProductCard';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import type { ProductWithDetails } from "../../types/products.types"
+import type { Product } from "../../types/products.types"
 
 interface ProductCarouselProps {
   title?: string;
-  products: ProductWithDetails[];
+  products: Product[];
   onToggleWishlist?: (productId: string) => void;
   wishlistedItems?: string[];
   onProductClick?: (productId: string) => void;
@@ -218,7 +218,7 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({
               <ProductCard
                 product={product}
                 onToggleWishlist={onToggleWishlist}
-                isWishlisted={wishlistedItems.includes(product.id)}
+                isWishlisted={wishlistedItems.includes(product.id!)}
                 onProductClick={onProductClick}
               />
             </div>

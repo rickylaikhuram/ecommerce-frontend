@@ -1,3 +1,4 @@
+// product image
 export interface ProductImage {
   id?: string | number; // Optional for existing images
   imageUrl: string; // S3 key
@@ -7,6 +8,7 @@ export interface ProductImage {
   url?: string; // Optional - for displaying existing images
 }
 
+// product stock
 export interface ProductStock {
   id?: string | number; // Optional for existing stocks
   stockName: string; // Size code (S, M, L, etc.)
@@ -14,50 +16,60 @@ export interface ProductStock {
   sizeName?: string; // Optional - full size name (Small, Medium, Large)
 }
 
-export interface Product {
-  id?: string | number; // Optional for new products
-  name: string;
-  description: string;
-  price: number; // Original price
-  fakePrice?: number; // Discounted price
-  category: Category; // Category ID or name
-  images: ProductImage[];
-  productSizes: ProductStock[];
-  createdAt?: Date | string;
-  updatedAt?: Date | string;
-  status?: "active" | "inactive" | "draft";
-}
-
+// product category
 export interface Category {
   id?: string;
   name: string;
 }
 
-export interface ProductSize {
-  stockName: string;
-  stock: number;
-}
-
-export interface ProductWithDetails {
-  id: string;
+// product details
+export interface Product {
+  id?: string ; // Optional for new products
   name: string;
   description: string;
-  price: number | string;
-  fakePrice: number | string;
+  price: number; // Original price
+  fakePrice: number; // Discounted price
+  category: Category; // Category ID or name
   images: ProductImage[];
+  productSizes: ProductStock[];
   totalSales: number;
   views: number;
-  category?: Category;
-  productSizes?: ProductSize[];
+  createdAt?: Date | string;
 }
 
+// product filter types -- uesd in product service
+export interface ProductFilters {
+  category?: string;
+  sortBy?: 'price-asc' | 'price-desc' | 'name-asc' | 'name-desc' | 'newest' | 'popular';
+  limit?: number;
+  offset?: number;
+  filter?: 'bestsellers' | 'trending';
+  period?: 'week' | 'month' | 'year' | 'alltime';
+  search?: string;
+}
+
+// product filter type response -- uesd in product service
+export interface ProductResponse {
+  message: string;
+  products: Product[];
+  pagination: {
+    total: number;
+    limit: number | null;
+    offset: number;
+    hasMore: boolean;
+  };
+  searchTerm?: string;
+}
+
+// product card props
 export interface ProductCardProps {
-  product: ProductWithDetails;
+  product: Product;
   onToggleWishlist?: (productId: string) => void;
   isWishlisted?: boolean;
   className?: string;
   onProductClick?: (productId: string) => void;
 }
+
 // used this to create product form data
 export interface FormData {
   name: string;

@@ -1,11 +1,11 @@
 // components/sections/ProductSection.tsx
 import React from "react";
 import ProductCarousel from "../products/ProductCarousel";
-import type { ProductWithDetails } from "../../types/products.types";
+import type { Product } from "../../types/products.types";
 
 interface ProductSectionProps {
   title: string;
-  products: ProductWithDetails[];
+  products: Product[];
   onToggleWishlist: (productId: string) => void;
   wishlistedItems: string[];
   onProductClick: (productId: string) => void;

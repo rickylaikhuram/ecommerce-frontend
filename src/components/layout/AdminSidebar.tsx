@@ -28,7 +28,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   isOpen,
   onToggle,
 }) => {
-  const logout = useLogout;
+  const logout = useLogout();
   const menuItems = [
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
     { id: "products", label: "Products", icon: Package },

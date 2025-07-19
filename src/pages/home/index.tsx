@@ -1,342 +1,280 @@
-// pages/index.tsx
-import { Suspense, useState } from "react";
+// pages/Home.tsx
+import React, { useState, useCallback, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useInView } from "react-intersection-observer";
 import HeroSection from "../../components/section/HeroSection";
 import ProductSection from "../../components/section/ProductSection";
-import Loading from "../../components/common/Loading";
-import type { ProductWithDetails } from "../../types/products.types.ts";
-import CategoryShowcase from '../../components/section/CategoryShowcase.tsx'
-// import  {Link}  from "react-router-dom";
+import CategoryShowcase from "../../components/section/CategoryShowcase";
+import ProductSectionSkeleton from "../../components/common/ProductSectionSkeleton";
+import { productService } from "../../services/product.services";
+import type { Product, ProductResponse } from "../../types/products.types";
+import { AlertCircle, RefreshCw } from "lucide-react";
 
-// Predefined product data for testing
-const bestSellerProducts: ProductWithDetails[] = [
-  {
-    id: "1",
-    name: "Wireless Bluetooth Headphones",
-    description:
-      "Premium noise-cancelling wireless headphones with 30-hour battery life",
-    price: 79.99,
-    fakePrice: 129.99,
-    images: [
-      {
-        id: "img1",
-        imageUrl:
-          "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&h=500&fit=crop",
-        altText: "Black wireless headphones",
-        isMain: true,
-        position: 1,
-      },
-    ],
-    totalSales: 2847,
-    views: 15420,
-    category: {
-      id: "cat1",
-      name: "Electronics",
-    },
-    productSizes: [{ stockName: "Default", stock: 45 }],
-  },
-  {
-    id: "2",
-    name: "Smart Fitness Watch",
-    description:
-      "Track your health and fitness with heart rate monitor and GPS",
-    price: 199.99,
-    fakePrice: 299.99,
-    images: [
-      {
-        id: "img2",
-        imageUrl:
-          "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&h=500&fit=crop",
-        altText: "Smart watch on white background",
-        isMain: true,
-        position: 1,
-      },
-    ],
-    totalSales: 1923,
-    views: 12890,
-    category: {
-      id: "cat1",
-      name: "Electronics",
-    },
-    productSizes: [
-      { stockName: "Small", stock: 12 },
-      { stockName: "Medium", stock: 23 },
-      { stockName: "Large", stock: 8 },
-    ],
-  },
-  {
-    id: "3",
-    name: "Premium Leather Backpack",
-    description: "Handcrafted genuine leather backpack with laptop compartment",
-    price: 149.99,
-    fakePrice: 249.99,
-    images: [
-      {
-        id: "img3",
-        imageUrl:
-          "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=500&h=500&fit=crop",
-        altText: "Brown leather backpack",
-        isMain: true,
-        position: 1,
-      },
-    ],
-    totalSales: 892,
-    views: 7234,
-    category: {
-      id: "cat2",
-      name: "Bags & Accessories",
-    },
-    productSizes: [{ stockName: "Default", stock: 18 }],
-  },
-  {
-    id: "4",
-    name: "Minimalist Desk Lamp",
-    description:
-      "Modern LED desk lamp with adjustable brightness and color temperature",
-    price: 59.99,
-    fakePrice: 89.99,
-    images: [
-      {
-        id: "img4",
-        imageUrl:
-          "https://images.unsplash.com/photo-1540932239986-30128078f3c5?w=500&h=500&fit=crop",
-        altText: "White minimalist desk lamp",
-        isMain: true,
-        position: 1,
-      },
-    ],
-    totalSales: 1456,
-    views: 9876,
-    category: {
-      id: "cat3",
-      name: "Home & Living",
-    },
-    productSizes: [
-      { stockName: "White", stock: 34 },
-      { stockName: "Black", stock: 28 },
-    ],
-  },
-  {
-    id: "5",
-    name: "Organic Cotton T-Shirt",
-    description: "Comfortable and sustainable organic cotton t-shirt",
-    price: 29.99,
-    fakePrice: 49.99,
-    images: [
-      {
-        id: "img5",
-        imageUrl:
-          "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500&h=500&fit=crop",
-        altText: "White cotton t-shirt",
-        isMain: true,
-        position: 1,
-      },
-    ],
-    totalSales: 3214,
-    views: 18943,
-    category: {
-      id: "cat4",
-      name: "Clothing",
-    },
-    productSizes: [
-      { stockName: "S", stock: 0 },
-      { stockName: "M", stock: 45 },
-      { stockName: "L", stock: 32 },
-      { stockName: "XL", stock: 21 },
-    ],
-  },
-  {
-    id: "6",
-    name: "Ceramic Coffee Mug Set",
-    description: "Set of 4 handmade ceramic coffee mugs in pastel colors",
-    price: 39.99,
-    fakePrice: 59.99,
-    images: [
-      {
-        id: "img6",
-        imageUrl:
-          "https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?w=500&h=500&fit=crop",
-        altText: "Ceramic coffee mugs",
-        isMain: true,
-        position: 1,
-      },
-    ],
-    totalSales: 1789,
-    views: 11234,
-    category: {
-      id: "cat3",
-      name: "Home & Living",
-    },
-    productSizes: [{ stockName: "Set of 4", stock: 23 }],
-  },
-  {
-    id: "7",
-    name: "Wireless Charging Pad",
-    description:
-      "Fast wireless charging pad compatible with all Qi-enabled devices",
-    price: 34.99,
-    fakePrice: 54.99,
-    images: [
-      {
-        id: "img7",
-        imageUrl:
-          "https://images.unsplash.com/photo-1591290619762-06612ee98f87?w=500&h=500&fit=crop",
-        altText: "Wireless charging pad",
-        isMain: true,
-        position: 1,
-      },
-    ],
-    totalSales: 2103,
-    views: 13456,
-    category: {
-      id: "cat1",
-      name: "Electronics",
-    },
-    productSizes: [{ stockName: "Default", stock: 67 }],
-  },
-  {
-    id: "8",
-    name: "Bamboo Sunglasses",
-    description: "Eco-friendly bamboo frame sunglasses with UV400 protection",
-    price: 49.99,
-    fakePrice: 89.99,
-    images: [
-      {
-        id: "img8",
-        imageUrl:
-          "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=500&h=500&fit=crop",
-        altText: "Bamboo sunglasses",
-        isMain: true,
-        position: 1,
-      },
-    ],
-    totalSales: 967,
-    views: 6789,
-    category: {
-      id: "cat2",
-      name: "Bags & Accessories",
-    },
-    productSizes: [{ stockName: "Default", stock: 0 }],
-  },
-];
+// Error component
+const ErrorSection: React.FC<{
+  message: string;
+  onRetry: () => void;
+  sectionName: string;
+}> = ({ message, onRetry, sectionName }) => (
+  <div className="container mx-auto px-4 py-8">
+    <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+      <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+      <h3 className="text-lg font-semibold text-red-800 mb-2">
+        Failed to load {sectionName}
+      </h3>
+      <p className="text-red-600 mb-4">{message}</p>
+      <button
+        onClick={onRetry}
+        className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+      >
+        <RefreshCw className="w-4 h-4" />
+        Try Again
+      </button>
+    </div>
+  </div>
+);
 
-// Create different product arrays for different sections
-const newArrivalProducts = bestSellerProducts.slice(0, 5).reverse(); // Last 5 products as new arrivals
-const featuredProducts = bestSellerProducts.filter(
-  (p) => parseFloat(p.fakePrice.toString()) > 100
-); // Products with higher original price
-const onSaleProducts = bestSellerProducts.filter((p) => {
-  const price = parseFloat(p.price.toString());
-  const fakePrice = parseFloat(p.fakePrice.toString());
-  return (fakePrice - price) / fakePrice > 0.3; // More than 30% discount
-});
+// Lazy loaded section component
+const LazyProductSection: React.FC<{
+  title: string;
+  fetcher: () => Promise<ProductResponse>;
+  onToggleWishlist: (productId: string) => void;
+  wishlistedItems: string[];
+  onProductClick: (productId: string) => void;
+  sectionClassName?: string;
+  containerClassName?: string;
+  autoScroll?: boolean;
+  autoScrollInterval?: number;
+  showNavigation?: boolean;
+  cardCount?: number;
+}> = ({ fetcher, ...props }) => {
+  const { ref, inView } = useInView({
+    threshold: 0,
+    triggerOnce: true,
+    rootMargin: "200px",
+  });
 
-const Home = () => {
-  const [wishlist, setWishlist] = useState<string[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleToggleWishlist = (productId: string) => {
+  const fetchProducts = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const response = await fetcher();
+      setProducts(response.products);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load products");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (inView && products.length === 0) {
+      fetchProducts();
+    }
+  }, [inView]);
+
+  return (
+    <div ref={ref}>
+      {!inView || isLoading ? (
+        <ProductSectionSkeleton
+          sectionClassName={props.sectionClassName}
+          containerClassName={props.containerClassName}
+          showNavigation={props.showNavigation}
+          cardCount={props.cardCount || 4}
+        />
+      ) : error ? (
+        <ErrorSection
+          message={error}
+          onRetry={fetchProducts}
+          sectionName={props.title}
+        />
+      ) : products.length === 0 ? (
+        <div className={props.sectionClassName}>
+          <div
+            className={
+              props.containerClassName || "container mx-auto px-4 py-8"
+            }
+          >
+            <h2 className="text-2xl font-bold mb-4">{props.title}</h2>
+            <p className="text-gray-500 text-center py-12">
+              No products available in this section yet.
+            </p>
+          </div>
+        </div>
+      ) : (
+        <ProductSection {...props} products={products} />
+      )}
+    </div>
+  );
+};
+
+const Home: React.FC = () => {
+  const navigate = useNavigate();
+  const [wishlist, setWishlist] = useState<string[]>(() => {
+    // Load wishlist from localStorage
+    const saved = localStorage.getItem("wishlist");
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  // Initial loading state for critical content
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [newArrivals, setNewArrivals] = useState<Product[]>([]);
+  const [initialError, setInitialError] = useState<string | null>(null);
+
+  // Load new arrivals immediately (above the fold content)
+  useEffect(() => {
+    const loadInitialData = async () => {
+      try {
+        setIsInitialLoading(true);
+        const response = await productService.getFilteredProducts({ 
+          sortBy: "newest", 
+          limit: 8 
+        });
+        setNewArrivals(response.products);
+      } catch (err) {
+        setInitialError(
+          err instanceof Error ? err.message : "Failed to load products"
+        );
+      } finally {
+        setIsInitialLoading(false);
+      }
+    };
+
+    loadInitialData();
+  }, []);
+
+  // Save wishlist to localStorage
+  useEffect(() => {
+    localStorage.setItem("wishlist", JSON.stringify(wishlist));
+  }, [wishlist]);
+
+  const handleToggleWishlist = useCallback((productId: string) => {
     setWishlist((prev) =>
       prev.includes(productId)
         ? prev.filter((id) => id !== productId)
         : [...prev, productId]
     );
-  };
+  }, []);
 
-  const handleProductClick = (productId: string) => {
-    // Handle navigation to product detail page
-    console.log("Navigating to product:", productId);
-    // In a real app with React Router:
-    // navigate(`/products/${productId}`);
+  const handleProductClick = useCallback(
+    (productId: string) => {
+      navigate(`/product/${productId}`);
+    },
+    [navigate]
+  );
+
+  const retryInitialLoad = async () => {
+    setInitialError(null);
+    try {
+      const response = await productService.getFilteredProducts({ 
+        sortBy: "newest", 
+        limit: 8 
+      });
+      setNewArrivals(response.products);
+    } catch (err) {
+      setInitialError(
+        err instanceof Error ? err.message : "Failed to load products"
+      );
+    }
   };
 
   return (
-    <main className="flex flex-col">
-      {/* <Link to="/location" className="text-sm text-gray-600 hover:text-blue-600">
-  Change Delivery Location
-</Link> */}
+    <main className="flex flex-col min-h-screen">
       <HeroSection />
 
-      {/* New Arrivals Section */}
-      <Suspense fallback={<Loading />}>
+      {/* New Arrivals Section - Load immediately */}
+      {isInitialLoading ? (
+        <ProductSectionSkeleton sectionClassName="bg-gray-50" cardCount={4} />
+      ) : initialError ? (
+        <ErrorSection
+          message={initialError}
+          onRetry={retryInitialLoad}
+          sectionName="New Arrivals"
+        />
+      ) : (
         <ProductSection
           title="New Arrivals"
-          products={newArrivalProducts}
+          products={newArrivals}
           onToggleWishlist={handleToggleWishlist}
           wishlistedItems={wishlist}
           onProductClick={handleProductClick}
           sectionClassName="bg-gray-50"
         />
-      </Suspense>
+      )}
 
-      <CategoryShowcase/>
+      <CategoryShowcase />
 
-      {/* Best Sellers Section */}
-      <Suspense fallback={<Loading />}>
-        <ProductSection
-          title="Best Sellers"
-          products={bestSellerProducts}
-          onToggleWishlist={handleToggleWishlist}
-          wishlistedItems={wishlist}
-          onProductClick={handleProductClick}
-          autoScroll={true}
-          autoScrollInterval={5000}
-        />
-      </Suspense>
+      {/* Best Sellers Section - Lazy load */}
+      <LazyProductSection
+        title="Best Sellers"
+        fetcher={() => productService.getBestsellers("week", 10)}
+        onToggleWishlist={handleToggleWishlist}
+        wishlistedItems={wishlist}
+        onProductClick={handleProductClick}
+        autoScroll={true}
+        autoScrollInterval={5000}
+        cardCount={4}
+      />
 
-      <CategoryShowcase/>
+      <CategoryShowcase />
 
-      {/* On Sale Section */}
-      <Suspense fallback={<Loading />}>
-        <ProductSection
-          title="Hot Deals 🔥"
-          products={onSaleProducts}
-          onToggleWishlist={handleToggleWishlist}
-          wishlistedItems={wishlist}
-          onProductClick={handleProductClick}
-          sectionClassName="bg-red-50"
-          autoScroll={true}
-          autoScrollInterval={4000}
-        />
-      </Suspense>
+      {/* Hot Deals Section - Lazy load */}
+      <LazyProductSection
+        title="Hot Deals 🔥"
+        fetcher={() => productService.getFilteredProducts({ 
+          sortBy: "price-desc", 
+          limit: 8 
+        })}
+        onToggleWishlist={handleToggleWishlist}
+        wishlistedItems={wishlist}
+        onProductClick={handleProductClick}
+        sectionClassName="bg-gradient-to-br from-red-50 to-orange-50"
+                autoScroll={true}
+        autoScrollInterval={4000}
+        cardCount={4}
+      />
 
-      {/* Featured Products Section */}
-      <Suspense fallback={<Loading />}>
-        <ProductSection
-          title="Featured Products"
-          products={featuredProducts}
-          onToggleWishlist={handleToggleWishlist}
-          wishlistedItems={wishlist}
-          onProductClick={handleProductClick}
-          sectionClassName="bg-gradient-to-r from-blue-50 to-purple-50"
-          containerClassName="container mx-auto px-4 py-12"
-        />
-      </Suspense>
+      {/* Featured Products Section - Lazy load */}
+      <LazyProductSection
+        title="Featured Products"
+        fetcher={() => productService.getTrendingProducts(8)}
+        onToggleWishlist={handleToggleWishlist}
+        wishlistedItems={wishlist}
+        onProductClick={handleProductClick}
+        sectionClassName="bg-gradient-to-r from-blue-50 to-purple-50"
+        containerClassName="container mx-auto px-4 py-12"
+        cardCount={4}
+      />
 
-      {/* Categories Section - Electronics Only */}
-      <Suspense fallback={<Loading />}>
-        <ProductSection
-          title="Electronics"
-          products={bestSellerProducts.filter(
-            (p) => p.category?.name === "Electronics"
-          )}
-          onToggleWishlist={handleToggleWishlist}
-          wishlistedItems={wishlist}
-          onProductClick={handleProductClick}
-          showNavigation={false}
-        />
-      </Suspense>
+      {/* Electronics Section - Lazy load */}
+      <LazyProductSection
+        title="Electronics"
+        fetcher={() => productService.getProductsByCategory("electronics", "popular", 6)}
+        onToggleWishlist={handleToggleWishlist}
+        wishlistedItems={wishlist}
+        onProductClick={handleProductClick}
+        showNavigation={false}
+        cardCount={3}
+      />
 
-      {/* You might also like Section */}
-      <Suspense fallback={<Loading />}>
-        <ProductSection
-          title="You Might Also Like"
-          products={bestSellerProducts.slice(2, 7)}
-          onToggleWishlist={handleToggleWishlist}
-          wishlistedItems={wishlist}
-          onProductClick={handleProductClick}
-          sectionClassName="border-t border-gray-200"
-          containerClassName="container mx-auto px-4 py-8 mt-8"
-        />
-      </Suspense>
+      {/* You Might Also Like Section - Lazy load */}
+      <LazyProductSection
+        title="You Might Also Like"
+        fetcher={() => productService.getFilteredProducts({ 
+          sortBy: "popular", 
+          limit: 5 
+        })}
+        onToggleWishlist={handleToggleWishlist}
+        wishlistedItems={wishlist}
+        onProductClick={handleProductClick}
+        sectionClassName="border-t border-gray-200 bg-gray-50"
+        containerClassName="container mx-auto px-4 py-8 mt-8"
+        cardCount={5}
+      />
     </main>
   );
 };

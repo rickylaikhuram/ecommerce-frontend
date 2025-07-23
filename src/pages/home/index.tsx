@@ -9,6 +9,7 @@ import ProductSectionSkeleton from "../../components/common/ProductSectionSkelet
 import { productService } from "../../services/product.services";
 import type { Product, ProductResponse } from "../../types/products.types";
 import { AlertCircle, RefreshCw } from "lucide-react";
+import { Star, Shield, Truck, HeartHandshake } from "lucide-react";
 
 // Error component
 const ErrorSection: React.FC<{
@@ -130,9 +131,9 @@ const Home: React.FC = () => {
     const loadInitialData = async () => {
       try {
         setIsInitialLoading(true);
-        const response = await productService.getFilteredProducts({ 
-          sortBy: "newest", 
-          limit: 8 
+        const response = await productService.getFilteredProducts({
+          sortBy: "newest",
+          limit: 8,
         });
         setNewArrivals(response.products);
       } catch (err) {
@@ -170,9 +171,9 @@ const Home: React.FC = () => {
   const retryInitialLoad = async () => {
     setInitialError(null);
     try {
-      const response = await productService.getFilteredProducts({ 
-        sortBy: "newest", 
-        limit: 8 
+      const response = await productService.getFilteredProducts({
+        sortBy: "newest",
+        limit: 8,
       });
       setNewArrivals(response.products);
     } catch (err) {
@@ -181,6 +182,29 @@ const Home: React.FC = () => {
       );
     }
   };
+
+  const features = [
+    {
+      icon: Shield,
+      title: "Secure Shopping",
+      description: "Your privacy and security are our top priorities",
+    },
+    {
+      icon: Truck,
+      title: "Fast Delivery",
+      description: "Free shipping on orders over $50",
+    },
+    {
+      icon: HeartHandshake,
+      title: "24/7 Support",
+      description: "Customer service when you need it",
+    },
+    {
+      icon: Star,
+      title: "Quality Guaranteed",
+      description: "30-day money-back guarantee",
+    },
+  ];
 
   return (
     <main className="flex flex-col min-h-screen">
@@ -225,15 +249,17 @@ const Home: React.FC = () => {
       {/* Hot Deals Section - Lazy load */}
       <LazyProductSection
         title="Hot Deals 🔥"
-        fetcher={() => productService.getFilteredProducts({ 
-          sortBy: "price-desc", 
-          limit: 8 
-        })}
+        fetcher={() =>
+          productService.getFilteredProducts({
+            sortBy: "price-desc",
+            limit: 8,
+          })
+        }
         onToggleWishlist={handleToggleWishlist}
         wishlistedItems={wishlist}
         onProductClick={handleProductClick}
         sectionClassName="bg-gradient-to-br from-red-50 to-orange-50"
-                autoScroll={true}
+        autoScroll={true}
         autoScrollInterval={4000}
         cardCount={4}
       />
@@ -253,7 +279,9 @@ const Home: React.FC = () => {
       {/* Electronics Section - Lazy load */}
       <LazyProductSection
         title="Electronics"
-        fetcher={() => productService.getProductsByCategory("electronics", "popular", 6)}
+        fetcher={() =>
+          productService.getProductsByCategory("electronics", "popular", 6)
+        }
         onToggleWishlist={handleToggleWishlist}
         wishlistedItems={wishlist}
         onProductClick={handleProductClick}
@@ -264,10 +292,12 @@ const Home: React.FC = () => {
       {/* You Might Also Like Section - Lazy load */}
       <LazyProductSection
         title="You Might Also Like"
-        fetcher={() => productService.getFilteredProducts({ 
-          sortBy: "popular", 
-          limit: 5 
-        })}
+        fetcher={() =>
+          productService.getFilteredProducts({
+            sortBy: "popular",
+            limit: 5,
+          })
+        }
         onToggleWishlist={handleToggleWishlist}
         wishlistedItems={wishlist}
         onProductClick={handleProductClick}
@@ -275,6 +305,43 @@ const Home: React.FC = () => {
         containerClassName="container mx-auto px-4 py-8 mt-8"
         cardCount={5}
       />
+
+      {/* Features Section */}
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-slate-900 mb-4">
+              Why Choose Our Shop?
+            </h2>
+            <p className="text-slate-600 max-w-2xl mx-auto">
+              We're committed to providing the best shopping experience possible
+            </p>
+          </div>
+
+          <div className="flex flex-wrap justify-center gap-8">
+            {features.map((feature, index) => {
+              const Icon = feature.icon;
+              return (
+                <div key={index} className="w-full sm:w-[45%] lg:w-[22%] px-4">
+                  <div className="flex flex-row sm:flex-col items-center sm:items-center text-left sm:text-center group gap-4 sm:gap-0">
+                    <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center group-hover:bg-emerald-200 transition-colors shrink-0">
+                      <Icon className="w-6 h-6 text-emerald-600" />
+                    </div>
+                    <div>
+                      <h3 className="text-base sm:text-lg font-semibold text-slate-900 mb-1 sm:mb-2">
+                        {feature.title}
+                      </h3>
+                      <p className="text-sm sm:text-base text-slate-600">
+                        {feature.description}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
     </main>
   );
 };

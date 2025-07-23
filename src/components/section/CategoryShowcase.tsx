@@ -239,6 +239,7 @@ const CategoryShowcase = () => {
           </button>
         </div>
       </div>
+      
 
       {/* CSS for animations */}
       <style jsx>{`

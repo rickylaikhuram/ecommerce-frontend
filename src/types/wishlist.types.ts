@@ -1,29 +1,22 @@
-// types/wishlist.types.ts
-export interface Product {
-  _id: string;
-  name: string;
-  price: number;
-  image: string;
-  description?: string;
-  inStock: boolean;
-}
-
+// Individual wishlist item response
 export interface WishlistItem {
-  _id: string;
-  productId: Product;
-  addedAt: string;
+  id: string;                    // Product ID for navigation
+  name: string;                  // Product name
+  price: number;                 // Original price
+  fakePrice: number;            // Discounted price
+  mainImage: {                  // Main product image
+    imageUrl: string;           // S3 key
+    altText: string;            // Alt text for accessibility
+  } | null;                     // Can be null if no main image exists
+  inStock: boolean;             // Stock availability status
+  wishlistItemId: string;       // Wishlist item ID for removal
 }
 
-export interface Wishlist {
-  _id: string;
-  userId: string;
-  items: WishlistItem[];
-  createdAt: string;
-  updatedAt: string;
-}
-
+// Wishlist response
 export interface WishlistResponse {
-  success: boolean;
-  data: Wishlist;
-  error?: string;
+  products: WishlistItem[];
+}
+
+export interface WishlistIdsResponse {
+  wishlistedIds: string[];
 }

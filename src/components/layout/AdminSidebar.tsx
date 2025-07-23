@@ -128,13 +128,6 @@ const Sidebar: React.FC<SidebarProps> = ({
 
         {/* Bottom Section - Fixed at bottom */}
         <div className="p-4 border-t border-slate-800">
-          <div className="bg-slate-800 rounded-xl p-4 mb-4">
-            <p className="text-white text-sm font-medium mb-1">Need Help?</p>
-            <p className="text-slate-400 text-xs mb-3">Check our documentation</p>
-            <button className="bg-blue-600 text-white text-sm px-4 py-2 rounded-lg hover:bg-blue-700 transition-all duration-200">
-              View Docs
-            </button>
-          </div>
           
           <button onClick={logout} className="w-full flex items-center px-4 py-3 text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl transition-all duration-200 group">
             <LogOut className="w-5 h-5 mr-3 text-slate-500 group-hover:text-slate-300" />

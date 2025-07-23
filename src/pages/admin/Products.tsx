@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Plus,
   Search,
@@ -7,6 +7,8 @@ import {
   Filter,
   Package,
   AlertCircle,
+  X,
+  HelpCircle, // Add this import for the question mark icon
 } from "lucide-react";
 import Button from "../../components/ui/Button";
 import Badge from "../../components/ui/Badge";
@@ -26,6 +28,8 @@ const Products: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [activeTooltip, setActiveTooltip] = useState<any>(null); // Track which tooltip is open
+  const tooltipRef = useRef<HTMLDivElement>(null);
   const itemsPerPage = 10;
 
   // Fetch products on component mount
@@ -33,21 +37,35 @@ const Products: React.FC = () => {
     fetchProducts();
   }, []);
 
+  // Close tooltip when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        tooltipRef.current &&
+        !tooltipRef.current.contains(event.target as Node)
+      ) {
+        setActiveTooltip(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   const fetchProducts = async () => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await instance.get("/api/product/all");
+      const response = await instance.get("/api/product/");
       const data = response.data;
 
-      // --- ADD THIS LINE FOR DEBUGGING ---
       console.log("API Response Data:", data);
-      // Check the first product's category in the browser console
       if (data.products && data.products.length > 0) {
         console.log("Category type is:", typeof data.products[0].category);
         console.log("Category value is:", data.products[0].category);
       }
-      // --- END DEBUGGING LINES ---
 
       if (data && Array.isArray(data)) {
         setProducts(data);
@@ -80,10 +98,10 @@ const Products: React.FC = () => {
       product.category.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus =
       statusFilter === "all" ||
-      (statusFilter === "active" && product.status === "active") ||
+      (statusFilter === "active" && product.isActive === true) ||
       (statusFilter === "low stock" && totalStock > 0 && totalStock <= 10) ||
       (statusFilter === "out of stock" && totalStock === 0) ||
-      (statusFilter === "inactive" && product.status === "inactive");
+      (statusFilter === "inactive" && product.isActive === false);
     return matchesSearch && matchesStatus;
   });
 
@@ -134,20 +152,8 @@ const Products: React.FC = () => {
   const handleProductSubmit = async (productData: any) => {
     try {
       if (currentView === "add") {
-        const response = await fetch("/api/products", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify(productData),
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to create product");
-        }
-
         await fetchProducts();
+        return;
       } else if (currentView === "edit" && selectedProduct) {
         const response = await fetch(`/api/products/${selectedProduct.id}`, {
           method: "PUT",
@@ -163,22 +169,21 @@ const Products: React.FC = () => {
         }
 
         await fetchProducts();
+        handleBackToList();
       }
-
-      handleBackToList();
     } catch (error) {
       console.error("Error saving product:", error);
-      throw error;
+      if (currentView === "edit") {
+        throw error;
+      }
     }
   };
 
   const getProductStatusBadge = (product: Product) => {
-    // First check if product is inactive
-    if (product.status === "inactive") {
+    if (product.isActive === false) {
       return { label: "Inactive", variant: "error" as const };
     }
 
-    // For active products, determine stock status
     const totalStock = getTotalStock(product.productSizes || []);
     if (totalStock === 0)
       return { label: "Out of Stock", variant: "error" as const };
@@ -187,26 +192,20 @@ const Products: React.FC = () => {
     return { label: "In Stock", variant: "success" as const };
   };
 
-  // Get main image URL
   const getMainImage = (product: Product): string => {
-    // Early return if no images
     if (!product.images || product.images.length === 0) {
       return "/placeholder-product.png";
     }
 
-    // Find the main image or fall back to first image
     const image = product.images.find((img) => img.isMain) || product.images[0];
     if (!image) return "/placeholder-product.png";
 
-    // Construct URL only if we have valid data
     const imageKey = image.imageUrl || image.url;
     if (!imageKey) return "/placeholder-product.png";
 
-    // Return full S3 URL or placeholder
     return imageKey.startsWith("http") ? imageKey : `${S3_BASE_URL}${imageKey}`;
   };
 
-  // Create a memoized version of the image component
   const ProductImage = React.memo(
     ({ imageUrl, alt }: { imageUrl: string; alt: string }) => {
       const [imgSrc, setImgSrc] = useState(imageUrl);
@@ -221,7 +220,7 @@ const Products: React.FC = () => {
           alt={alt}
           className="w-full h-full object-cover"
           onError={() => setImgSrc("/placeholder-product.png")}
-          loading="lazy" // Add lazy loading
+          loading="lazy"
         />
       );
     }
@@ -239,19 +238,17 @@ const Products: React.FC = () => {
     );
   }
 
-  // Calculate stats - only count active products for stock status
   const lowStockCount = products.filter(
     (p) =>
-      p.status === "active" &&
+      p.isActive === true &&
       getTotalStock(p.productSizes || []) > 0 &&
       getTotalStock(p.productSizes || []) <= 10
   ).length;
 
   const outOfStockCount = products.filter(
-    (p) => p.status === "active" && getTotalStock(p.productSizes || []) === 0
+    (p) => p.isActive === true && getTotalStock(p.productSizes || []) === 0
   ).length;
 
-  // Loading state
   if (isLoading && currentView === "list") {
     return (
       <div className="flex items-center justify-center h-64">
@@ -263,7 +260,6 @@ const Products: React.FC = () => {
     );
   }
 
-  // Error state
   if (error && currentView === "list") {
     return (
       <div className="flex items-center justify-center h-64">
@@ -282,7 +278,6 @@ const Products: React.FC = () => {
     );
   }
 
-  // Render Product List
   return (
     <div className="space-y-6">
       {/* Header Section */}
@@ -388,10 +383,18 @@ const Products: React.FC = () => {
         </div>
       </div>
 
-      {/* Products Table */}
+      {/* Products Table with Fixed Layout */}
       <div className="bg-white rounded-xl shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full">
+          <table className="w-full table-fixed">
+            <colgroup>
+              <col className="w-[35%]" />
+              <col className="w-[15%]" />
+              <col className="w-[15%]" />
+              <col className="w-[15%]" />
+              <col className="w-[10%]" />
+              <col className="w-[10%]" />
+            </colgroup>
             <thead>
               <tr className="bg-slate-50 border-b border-slate-200">
                 <th className="text-left px-6 py-4 text-sm font-semibold text-slate-700">
@@ -444,32 +447,33 @@ const Products: React.FC = () => {
                               alt={product.name}
                             />
                           </div>
-                          <div>
-                            <p className="font-semibold text-slate-800">
+                          <div className="min-w-0 flex-1">
+                            <p
+                              className="font-semibold text-slate-800 truncate"
+                              title={product.name}
+                            >
                               {product.name}
-                            </p>
-                            <p className="text-sm text-slate-500">
-                              {product.productSizes
-                                ?.map((s) => s.stockName)
-                                .join(", ") || "No sizes"}
                             </p>
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="text-slate-700 capitalize">
+                        <span
+                          className="text-slate-700 capitalize truncate block"
+                          title={product.category.name}
+                        >
                           {product.category.name}
                         </span>
                       </td>
                       <td className="px-6 py-4">
-                        <div>
+                        <div className="truncate">
                           {product.fakePrice &&
                           product.fakePrice > product.price ? (
                             <>
                               <span className="font-semibold text-slate-800">
                                 ${Number(product.price).toFixed(2)}
                               </span>
-                              <span className="text-sm text-slate-500 line-through ml-2">
+                              <span className="text-sm text-slate-500 line-through ml-1">
                                 ${Number(product.fakePrice).toFixed(2)}
                               </span>
                             </>
@@ -480,8 +484,9 @@ const Products: React.FC = () => {
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-4">
-                        <div>
+                      {/* Stock Column with Question Mark */}
+                      <td className="px-6 py-4 relative">
+                        <div className="flex items-center gap-2">
                           <span
                             className={`font-semibold ${
                               totalStock === 0
@@ -495,14 +500,39 @@ const Products: React.FC = () => {
                           </span>
                           {product.productSizes &&
                             product.productSizes.length > 0 && (
-                              <p className="text-xs text-slate-500 mt-1">
-                                {product.productSizes
-                                  .map(
-                                    (stock) =>
-                                      `${stock.stockName}: ${stock.stock}`
-                                  )
-                                  .join(" | ")}
-                              </p>
+                              <div className="relative">
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    const rect =
+                                      e.currentTarget.getBoundingClientRect();
+                                    const spaceBelow =
+                                      window.innerHeight - rect.bottom;
+                                    const spaceAbove = rect.top;
+
+                                    // Store position info for smart positioning
+                                    const positionInfo = {
+                                      id: product.id,
+                                      top: rect.top,
+                                      left: rect.left,
+                                      bottom: rect.bottom,
+                                      right: rect.right,
+                                      spaceBelow,
+                                      spaceAbove,
+                                    };
+
+                                    setActiveTooltip(
+                                      activeTooltip === product.id
+                                        ? null
+                                        : positionInfo
+                                    );
+                                  }}
+                                  className="text-slate-400 hover:text-slate-600 transition-colors"
+                                  title="View size breakdown"
+                                >
+                                  <HelpCircle className="w-4 h-4" />
+                                </button>
+                              </div>
                             )}
                         </div>
                       </td>
@@ -537,6 +567,117 @@ const Products: React.FC = () => {
               )}
             </tbody>
           </table>
+          {/* Modern Tooltip/Popover - Place this right after the closing </table> tag */}
+          {activeTooltip && (
+            <div
+              className="fixed z-50"
+              style={{
+                // Smart positioning
+                top:
+                  activeTooltip.spaceBelow < 250
+                    ? `${activeTooltip.top - 220}px` // Show above if not enough space below
+                    : `${activeTooltip.bottom + 5}px`, // Show below
+                left: `${Math.min(
+                  activeTooltip.left,
+                  window.innerWidth - 280
+                )}px`, // Prevent going off right edge
+              }}
+            >
+              <div
+                ref={tooltipRef}
+                className="bg-white border border-slate-200 rounded-xl shadow-2xl p-4 min-w-[240px] max-w-[280px] transform transition-all duration-200 ease-out"
+                onClick={(e) => e.stopPropagation()}
+                style={{
+                  animation: "fadeIn 0.2s ease-out",
+                }}
+              >
+                {/* Arrow - positioned based on where tooltip appears */}
+                <div
+                  className={`absolute w-3 h-3 bg-white border-slate-200 transform rotate-45 ${
+                    activeTooltip.spaceBelow < 250
+                      ? "bottom-[-6px] border-r border-b" // Arrow pointing down when tooltip is above
+                      : "top-[-6px] border-l border-t" // Arrow pointing up when tooltip is below
+                  }`}
+                  style={{
+                    left: "20px",
+                  }}
+                ></div>
+
+                <div className="relative">
+                  {/* Header */}
+                  <div className="flex items-center justify-between mb-3 pb-3 border-b border-slate-100">
+                    <h4 className="text-sm font-semibold text-slate-800 flex items-center gap-2">
+                      <Package className="w-4 h-4 text-slate-600" />
+                      Size Breakdown
+                    </h4>
+                    <button
+                      onClick={() => setActiveTooltip(null)}
+                      className="text-slate-400 hover:text-slate-600 transition-colors"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  {/* Find the product to display its sizes */}
+                  {products
+                    .find((p) => p.id === activeTooltip.id)
+                    ?.productSizes.map((size, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center justify-between py-2 hover:bg-slate-50 px-2 -mx-2 rounded-lg transition-colors"
+                      >
+                        <div className="flex items-center gap-2">
+                          <div
+                            className={`w-2 h-2 rounded-full ${
+                              size.stock === 0
+                                ? "bg-red-500"
+                                : size.stock <= 10
+                                ? "bg-amber-500"
+                                : "bg-green-500"
+                            }`}
+                          ></div>
+                          <span className="text-sm text-slate-700 font-medium">
+                            {size.stockName}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={`text-sm font-semibold ${
+                              size.stock === 0
+                                ? "text-red-600"
+                                : size.stock <= 10
+                                ? "text-amber-600"
+                                : "text-green-600"
+                            }`}
+                          >
+                            {size.stock}
+                          </span>
+                          <span className="text-xs text-slate-500">units</span>
+                        </div>
+                      </div>
+                    ))}
+
+                  {/* Total */}
+                  <div className="mt-3 pt-3 border-t border-slate-100">
+                    <div className="flex items-center justify-between px-2">
+                      <span className="text-sm font-semibold text-slate-800">
+                        Total Stock
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-base font-bold text-slate-900">
+                          {getTotalStock(
+                            products.find((p) => p.id === activeTooltip.id)
+                              ?.productSizes || []
+                          )}
+                        </span>
+                        <span className="text-sm text-slate-500">units</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Table Footer */}

@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
 import {
   Upload,
   X,
@@ -24,17 +23,26 @@ import type {
   ProductFormProps,
 } from "../../types/products.types";
 
+// Add this interface for image data
+interface ImageData {
+  file: File;
+  previewUrl: string;
+  id: string; // unique identifier
+}
+
 const ProductForm: React.FC<ProductFormProps> = ({
   mode,
   initialData,
   onSubmit,
   onCancel,
 }) => {
-  const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [imagePreviewUrls, setImagePreviewUrls] = useState<string[]>([]);
+
+  // Replace the separate states with a combined one
+  const [imageDataList, setImageDataList] = useState<ImageData[]>([]);
+
   const [uploadStatuses, setUploadStatuses] = useState<UploadStatus[]>([]);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [submitStatus, setSubmitStatus] = useState<
@@ -52,23 +60,38 @@ const ProductForm: React.FC<ProductFormProps> = ({
     trigger,
     setValue,
     setError,
-  } = useForm<FormData>({
-    defaultValues: {
-      name: initialData?.name || "",
-      description: initialData?.description || "",
-      originalPrice: initialData?.price || 0,
-      discountedPrice: initialData?.price || 0,
-      category: initialData?.category?.name || "",
-      sizes: [{ sizeName: "Small", sizeCode: "S", stock: 1 }],
-      images: [],
-    },
-  });
+    reset
+  } = useForm<FormData>();
 
   const { fields, append, remove } = useFieldArray({
     control,
     name: "sizes",
   });
-
+// Remove the initial reset useEffect and replace it with this one that waits for categories
+useEffect(() => {
+  if (initialData && mode === 'edit' && categories.length > 0) {
+    // Only reset when categories are loaded
+    reset({
+      name: initialData.name || "",
+      description: initialData.description || "",
+      originalPrice: initialData.price || 0,
+      discountedPrice: initialData.fakePrice || 0,
+      category: initialData.category?.name || "",
+      sizes: initialData.productSizes?.length > 0 
+        ? initialData.productSizes.map(size => ({
+            sizeName: size.sizeName || "",
+            sizeCode: size.stockName || "",
+            stock: size.stock || 0
+          }))
+        : [{ sizeName: "Small", sizeCode: "S", stock: 1 }],
+      images: [],
+      isActive: !!initialData.isActive, 
+    });
+    
+    console.log('Form reset with category:', initialData.category?.name);
+    console.log('Available categories:', categories.map(c => c.name));
+  }
+}, [initialData, mode, reset, categories]); // Watch categories array
   // Fetch categories from backend
   useEffect(() => {
     fetchCategories();
@@ -77,11 +100,10 @@ const ProductForm: React.FC<ProductFormProps> = ({
   // Cleanup preview URLs on unmount
   useEffect(() => {
     return () => {
-      imagePreviewUrls.forEach((url) => URL.revokeObjectURL(url));
-      // Cancel any ongoing uploads
+      imageDataList.forEach((data) => URL.revokeObjectURL(data.previewUrl));
       uploadRequestsRef.current.forEach((xhr) => xhr?.abort());
     };
-  }, [imagePreviewUrls]);
+  }, []); // Empty dependency array for cleanup on unmount only
 
   const fetchCategories = async () => {
     try {
@@ -108,12 +130,10 @@ const ProductForm: React.FC<ProductFormProps> = ({
       "image/webp",
       "image/gif",
       "image/avif",
-
-      // ✅ Video formats
       "video/mp4",
       "video/webm",
-      "video/quicktime", // .mov
-      "video/x-matroska", // .mkv
+      "video/quicktime",
+      "video/x-matroska",
       "video/avi",
     ];
 
@@ -126,7 +146,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
     }
 
     if (file.size > MAX_SIZE) {
-      return { valid: false, error: "Image size must be less than 10MB" };
+      return { valid: false, error: "File size must be less than 10MB" };
     }
 
     return { valid: true };
@@ -134,7 +154,6 @@ const ProductForm: React.FC<ProductFormProps> = ({
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    const currentImages = watch("images") || [];
 
     // Validate each file
     const validFiles: File[] = [];
@@ -154,25 +173,46 @@ const ProductForm: React.FC<ProductFormProps> = ({
     }
 
     // Limit to 10 images
-    if (currentImages.length + validFiles.length > 10) {
+    if (imageDataList.length + validFiles.length > 10) {
       alert("You can upload a maximum of 10 images");
+      e.target.value = "";
       return;
     }
 
-    setValue("images", [...currentImages, ...validFiles]);
+    // Create new image data objects with unique IDs
+    const newImageDataList = validFiles.map((file) => ({
+      file,
+      previewUrl: URL.createObjectURL(file),
+      id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`, // Unique ID
+    }));
 
-    // Create preview URLs
-    const newPreviewUrls = validFiles.map((file) => URL.createObjectURL(file));
-    setImagePreviewUrls([...imagePreviewUrls, ...newPreviewUrls]);
+    // Update both states
+    const updatedImageDataList = [...imageDataList, ...newImageDataList];
+    setImageDataList(updatedImageDataList);
+
+    // Update form value with just the files
+    setValue(
+      "images",
+      updatedImageDataList.map((item) => item.file)
+    );
+
+    // Reset the input
+    e.target.value = "";
   };
 
   const removeImage = (index: number) => {
-    const currentImages = watch("images");
-    const newImages = currentImages.filter((_, i) => i !== index);
-    setValue("images", newImages);
+    // Revoke the URL being removed
+    URL.revokeObjectURL(imageDataList[index].previewUrl);
 
-    URL.revokeObjectURL(imagePreviewUrls[index]);
-    setImagePreviewUrls(imagePreviewUrls.filter((_, i) => i !== index));
+    // Remove from imageDataList
+    const newImageDataList = imageDataList.filter((_, i) => i !== index);
+    setImageDataList(newImageDataList);
+
+    // Update form value
+    setValue(
+      "images",
+      newImageDataList.map((item) => item.file)
+    );
   };
 
   // Drag and drop handlers
@@ -201,18 +241,17 @@ const ProductForm: React.FC<ProductFormProps> = ({
 
     if (draggedIndex === null || draggedIndex === dropIndex) return;
 
-    const currentImages = watch("images");
-    const newImages = [...currentImages];
-    const newPreviewUrls = [...imagePreviewUrls];
+    const newImageDataList = [...imageDataList];
 
-    const [draggedImage] = newImages.splice(draggedIndex, 1);
-    const [draggedUrl] = newPreviewUrls.splice(draggedIndex, 1);
+    // Remove from original position and insert at new position
+    const [draggedItem] = newImageDataList.splice(draggedIndex, 1);
+    newImageDataList.splice(dropIndex, 0, draggedItem);
 
-    newImages.splice(dropIndex, 0, draggedImage);
-    newPreviewUrls.splice(dropIndex, 0, draggedUrl);
-
-    setValue("images", newImages);
-    setImagePreviewUrls(newPreviewUrls);
+    setImageDataList(newImageDataList);
+    setValue(
+      "images",
+      newImageDataList.map((item) => item.file)
+    );
     setDraggedIndex(null);
   };
 
@@ -371,6 +410,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
           stockName: size.sizeCode,
           stock: size.stock,
         })),
+        isActive: data.isActive,
       };
 
       // Submit to backend
@@ -381,16 +421,22 @@ const ProductForm: React.FC<ProductFormProps> = ({
 
       console.log("Product created:", response.data);
       setSubmitStatus("success");
+      console.log("Submit status set to success");
 
       // Call the onSubmit prop if needed
       if (onSubmit) {
+        console.log("Calling onSubmit...");
         await onSubmit(submitData);
+        console.log("onSubmit completed");
       }
 
       // Wait a bit to show success status
       setTimeout(() => {
-        navigate("/products");
-      }, 1500);
+        // Use onCancel to return to list view
+        if (onCancel) {
+          onCancel();
+        }
+      }, 1000);
     } catch (error: any) {
       console.error("Error submitting form:", error);
       setSubmitStatus("error");
@@ -604,6 +650,37 @@ const ProductForm: React.FC<ProductFormProps> = ({
                   {errors.category.message}
                 </p>
               )}
+            </div>
+
+            {/* Add this new section for isActive toggle */}
+            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <div className="flex-1">
+                <label
+                  htmlFor="isActive"
+                  className="text-sm font-medium text-gray-700 cursor-pointer"
+                >
+                  Product Status
+                </label>
+                <p className="text-sm text-gray-500 mt-1">
+                  {watch("isActive")
+                    ? "Product is active and visible to customers"
+                    : "Product is inactive and hidden from customers"}
+                </p>
+              </div>
+              <div className="flex items-center">
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    id="isActive"
+                    {...register("isActive")}
+                    className="sr-only peer"
+                  />
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                  <span className="ml-3 text-sm font-medium text-gray-700">
+                    {watch("isActive") ? "Active" : "Inactive"}
+                  </span>
+                </label>
+              </div>
             </div>
           </div>
         );
@@ -838,16 +915,16 @@ const ProductForm: React.FC<ProductFormProps> = ({
                 <input
                   type="file"
                   multiple
-                  accept="image/*"
+                  accept="image/*,video/*"
                   onChange={handleImageChange}
                   className="hidden"
                   id="image-upload"
-                  disabled={imagePreviewUrls.length >= 10}
+                  disabled={imageDataList.length >= 10}
                 />
                 <label
                   htmlFor="image-upload"
                   className={`cursor-pointer flex flex-col items-center ${
-                    imagePreviewUrls.length >= 10
+                    imageDataList.length >= 10
                       ? "opacity-50 cursor-not-allowed"
                       : ""
                   }`}
@@ -859,24 +936,24 @@ const ProductForm: React.FC<ProductFormProps> = ({
                   <p className="text-sm text-gray-500 mt-2">
                     PNG, JPG, WebP up to 10MB each
                   </p>
-                  {imagePreviewUrls.length > 0 && (
+                  {imageDataList.length > 0 && (
                     <p className="text-sm text-blue-600 mt-2">
-                      {imagePreviewUrls.length}/10 images selected
+                      {imageDataList.length}/10 images selected
                     </p>
                   )}
                 </label>
               </div>
 
-              {imagePreviewUrls.length > 0 && (
+              {imageDataList.length > 0 && (
                 <div className="mt-6">
                   <p className="text-sm text-gray-600 mb-3">
                     Drag images to reorder. First image will be the main product
                     image.
                   </p>
                   <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                    {imagePreviewUrls.map((url, index) => (
+                    {imageDataList.map((item, index) => (
                       <div
-                        key={`${url}-${index}`}
+                        key={item.id}
                         draggable
                         onDragStart={(e) => handleDragStart(e, index)}
                         onDragOver={handleDragOver}
@@ -890,11 +967,19 @@ const ProductForm: React.FC<ProductFormProps> = ({
                             Main
                           </span>
                         )}
-                        <img
-                          src={url}
-                          alt={`Preview ${index + 1}`}
-                          className="w-full h-32 object-cover rounded-lg border-2 border-gray-200 hover:border-blue-400 transition-colors"
-                        />
+                        {item.file.type.startsWith("video/") ? (
+                          <video
+                            src={item.previewUrl}
+                            className="w-full h-32 object-cover rounded-lg border-2 border-gray-200 hover:border-blue-400 transition-colors"
+                            muted
+                          />
+                        ) : (
+                          <img
+                            src={item.previewUrl}
+                            alt={`Preview ${index + 1}`}
+                            className="w-full h-32 object-cover rounded-lg border-2 border-gray-200 hover:border-blue-400 transition-colors"
+                          />
+                        )}
                         <button
                           type="button"
                           onClick={() => removeImage(index)}
@@ -930,6 +1015,17 @@ const ProductForm: React.FC<ProductFormProps> = ({
               <div>
                 <span className="text-sm text-gray-500">Category:</span>
                 <p className="font-medium text-gray-900">{watch("category")}</p>
+              </div>
+
+              <div>
+                <span className="text-sm text-gray-500">Status:</span>
+                <p className="font-medium text-gray-900">
+                  {watch("isActive") ? (
+                    <span className="text-green-600">Active</span>
+                  ) : (
+                    <span className="text-red-600">Inactive</span>
+                  )}
+                </p>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -984,18 +1080,31 @@ const ProductForm: React.FC<ProductFormProps> = ({
               <div>
                 <span className="text-sm text-gray-500">Images:</span>
                 <p className="font-medium text-gray-900 mb-3">
-                  {imagePreviewUrls.length} images selected
+                  {imageDataList.length} images selected
                 </p>
 
-                {imagePreviewUrls.length > 0 && (
+                {imageDataList.length > 0 && (
                   <div className="grid grid-cols-4 md:grid-cols-6 gap-2">
-                    {imagePreviewUrls.map((url, index) => (
-                      <div key={index} className="relative">
-                        <img
-                          src={url} // ← Make sure this is correct
-                          alt={`Preview ${index + 1}`}
-                          className="w-full h-16 object-cover rounded-lg"
-                        />
+                    {imageDataList.map((item, index) => (
+                      <div key={item.id} className="relative">
+                        {item.file.type.startsWith("video/") ? (
+                          <video
+                            src={item.previewUrl}
+                            className="w-full h-16 object-cover rounded-lg"
+                            muted
+                          />
+                        ) : (
+                          <img
+                            src={item.previewUrl}
+                            alt={`Preview ${index + 1}`}
+                            className="w-full h-16 object-cover rounded-lg"
+                          />
+                        )}
+                        {index === 0 && (
+                          <span className="absolute top-1 left-1 bg-blue-500 text-white text-xs px-1 py-0.5 rounded text-[10px]">
+                            Main
+                          </span>
+                        )}
                       </div>
                     ))}
                   </div>

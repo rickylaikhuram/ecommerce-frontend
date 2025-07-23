@@ -17,7 +17,7 @@ import { useAuth } from "../../context/AuthContext";
 const LandingHeader = () => {
   const { authStatus } = useAuth(); // <── who am I?
   const isGuest = authStatus?.role === "guest";
-  const profileHref = isGuest ? "/signin" : "/account"; // dynamic path
+  const profileHref = isGuest ? "/signin" : "/account/profile"; // dynamic path
   const profileLabel = isGuest ? "Sign in" : "Profile"; // optional text
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);

@@ -45,26 +45,30 @@ const SignIn = () => {
 
   // Detect if input is email or phone
   const detectInputType = (value: string) => {
-    const cleanValue = value.replace(/\s/g, "");
+    const cleanValue = value.trim();
 
     if (!cleanValue) {
       setInputType(null);
       return value;
     }
 
-    // Check if it starts with a number or +
-    if (/^[+0-9]/.test(cleanValue)) {
-      setInputType("phone");
-      // Remove any non-digits and limit to 10 digits
-      const digitsOnly = cleanValue.replace(/\D/g, "").slice(-10);
-      return digitsOnly;
-    } else if (cleanValue.includes("@") || /^[a-zA-Z]/.test(cleanValue)) {
+    // Check if it contains @ or any letters - then it's definitely email
+    if (cleanValue.includes("@") || /[a-zA-Z]/.test(cleanValue)) {
       setInputType("email");
-      return value;
-    } else {
-      setInputType(null);
-      return value;
+      return value; // Return the original value without modification
     }
+    
+    // If it's only numbers (and possibly spaces, +, -, etc.), it's a phone
+    if (/^[\d\s\-\+\(\)]*$/.test(cleanValue)) {
+      setInputType("phone");
+      // For phone numbers, remove all non-digits but don't limit length during typing
+      const digitsOnly = cleanValue.replace(/\D/g, "");
+      return digitsOnly;
+    }
+
+    // Default case - treat as email
+    setInputType("email");
+    return value;
   };
 
   const handleEmailOrPhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -73,29 +77,27 @@ const SignIn = () => {
   };
 
   const onSubmit = async (data: FormData) => {
-  setLoading(true);
-  try {
-    // Prepare payload based on detected inputType
-    const payload = {
-      identifierType: inputType, // "email" or "phone
-      identifier:
-        inputType === "phone" ? data.emailOrPhone : data.emailOrPhone,
-      password: data.password,
-    };
+    setLoading(true);
+    try {
+      // Prepare payload based on detected inputType
+      const payload = {
+        identifierType: inputType, // "email" or "phone"
+        identifier: data.emailOrPhone,
+        password: data.password,
+      };
 
-    console.log("Login payload:", payload);
+      console.log("Login payload:", payload);
 
-    await instance.post("/api/auth/signin/password", payload);
+      await instance.post("/api/auth/signin/password", payload);
 
-    await refreshAuth();
-    navigate("/");
-  } catch (err) {
-    console.error("Sign in failed:", err);
-  } finally {
-    setLoading(false);
-  }
-};
-
+      await refreshAuth();
+      navigate("/");
+    } catch (err) {
+      console.error("Sign in failed:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleGoogleSignIn = () => {
     console.log("Google Sign In clicked");
@@ -105,12 +107,21 @@ const SignIn = () => {
   const validateEmailOrPhone = (value: string) => {
     if (!value) return "Email or phone number is required";
 
-    const cleanValue = value.replace(/\s/g, "");
+    const cleanValue = value.trim();
 
-    // Check if it looks like a phone number
-    if (/^[0-9]+$/.test(cleanValue)) {
+    // If it contains @ or letters, validate as email
+    if (cleanValue.includes("@") || /[a-zA-Z]/.test(cleanValue)) {
+      const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+      if (!emailRegex.test(value)) {
+        return "Please enter a valid email address";
+      }
+      return true;
+    }
+
+    // If it's only digits, validate as phone
+    if (/^[\d]+$/.test(cleanValue)) {
       if (cleanValue.length !== 10) {
-        return "Phone number must be 10 digits";
+        return "Phone number must be exactly 10 digits";
       }
       if (!/^[6-9]/.test(cleanValue)) {
         return "Phone number must start with 6-9";
@@ -118,13 +129,8 @@ const SignIn = () => {
       return true;
     }
 
-    // Otherwise validate as email
-    const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
-    if (!emailRegex.test(value)) {
-      return "Please enter a valid email address";
-    }
-
-    return true;
+    // Mixed content that's not a valid email
+    return "Please enter a valid email address or phone number";
   };
 
   const getFieldState = (fieldName: keyof FormData) => {

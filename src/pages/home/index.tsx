@@ -9,6 +9,7 @@ import ProductSectionSkeleton from "../../components/common/ProductSectionSkelet
 import { productService } from "../../services/product.services";
 import type { Product, ProductResponse } from "../../types/products.types";
 import { AlertCircle, RefreshCw } from "lucide-react";
+import { wishlistService } from "../../services/wishlist.services";
 
 // Error component
 const ErrorSection: React.FC<{
@@ -114,11 +115,7 @@ const LazyProductSection: React.FC<{
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
-  const [wishlist, setWishlist] = useState<string[]>(() => {
-    // Load wishlist from localStorage
-    const saved = localStorage.getItem("wishlist");
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [wishlist, setWishlist] = useState<string[]>([]);
 
   // Initial loading state for critical content
   const [isInitialLoading, setIsInitialLoading] = useState(true);
@@ -130,9 +127,9 @@ const Home: React.FC = () => {
     const loadInitialData = async () => {
       try {
         setIsInitialLoading(true);
-        const response = await productService.getFilteredProducts({ 
-          sortBy: "newest", 
-          limit: 8 
+        const response = await productService.getFilteredProducts({
+          sortBy: "newest",
+          limit: 8,
         });
         setNewArrivals(response.products);
       } catch (err) {
@@ -146,18 +143,31 @@ const Home: React.FC = () => {
 
     loadInitialData();
   }, []);
-
-  // Save wishlist to localStorage
+  
   useEffect(() => {
-    localStorage.setItem("wishlist", JSON.stringify(wishlist));
-  }, [wishlist]);
+    const loadWishlist = async () => {
+      try {
+        const res = await wishlistService.getUserWishlistedIds();
+        setWishlist(res.wishlistedIds); 
+      } catch (err) {
+        console.error("Error loading wishlist", err);
+      }
+    };
 
-  const handleToggleWishlist = useCallback((productId: string) => {
-    setWishlist((prev) =>
-      prev.includes(productId)
-        ? prev.filter((id) => id !== productId)
-        : [...prev, productId]
-    );
+    loadWishlist();
+  }, []);
+
+  const handleToggleWishlist = useCallback(async (productId: string) => {
+    try {
+      await wishlistService.toggleWishlist(productId);
+      setWishlist((prev) =>
+        prev.includes(productId)
+          ? prev.filter((id) => id !== productId)
+          : [...prev, productId]
+      );
+    } catch (err) {
+      console.error("Failed to toggle wishlist", err);
+    }
   }, []);
 
   const handleProductClick = useCallback(
@@ -170,9 +180,9 @@ const Home: React.FC = () => {
   const retryInitialLoad = async () => {
     setInitialError(null);
     try {
-      const response = await productService.getFilteredProducts({ 
-        sortBy: "newest", 
-        limit: 8 
+      const response = await productService.getFilteredProducts({
+        sortBy: "newest",
+        limit: 8,
       });
       setNewArrivals(response.products);
     } catch (err) {
@@ -225,15 +235,17 @@ const Home: React.FC = () => {
       {/* Hot Deals Section - Lazy load */}
       <LazyProductSection
         title="Hot Deals 🔥"
-        fetcher={() => productService.getFilteredProducts({ 
-          sortBy: "price-desc", 
-          limit: 8 
-        })}
+        fetcher={() =>
+          productService.getFilteredProducts({
+            sortBy: "price-desc",
+            limit: 8,
+          })
+        }
         onToggleWishlist={handleToggleWishlist}
         wishlistedItems={wishlist}
         onProductClick={handleProductClick}
         sectionClassName="bg-gradient-to-br from-red-50 to-orange-50"
-                autoScroll={true}
+        autoScroll={true}
         autoScrollInterval={4000}
         cardCount={4}
       />
@@ -250,24 +262,16 @@ const Home: React.FC = () => {
         cardCount={4}
       />
 
-      {/* Electronics Section - Lazy load */}
-      <LazyProductSection
-        title="Electronics"
-        fetcher={() => productService.getProductsByCategory("electronics", "popular", 6)}
-        onToggleWishlist={handleToggleWishlist}
-        wishlistedItems={wishlist}
-        onProductClick={handleProductClick}
-        showNavigation={false}
-        cardCount={3}
-      />
 
       {/* You Might Also Like Section - Lazy load */}
       <LazyProductSection
         title="You Might Also Like"
-        fetcher={() => productService.getFilteredProducts({ 
-          sortBy: "popular", 
-          limit: 5 
-        })}
+        fetcher={() =>
+          productService.getFilteredProducts({
+            sortBy: "popular",
+            limit: 5,
+          })
+        }
         onToggleWishlist={handleToggleWishlist}
         wishlistedItems={wishlist}
         onProductClick={handleProductClick}

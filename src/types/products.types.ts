@@ -30,6 +30,7 @@ export interface Product {
   price: number; // Original price
   fakePrice: number; // Discounted price
   category: Category; // Category ID or name
+  isActive: Boolean
   images: ProductImage[];
   productSizes: ProductStock[];
   totalSales: number;
@@ -79,6 +80,7 @@ export interface FormData {
   category: string;
   sizes: { sizeName: string; sizeCode: string; stock: number }[];
   images: File[];
+  isActive: boolean;
 }
 
 export interface UploadStatus {

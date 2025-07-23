@@ -1,4 +1,3 @@
-import type { ProductResponse } from "../types/products.types";
 import type { WishlistIdsResponse, WishlistResponse } from "../types/wishlist.types";
 import instance from "../utils/axios";
 

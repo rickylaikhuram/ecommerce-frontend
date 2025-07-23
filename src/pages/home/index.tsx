@@ -8,7 +8,9 @@ import CategoryShowcase from "../../components/section/CategoryShowcase";
 import ProductSectionSkeleton from "../../components/common/ProductSectionSkeleton";
 import { productService } from "../../services/product.services";
 import type { Product, ProductResponse } from "../../types/products.types";
-import { AlertCircle, RefreshCw } from "lucide-react";
+import { AlertCircle, RefreshCw,Shield,Truck ,HeartHandshake,Star
+} from "lucide-react";
+import { wishlistService } from "../../services/wishlist.services";
 
 // Error component
 const ErrorSection: React.FC<{

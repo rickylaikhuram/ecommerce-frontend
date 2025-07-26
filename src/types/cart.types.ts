@@ -1,31 +1,56 @@
 // types/cart.types.ts
+export interface CartImage {
+  imageUrl: string;
+  altText: string | null;
+}
+
+export interface CartCategory {
+  id: string;
+  name: string;
+  parentCategory: {
+    id: string;
+    name: string;
+  } | null;
+}
+
 export interface CartItem {
   id: string;
   productId: string;
   name: string;
-  price: number;
+  originalPrice: number;
+  discountedPrice: number;
+  mainImage: CartImage | null;
   quantity: number;
-  image: string;
-  size?: string;
-  color?: string;
+  stockName: string;
+  addedAt: Date;
+  category: CartCategory;
+  inStock: boolean;
+  stockVariantInStock: boolean;
+  availableStock: number;
+  subtotal: number;
+  originalSubtotal: number;
+  discount: number;
 }
 
 export interface CartSummary {
-  subtotal: number;
-  shipping: number;
-  tax: number;
-  discount: number;
-  total: number;
+  totalItems: number;
+  totalUniqueItems: number;
+  totalPrice: number;
+  totalOriginalPrice: number;
+  totalDiscount: number;
 }
 
-export interface CouponResponse {
-  valid: boolean;
-  discount: number;
-  message: string;
+export interface CartResponse {
+  items: CartItem[];
+  summary: CartSummary;
 }
-export interface CartItemProps {
-  item: CartItem;
-  onUpdateQuantity: (id: string, quantity: number) => void;
-  onRemove: (id: string) => void;
-  isUpdating: boolean;
+
+export interface AddToCartResponse {
+  success: boolean;
+  alreadyInCart: boolean;
+  cartItem: {
+    id: string;
+    quantity: number;
+  };
+  message: string;
 }

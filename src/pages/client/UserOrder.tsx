@@ -12,24 +12,7 @@ interface Order {
 }
 
 const Orders: React.FC = () => {
-  const [orders] = useState<Order[]>([
-    {
-      id: '1',
-      orderNumber: 'ORD-2024-001',
-      date: '2024-01-15',
-      status: 'delivered',
-      total: 299.99,
-      items: 3
-    },
-    {
-      id: '2',
-      orderNumber: 'ORD-2024-002',
-      date: '2024-01-20',
-      status: 'shipped',
-      total: 149.99,
-      items: 1
-    }
-  ]);
+  const [orders] = useState<Order[]>([]);
 
   const getStatusIcon = (status: Order['status']) => {
     switch (status) {

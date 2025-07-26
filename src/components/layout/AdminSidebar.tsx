@@ -11,7 +11,7 @@ import {
   TrendingUp,
   X,
   LogOut,
-  ChevronDown,
+  FolderTree,
 } from "lucide-react";
 import useLogout from "../../hooks/useLogout";
 
@@ -32,6 +32,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   const menuItems = [
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
     { id: "products", label: "Products", icon: Package },
+    { id: "categories", label: "Categories", icon: FolderTree },
     { id: "orders", label: "Orders", icon: ShoppingCart },
     { id: "customers", label: "Customers", icon: Users },
     { id: "analytics", label: "Analytics", icon: TrendingUp },
@@ -72,20 +73,6 @@ const Sidebar: React.FC<SidebarProps> = ({
           >
             <X className="w-5 h-5 text-slate-400" />
           </button>
-        </div>
-
-        {/* User Profile Section */}
-        <div className="px-6 py-6 border-b border-slate-800">
-          <div className="flex items-center">
-            <div className="w-12 h-12 rounded-full bg-amber-500 flex items-center justify-center">
-              <span className="text-slate-900 font-semibold text-lg">JD</span>
-            </div>
-            <div className="ml-3 flex-1">
-              <p className="text-white font-medium">John Doe</p>
-              <p className="text-slate-400 text-sm">Administrator</p>
-            </div>
-            <ChevronDown className="w-4 h-4 text-slate-400" />
-          </div>
         </div>
 
         {/* Navigation Menu - Scrollable */}

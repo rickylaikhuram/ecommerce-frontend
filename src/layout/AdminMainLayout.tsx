@@ -21,6 +21,7 @@ const AdminMainLayout = () => {
     const titles: { [key: string]: string } = {
       dashboard: "Dashboard",
       products: "Products",
+      categories: "Categories",
       orders: "Orders",
       customers: "Customers",
       analytics: "Analytics",

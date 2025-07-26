@@ -60,38 +60,41 @@ const ProductForm: React.FC<ProductFormProps> = ({
     trigger,
     setValue,
     setError,
-    reset
+    reset,
   } = useForm<FormData>();
 
   const { fields, append, remove } = useFieldArray({
     control,
     name: "sizes",
   });
-// Remove the initial reset useEffect and replace it with this one that waits for categories
-useEffect(() => {
-  if (initialData && mode === 'edit' && categories.length > 0) {
-    // Only reset when categories are loaded
-    reset({
-      name: initialData.name || "",
-      description: initialData.description || "",
-      originalPrice: initialData.price || 0,
-      discountedPrice: initialData.fakePrice || 0,
-      category: initialData.category?.name || "",
-      sizes: initialData.productSizes?.length > 0 
-        ? initialData.productSizes.map(size => ({
-            sizeName: size.sizeName || "",
-            sizeCode: size.stockName || "",
-            stock: size.stock || 0
-          }))
-        : [{ sizeName: "Small", sizeCode: "S", stock: 1 }],
-      images: [],
-      isActive: !!initialData.isActive, 
-    });
-    
-    console.log('Form reset with category:', initialData.category?.name);
-    console.log('Available categories:', categories.map(c => c.name));
-  }
-}, [initialData, mode, reset, categories]); // Watch categories array
+  // Remove the initial reset useEffect and replace it with this one that waits for categories
+  useEffect(() => {
+    if (initialData && mode === "edit" && categories.length > 0) {
+      // Only reset when categories are loaded
+      reset({
+        name: initialData.name || "",
+        description: initialData.description || "",
+        originalPrice: initialData.originalPrice || 0,
+        discountedPrice: initialData.discountedPrice || 0,
+        category: initialData.category?.name || "",
+        sizes:
+          initialData.productSizes?.length > 0
+            ? initialData.productSizes.map((size) => ({
+                sizeCode: size.stockName || "",
+                stock: size.stock || 0,
+              }))
+            : [{ sizeCode: "S", stock: 1 }],
+        images: [],
+        isActive: !!initialData.isActive,
+      });
+
+      console.log("Form reset with category:", initialData.category?.name);
+      console.log(
+        "Available categories:",
+        categories.map((c) => c.name)
+      );
+    }
+  }, [initialData, mode, reset, categories]); // Watch categories array
   // Fetch categories from backend
   useEffect(() => {
     fetchCategories();
@@ -107,8 +110,8 @@ useEffect(() => {
 
   const fetchCategories = async () => {
     try {
-      const response = await instance.get("/api/admin/get/categories");
-      setCategories(response.data.category);
+      const response = await instance.get("/api/admin/get/lowcategories");
+      setCategories(response.data.categories);
     } catch (error) {
       console.error("Error fetching categories:", error);
     }
@@ -403,8 +406,8 @@ useEffect(() => {
         category: data.category,
         name: data.name,
         description: data.description,
-        price: data.originalPrice,
-        fakePrice: data.discountedPrice,
+        originalPrice: data.originalPrice,
+        discountedPrice: data.discountedPrice,
         images: uploadedImages,
         productStocks: data.sizes.map((size) => ({
           stockName: size.sizeCode,
@@ -450,23 +453,17 @@ useEffect(() => {
     }
   };
 
-  // Helper function to check for duplicate size codes or names
+  // Helper function to check for duplicate size codes
   const validateSizeUniqueness = (sizes: any[]) => {
     const sizeCodes = sizes.map((s) => s.sizeCode.toUpperCase());
-    const sizeNames = sizes.map((s) => s.sizeName.toLowerCase());
 
     const duplicateCodes = sizeCodes.filter(
       (code, index) => sizeCodes.indexOf(code) !== index
     );
-    const duplicateNames = sizeNames.filter(
-      (name, index) => sizeNames.indexOf(name) !== index
-    );
 
     return {
       hasDuplicateCodes: duplicateCodes.length > 0,
-      hasDuplicateNames: duplicateNames.length > 0,
       duplicateCodes,
-      duplicateNames,
     };
   };
 
@@ -514,7 +511,7 @@ useEffect(() => {
           }
         });
 
-        // Check for duplicate size codes and names
+        // Check for duplicate size codes
         const uniquenessCheck = validateSizeUniqueness(currentSizes);
 
         if (uniquenessCheck.hasDuplicateCodes) {
@@ -527,22 +524,6 @@ useEffect(() => {
               setError(`sizes.${index}.sizeCode`, {
                 type: "manual",
                 message: "Size code must be unique",
-              });
-              hasErrors = true;
-            }
-          });
-        }
-
-        if (uniquenessCheck.hasDuplicateNames) {
-          currentSizes.forEach((size, index) => {
-            if (
-              uniquenessCheck.duplicateNames.includes(
-                size.sizeName.toLowerCase()
-              )
-            ) {
-              setError(`sizes.${index}.sizeName`, {
-                type: "manual",
-                message: "Size name must be unique",
               });
               hasErrors = true;
             }
@@ -777,9 +758,7 @@ useEffect(() => {
                 </label>
                 <button
                   type="button"
-                  onClick={() =>
-                    append({ sizeName: "", sizeCode: "", stock: 0 })
-                  }
+                  onClick={() => append({ sizeCode: "", stock: 0 })}
                   className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center gap-1"
                 >
                   <Plus className="w-4 h-4" />
@@ -798,32 +777,8 @@ useEffect(() => {
                   <div key={field.id} className="flex gap-3 items-start">
                     <div className="flex-1">
                       <input
-                        {...register(`sizes.${index}.sizeName` as const, {
-                          required: "Size name is required",
-                          validate: (value) => {
-                            if (!value || value.trim() === "") {
-                              return "Size name is required";
-                            }
-                            return true;
-                          },
-                        })}
-                        placeholder="e.g., Small"
-                        className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                          errors.sizes?.[index]?.sizeName
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        }`}
-                      />
-                      {errors.sizes?.[index]?.sizeName && (
-                        <p className="mt-1 text-xs text-red-500">
-                          {errors.sizes[index].sizeName.message}
-                        </p>
-                      )}
-                    </div>
-                    <div className="w-24">
-                      <input
                         {...register(`sizes.${index}.sizeCode` as const, {
-                          required: "Code is required",
+                          required: "Size code is required",
                           validate: (value) => {
                             if (!value || value.trim() === "") {
                               return "Size code is required";
@@ -831,7 +786,7 @@ useEffect(() => {
                             return true;
                           },
                         })}
-                        placeholder="e.g., S"
+                        placeholder="e.g., S, M, L, XL"
                         className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
                           errors.sizes?.[index]?.sizeCode
                             ? "border-red-500"
@@ -886,9 +841,7 @@ useEffect(() => {
                   <p className="text-gray-500 mb-2">No sizes added yet</p>
                   <button
                     type="button"
-                    onClick={() =>
-                      append({ sizeName: "", sizeCode: "", stock: 0 })
-                    }
+                    onClick={() => append({ sizeCode: "", stock: 0 })}
                     className="text-blue-600 hover:text-blue-700 text-sm font-medium"
                   >
                     Click here to add your first size
@@ -1071,7 +1024,7 @@ useEffect(() => {
                 <div className="mt-2 space-y-1">
                   {watch("sizes").map((size, index) => (
                     <p key={index} className="text-sm text-gray-700">
-                      {size.sizeName} ({size.sizeCode}): {size.stock} units
+                      {size.sizeCode}: {size.stock} units
                     </p>
                   ))}
                 </div>

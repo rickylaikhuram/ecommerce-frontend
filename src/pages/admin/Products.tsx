@@ -467,19 +467,19 @@ const Products: React.FC = () => {
                       </td>
                       <td className="px-6 py-4">
                         <div className="truncate">
-                          {product.fakePrice &&
-                          product.fakePrice > product.price ? (
+                          {product.originalPrice &&
+                          product.originalPrice > product.discountedPrice ? (
                             <>
                               <span className="font-semibold text-slate-800">
-                                ${Number(product.price).toFixed(2)}
+                                ${Number(product.discountedPrice).toFixed(2)}
                               </span>
                               <span className="text-sm text-slate-500 line-through ml-1">
-                                ${Number(product.fakePrice).toFixed(2)}
+                                ${Number(product.originalPrice).toFixed(2)}
                               </span>
                             </>
                           ) : (
                             <span className="font-semibold text-slate-800">
-                              ${Number(product.price).toFixed(2)}
+                              ${Number(product.discountedPrice).toFixed(2)}
                             </span>
                           )}
                         </div>

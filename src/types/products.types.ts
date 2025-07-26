@@ -27,8 +27,8 @@ export interface Product {
   id?: string ; // Optional for new products
   name: string;
   description: string;
-  price: number; // Original price
-  fakePrice: number; // Discounted price
+  originalPrice: number; // Original price
+  discountedPrice: number; // Discounted price
   category: Category; // Category ID or name
   isActive: Boolean
   images: ProductImage[];
@@ -78,7 +78,7 @@ export interface FormData {
   originalPrice: number;
   discountedPrice: number;
   category: string;
-  sizes: { sizeName: string; sizeCode: string; stock: number }[];
+  sizes: {sizeCode: string; stock: number }[];
   images: File[];
   isActive: boolean;
 }

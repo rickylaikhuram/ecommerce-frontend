@@ -8,7 +8,13 @@ import CategoryShowcase from "../../components/section/CategoryShowcase";
 import ProductSectionSkeleton from "../../components/common/ProductSectionSkeleton";
 import { productService } from "../../services/product.services";
 import type { Product, ProductResponse } from "../../types/products.types";
-import { AlertCircle, RefreshCw,Shield,Truck ,HeartHandshake,Star
+import {
+  AlertCircle,
+  RefreshCw,
+  Shield,
+  Truck,
+  HeartHandshake,
+  Star,
 } from "lucide-react";
 import { wishlistService } from "../../services/wishlist.services";
 
@@ -144,12 +150,12 @@ const Home: React.FC = () => {
 
     loadInitialData();
   }, []);
-  
+
   useEffect(() => {
     const loadWishlist = async () => {
       try {
         const res = await wishlistService.getUserWishlistedIds();
-        setWishlist(res.wishlistedIds); 
+        setWishlist(res.wishlistedIds);
       } catch (err) {
         console.error("Error loading wishlist", err);
       }
@@ -289,7 +295,9 @@ const Home: React.FC = () => {
       {/* Electronics Section - Lazy load */}
       <LazyProductSection
         title="Electronics"
-        fetcher={() => productService.getProductsByCategory("electronics", "popular", 6)}
+        fetcher={() =>
+          productService.getProductsByCategory("electronics", "popular", 6)
+        }
         onToggleWishlist={handleToggleWishlist}
         wishlistedItems={wishlist}
         onProductClick={handleProductClick}

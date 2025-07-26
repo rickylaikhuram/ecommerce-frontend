@@ -1,3 +1,4 @@
+// components/LandingHeader.tsx
 import {
   Search,
   User,
@@ -8,18 +9,18 @@ import {
   Home,
   X,
   ChevronDown,
+  Loader2,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-// import { useCart } from "../context/CartContext";
+import { useCartContext } from "../../context/CartContext";
 
-/* …inside the component … */
 const LandingHeader = () => {
-  const { authStatus } = useAuth(); // <── who am I?
+  const { authStatus } = useAuth();
   const isGuest = authStatus?.role === "guest";
-  const profileHref = isGuest ? "/signin" : "/account/profile"; // dynamic path
-  const profileLabel = isGuest ? "Sign in" : "Profile"; // optional text
+  const profileHref = isGuest ? "/signin" : "/account/profile";
+  const profileLabel = isGuest ? "Sign in" : "Profile";
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [shouldFixHeader, setShouldFixHeader] = useState(false);
@@ -32,8 +33,9 @@ const LandingHeader = () => {
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
-  // const { cartItems } = useCart();
-  // const cartCount = cartItems.reduce((total, item) => total + (item.quantity || 1), 0);
+  // Get cart data from context
+  const { cart, loading: cartLoading } = useCartContext();
+  const cartCount = cart?.summary.totalItems || 0;
 
   // Prevent body scroll when menu is open
   useEffect(() => {
@@ -86,20 +88,15 @@ const LandingHeader = () => {
       ],
     },
   ];
-  // const navItems = [
-  //   { name: "HOME", path: "/" },
-  //   { name: "Products", path: "/men" },
-  //   { name: "Categories", path: "/women" }
-  //   // { name: "SNEAKERS", path: "/sneakers" },
-  //   // { name: "NEW ARRIVALS", path: "/new" },
-  //   // { name: "CLEARANCE", path: "/clearance" },
-  // ];
 
   // Check if route is active
-  const isActive = (path: any) => location.pathname === path;
+  const isActive = (path: string) => location.pathname === path;
 
   // Handle navigation click with double-click detection
-  const handleNavClick = (e: any, path: any) => {
+  const handleNavClick = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    path: string
+  ) => {
     const currentTime = Date.now();
     const timeDiff = currentTime - lastClickRef.current.timestamp;
 
@@ -123,6 +120,38 @@ const LandingHeader = () => {
       toggleMenu();
     }
   };
+
+  // Cart Icon Component with loading state
+  const CartIcon = ({
+    size = 20,
+    showCount = true,
+  }: {
+    size?: number;
+    showCount?: boolean;
+    className?: string;
+  }) => (
+    <div className="relative">
+      <ShoppingCart
+        size={size}
+        strokeWidth={1.5}
+        fill={isActive("/cart") ? "currentColor" : "none"}
+      />
+      {showCount && cartCount > 0 && !cartLoading && (
+        <span
+          className={`absolute -top-2 -right-2 bg-blue-600 text-white rounded-full flex items-center justify-center font-semibold ${
+            size > 20 ? "text-xs h-5 w-5" : "text-[10px] h-4 w-4"
+          }`}
+        >
+          {cartCount > 99 ? "99+" : cartCount}
+        </span>
+      )}
+      {showCount && cartLoading && (
+        <span className="absolute -top-2 -right-2 bg-gray-300 text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center">
+          <Loader2 className="w-2.5 h-2.5 animate-spin" />
+        </span>
+      )}
+    </div>
+  );
 
   return (
     <>
@@ -168,14 +197,14 @@ const LandingHeader = () => {
                 </button>
                 {dropdownOpen && (
                   <div className="ml-4 mt-1 space-y-1">
-                    {item.items.map((subItem) => (
+                    {item.items?.map((subItem) => (
                       <Link
                         key={subItem.label}
                         to={subItem.path}
                         className="block px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded"
                         onClick={(e) => {
                           handleNavClick(e, subItem.path);
-                          toggleMenu(); // close mobile menu
+                          toggleMenu();
                         }}
                       >
                         {subItem.label}
@@ -216,6 +245,27 @@ const LandingHeader = () => {
               Wishlist
             </Link>
             <Link
+              to="/cart"
+              className={`flex items-center gap-3 py-2.5 px-3 text-sm font-medium rounded-lg transition-all duration-200 ${
+                isActive("/cart")
+                  ? "bg-blue-50 text-blue-600"
+                  : "text-gray-800 hover:bg-gray-50 hover:text-blue-600"
+              }`}
+              onClick={(e) => handleNavClick(e, "/cart")}
+            >
+              <CartIcon size={16} showCount={false} />
+              <span className="flex items-center gap-1">
+                Cart
+                {cartLoading ? (
+                  <Loader2 className="w-3 h-3 animate-spin" />
+                ) : cartCount > 0 ? (
+                  <span className="text-blue-600 font-semibold">
+                    ({cartCount})
+                  </span>
+                ) : null}
+              </span>
+            </Link>
+            <Link
               to={profileHref}
               className={`flex items-center gap-3 py-2.5 px-3 text-sm font-medium
               rounded-lg transition-all duration-200
@@ -233,6 +283,25 @@ const LandingHeader = () => {
               {profileLabel}
             </Link>
           </div>
+
+          {/* Cart Summary in Mobile Menu */}
+          {cart && cart.items.length > 0 && (
+            <div className="mt-4 pt-4 border-t">
+              <div className="bg-blue-50 rounded-lg p-3 mb-3">
+                <p className="text-xs text-gray-600 mb-1">Cart Total</p>
+                <p className="text-lg font-bold text-gray-900">
+                  ₹{cart.summary.totalPrice.toFixed(2)}
+                </p>
+              </div>
+              <Link
+                to="/checkout"
+                className="block w-full bg-blue-600 text-white text-center py-2.5 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                onClick={toggleMenu}
+              >
+                Checkout
+              </Link>
+            </div>
+          )}
         </div>
       </div>
 
@@ -268,7 +337,7 @@ const LandingHeader = () => {
                         <ChevronDown size={16} />
                       </button>
                       <div className="absolute top-full left-0 mt-2 bg-white border border-gray-200 rounded-md shadow-md min-w-[160px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-30">
-                        {item.items.map((subItem) => (
+                        {item.items?.map((subItem) => (
                           <Link
                             key={subItem.label}
                             to={subItem.path}
@@ -316,7 +385,7 @@ const LandingHeader = () => {
               {/* Icons */}
               <div className="flex items-center gap-2">
                 <Link
-                  to={profileHref} // <<— dynamic
+                  to={profileHref}
                   className={`p-2.5 rounded-lg transition-colors
                     ${
                       isActive(profileHref)
@@ -335,7 +404,7 @@ const LandingHeader = () => {
                   className={`p-2.5 rounded-lg transition-colors relative ${
                     isActive("/location")
                       ? "bg-blue-100 text-blue-600"
-                      : "hover: text-gray-700"
+                      : "hover:bg-gray-100 text-gray-700"
                   }`}
                   onClick={(e) => handleNavClick(e, "/location")}
                 >
@@ -344,10 +413,6 @@ const LandingHeader = () => {
                     fill={isActive("/location") ? "currentColor" : "none"}
                   />
                 </Link>
-
-                {/* <button className="p-2.5 hover:bg-gray-100 rounded-lg transition-colors hidden md:block">
-                  <MapPin size={20} className="text-gray-700" />
-                </button> */}
 
                 <Link
                   to="/wishlist"
@@ -364,6 +429,7 @@ const LandingHeader = () => {
                   />
                 </Link>
 
+                {/* Cart with MiniCart - Desktop */}
                 <Link
                   to="/cart"
                   className={`p-2.5 rounded-lg transition-colors relative ${
@@ -373,10 +439,7 @@ const LandingHeader = () => {
                   }`}
                   onClick={(e) => handleNavClick(e, "/cart")}
                 >
-                  <ShoppingCart
-                    size={20}
-                    fill={isActive("/cart") ? "currentColor" : "none"}
-                  />
+                  <CartIcon size={20} />
                 </Link>
               </div>
             </div>
@@ -410,6 +473,14 @@ const LandingHeader = () => {
                 size={16}
               />
             </div>
+
+            {/* Cart preview for mobile header */}
+            <Link
+              to="/cart"
+              className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors flex-shrink-0"
+            >
+              <CartIcon size={20} />
+            </Link>
           </div>
         </div>
       </header>
@@ -482,11 +553,7 @@ const LandingHeader = () => {
             }`}
             onClick={(e) => handleNavClick(e, "/cart")}
           >
-            <ShoppingCart
-              size={20}
-              strokeWidth={1.5}
-              fill={isActive("/cart") ? "currentColor" : "none"}
-            />
+            <CartIcon size={20} />
             <span
               className={`text-[10px] font-medium mt-1 ${
                 isActive("/cart") ? "font-semibold" : ""
@@ -502,11 +569,11 @@ const LandingHeader = () => {
           <Link
             to={profileHref}
             className={`flex flex-col items-center py-2 transition-colors relative
-       ${
-         isActive(profileHref)
-           ? "text-blue-600"
-           : "text-gray-600 hover:text-blue-600"
-       }`}
+              ${
+                isActive(profileHref)
+                  ? "text-blue-600"
+                  : "text-gray-600 hover:text-blue-600"
+              }`}
             onClick={(e) => handleNavClick(e, profileHref)}
           >
             <User
@@ -516,7 +583,7 @@ const LandingHeader = () => {
             />
             <span
               className={`text-[10px] font-medium mt-1
-          ${isActive(profileHref) ? "font-semibold" : ""}`}
+                ${isActive(profileHref) ? "font-semibold" : ""}`}
             >
               {profileLabel}
             </span>

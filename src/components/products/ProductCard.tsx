@@ -19,10 +19,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
     product.images.find((img) => img.isMain) || product.images[0];
 
   // Calculate discount percentage
-  const price = parseFloat(product.price.toString());
-  const fakePrice = parseFloat(product.fakePrice.toString());
+  const originalPrice = parseFloat(product.originalPrice.toString());
+  const discountedPrice = parseFloat(product.discountedPrice.toString());
   const discountPercentage =
-    fakePrice > price ? Math.round(((fakePrice - price) / fakePrice) * 100) : 0;
+    originalPrice > discountedPrice ? Math.round(((originalPrice - discountedPrice) / originalPrice) * 100) : 0;
 
   // Check if product is in stock
   const isInStock =
@@ -163,11 +163,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <div className="mt-auto pt-3 border-t border-gray-100">
           <div className="flex items-baseline gap-2 sm:gap-3">
             <span className="text-lg sm:text-2xl font-black text-gray-900">
-              ₹{price.toFixed(2)}
+              ₹{discountedPrice.toFixed(2)}
             </span>
             {discountPercentage > 0 && (
               <span className="text-sm sm:text-base text-gray-400 line-through font-medium">
-                ₹{fakePrice.toFixed(2)}
+                ₹{originalPrice.toFixed(2)}
               </span>
             )}
           </div>

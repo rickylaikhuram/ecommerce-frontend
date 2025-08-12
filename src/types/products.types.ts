@@ -18,19 +18,25 @@ export interface ProductStock {
 
 // product category
 export interface Category {
-  id?: string;
+  id: string;
   name: string;
+  parentId?: string;
+  children: Category[];
+}
+
+export interface CategoryResponse {
+  categories: Category[];
 }
 
 // product details
 export interface Product {
-  id?: string ; // Optional for new products
+  id?: string; // Optional for new products
   name: string;
   description: string;
   originalPrice: number; // Original price
   discountedPrice: number; // Discounted price
   category: Category; // Category ID or name
-  isActive: Boolean
+  isActive: Boolean;
   images: ProductImage[];
   productSizes: ProductStock[];
   totalSales: number;
@@ -41,12 +47,21 @@ export interface Product {
 // product filter types -- uesd in product service
 export interface ProductFilters {
   category?: string;
-  sortBy?: 'price-asc' | 'price-desc' | 'name-asc' | 'name-desc' | 'newest' | 'popular';
+  sortBy?:
+    | "price-asc"
+    | "price-desc"
+    | "name-asc"
+    | "name-desc"
+    | "newest"
+    | "popular";
   limit?: number;
   offset?: number;
-  filter?: 'bestsellers' | 'trending';
-  period?: 'week' | 'month' | 'year' | 'alltime';
+  filter?: "bestsellers" | "trending";
+  period?: "week" | "month" | "year" | "alltime";
   search?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  sizes?: string[];
 }
 
 // product filter type response -- uesd in product service
@@ -55,7 +70,7 @@ export interface ProductResponse {
   products: Product[];
   pagination: {
     total: number;
-    limit: number | null;
+    limit: number ;
     offset: number;
     hasMore: boolean;
   };
@@ -78,7 +93,7 @@ export interface FormData {
   originalPrice: number;
   discountedPrice: number;
   category: string;
-  sizes: {sizeCode: string; stock: number }[];
+  sizes: { sizeCode: string; stock: number }[];
   images: File[];
   isActive: boolean;
 }

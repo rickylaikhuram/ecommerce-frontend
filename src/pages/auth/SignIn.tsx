@@ -99,9 +99,7 @@ const SignIn = () => {
     }
   };
 
-  const handleGoogleSignIn = () => {
-    console.log("Google Sign In clicked");
-  };
+
 
   // Custom validation for email or phone
   const validateEmailOrPhone = (value: string) => {
@@ -388,7 +386,6 @@ const SignIn = () => {
             </div>
           </div>
 
-          {/* Google Sign In */}
           <div className="space-y-3">
             <Link
               to="/signinwithotp"
@@ -400,15 +397,6 @@ const SignIn = () => {
               </span>
             </Link>
 
-            <button
-              onClick={handleGoogleSignIn}
-              className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 hover:shadow-md transition-all duration-200 group"
-            >
-              <Volleyball className="w-5 h-5 text-gray-600 group-hover:text-blue-600 transition-colors" />
-              <span className="text-gray-700 font-medium">
-                Sign in with Google
-              </span>
-            </button>
           </div>
 
           {/* Sign Up Link */}

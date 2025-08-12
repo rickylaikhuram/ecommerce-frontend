@@ -19,11 +19,37 @@ export interface CartItem {
   name: string;
   originalPrice: number;
   discountedPrice: number;
-  mainImage: CartImage | null;
+  mainImage: {
+    imageUrl: string;
+    altText: string;
+  } | null;
   quantity: number;
   stockName: string;
-  addedAt: Date;
-  category: CartCategory;
+  addedAt: string;
+  category: {
+    id: string;
+    name: string;
+    parentCategory: {
+      id: string;
+      name: string;
+    } | null;
+  };
+  
+  // Enhanced stock validation fields
+  status: 'available' | 'out_of_stock' | 'quantity_exceeded' | 'low_stock_warning';
+  statusCode: 'IN_STOCK' | 'OUT_OF_STOCK' | 'QUANTITY_EXCEEDED' | 'LOW_STOCK';
+  message: string;
+  action: 'proceed' | 'remove' | 'reduce_quantity' | 'proceed_with_caution';
+  canProceedToCheckout: boolean;
+  stockInfo: {
+    availableStock: number;
+    cartQuantity: number;
+    maxAllowed?: number;
+    isOutOfStock: boolean;
+    isLowStock: boolean;
+  };
+  
+  // Legacy fields for backward compatibility
   inStock: boolean;
   stockVariantInStock: boolean;
   availableStock: number;
@@ -32,13 +58,25 @@ export interface CartItem {
   discount: number;
 }
 
+
 export interface CartSummary {
   totalItems: number;
   totalUniqueItems: number;
   totalPrice: number;
+  totalValidItems: number;
   totalOriginalPrice: number;
   totalDiscount: number;
+  
+  // Enhanced cart status fields
+  overallStatus: 'ready' | 'requires_action' | 'low_stock_warning';
+  canProceedToCheckout: boolean;
+  checkoutMessage: string;
+  hasOutOfStockItems: boolean;
+  hasLowStockWarnings: boolean;
+  hasQuantityIssues: boolean;
+  itemsRequiringAttention: number;
 }
+
 
 export interface CartResponse {
   items: CartItem[];

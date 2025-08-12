@@ -1,8 +1,20 @@
-import type { ProductFilters, ProductResponse } from "../types/products.types";
+import type {  CategoryResponse, ProductFilters, ProductResponse } from "../types/products.types";
 import instance from "../utils/axios";
 
 // Main service function
 export const productService = {
+
+  // get categories
+  async getCategories(): Promise<CategoryResponse> {
+    try {
+      const response = await instance.get<CategoryResponse>("/api/product/categories");
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+      throw error;
+    }
+  },
+
   // Get filtered products
   async getFilteredProducts(
     filters: ProductFilters = {}

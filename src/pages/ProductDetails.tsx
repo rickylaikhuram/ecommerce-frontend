@@ -1,5 +1,5 @@
 // pages/ProductDetails.tsx
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import instance from "../utils/axios";
 import { useCartContext } from "../context/CartContext";
@@ -42,7 +42,13 @@ const ProductDetails: React.FC = () => {
   const [selectedSize, setSelectedSize] = useState<string>("");
   const [quantity, setQuantity] = useState(1);
   const [isWishlisted, setIsWishlisted] = useState(false);
-  const [activeTab, setActiveTab] = useState<"description" | "shipping" | "returns">("description");
+  const [activeTab, setActiveTab] = useState<
+    "description" | "shipping" | "returns"
+  >("description");
+
+  // Debounce ref
+  const debounceTimeoutRef = useRef<number | null>(null);
+  const DEBOUNCE_DELAY = 1000;
 
   // Get cart item for current product and selected size
   const cartItem = React.useMemo(() => {
@@ -51,13 +57,31 @@ const ProductDetails: React.FC = () => {
   }, [product, selectedSize, cart, cartLoading, getCartItem]);
 
   const isProductInCart = !!cartItem;
-  const cartQuantity = cartItem?.quantity || 0;
+
+  // Always use local quantity state for display
+  const displayQuantity = quantity;
 
   useEffect(() => {
     if (id) {
       fetchProduct();
     }
   }, [id]);
+
+  // Sync local quantity when cart item changes
+  useEffect(() => {
+    if (isProductInCart && cartItem) {
+      setQuantity(cartItem.quantity);
+    }
+  }, [isProductInCart, cartItem]);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const fetchProduct = async () => {
     try {
@@ -93,7 +117,11 @@ const ProductDetails: React.FC = () => {
   const handleAddToCart = async () => {
     if (!product || !product.id) return;
 
-    if (!selectedSize && product.productSizes && product.productSizes.length > 0) {
+    if (
+      !selectedSize &&
+      product.productSizes &&
+      product.productSizes.length > 0
+    ) {
       alert("Please select a size");
       return;
     }
@@ -111,20 +139,47 @@ const ProductDetails: React.FC = () => {
     }
   };
 
-  const handleQuantityChange = (newQuantity: number) => {
-    const selectedStock = product?.productSizes?.find(s => s.stockName === selectedSize);
+  const handleQuantityChange = async (newQuantity: number) => {
+    const selectedStock = product?.productSizes?.find(
+      (s) => s.stockName === selectedSize
+    );
     const maxStock = selectedStock?.stock || 10;
-    
+
     if (newQuantity >= 1 && newQuantity <= maxStock) {
+      // Update UI immediately
       setQuantity(newQuantity);
+
+      if (isProductInCart && cartItem) {
+        // Clear existing timeout
+        if (debounceTimeoutRef.current) {
+          clearTimeout(debounceTimeoutRef.current);
+        }
+
+        // Set new timeout for debounced API call
+        debounceTimeoutRef.current = setTimeout(async () => {
+          try {
+            await updateQuantity(cartItem.id, newQuantity);
+          } catch (err) {
+            console.error("Error updating cart quantity:", err);
+            // Reset to cart quantity on error
+            if (cartItem) {
+              setQuantity(cartItem.quantity);
+            }
+            alert("Failed to update quantity. Please try again.");
+          }
+        }, DEBOUNCE_DELAY);
+      }
     }
   };
 
   const calculateDiscount = () => {
-    if (!product || !product.discountedPrice || !product.originalPrice) return 0;
+    if (!product || !product.discountedPrice || !product.originalPrice)
+      return 0;
     if (product.originalPrice <= product.discountedPrice) return 0;
     return Math.round(
-      ((product.originalPrice - product.discountedPrice) / product.originalPrice) * 100
+      ((product.originalPrice - product.discountedPrice) /
+        product.originalPrice) *
+        100
     );
   };
 
@@ -164,7 +219,8 @@ const ProductDetails: React.FC = () => {
             {error || "Product not found"}
           </h2>
           <p className="text-gray-600 mb-6">
-            The product you're looking for might have been removed or is temporarily unavailable.
+            The product you're looking for might have been removed or is
+            temporarily unavailable.
           </p>
           <button
             onClick={() => navigate("/")}
@@ -179,8 +235,13 @@ const ProductDetails: React.FC = () => {
 
   const discount = calculateDiscount();
   const hasStock = product.productSizes?.some((size) => size.stock > 0) ?? true;
-  const selectedStock = product.productSizes?.find(s => s.stockName === selectedSize);
-  const isActionLoading = actionLoading === 'add' || actionLoading === product.id;
+  const selectedStock = product.productSizes?.find(
+    (s) => s.stockName === selectedSize
+  );
+
+  // Check if add to cart action is loading
+  const isActionLoading =
+    actionLoading === "add" || actionLoading === product.id;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -199,7 +260,9 @@ const ProductDetails: React.FC = () => {
               {product.category?.name || "Products"}
             </span>
             <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400 flex-shrink-0" />
-            <span className="text-gray-900 font-medium truncate">{product.name}</span>
+            <span className="text-gray-900 font-medium truncate">
+              {product.name}
+            </span>
           </nav>
         </div>
       </div>
@@ -214,8 +277,13 @@ const ProductDetails: React.FC = () => {
                 {product.images && product.images.length > 0 ? (
                   <>
                     <img
-                      src={`${S3_BASE_URL}${product.images[selectedImage]?.imageUrl}` || ""}
-                      alt={product.images[selectedImage]?.altText || product.name}
+                      src={
+                        `${S3_BASE_URL}${product.images[selectedImage]?.imageUrl}` ||
+                        ""
+                      }
+                      alt={
+                        product.images[selectedImage]?.altText || product.name
+                      }
                       className="w-full h-full object-contain p-4"
                       onError={(e) => {
                         e.currentTarget.src = "/placeholder-image.png";
@@ -298,7 +366,7 @@ const ProductDetails: React.FC = () => {
                 {isProductInCart && (
                   <span className="text-xs sm:text-sm font-medium text-green-600 bg-green-50 px-2 sm:px-3 py-1 rounded-full flex items-center gap-1">
                     <Check className="w-3 h-3" />
-                    In Cart ({cartQuantity})
+                    In Cart ({displayQuantity})
                   </span>
                 )}
               </div>
@@ -307,9 +375,13 @@ const ProductDetails: React.FC = () => {
               </h1>
 
               <div className="flex items-center gap-3 sm:gap-4 text-xs sm:text-sm">
-                <span className="text-gray-600">{product.totalSales || 0} sold</span>
+                <span className="text-gray-600">
+                  {product.totalSales || 0} sold
+                </span>
                 <span className="text-gray-400">|</span>
-                <span className="text-gray-600">{product.views || 0} views</span>
+                <span className="text-gray-600">
+                  {product.views || 0} views
+                </span>
               </div>
             </div>
 
@@ -319,17 +391,35 @@ const ProductDetails: React.FC = () => {
                 <span className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">
                   ₹{Number(product.discountedPrice ?? 0).toFixed(2)}
                 </span>
-                {product.originalPrice && product.originalPrice > (product.discountedPrice || 0) && (
-                  <>
-                    <span className="text-lg sm:text-xl lg:text-2xl text-gray-400 line-through">
-                      ₹{Number(product.originalPrice).toFixed(2)}
-                    </span>
-                    <span className="text-xs sm:text-sm font-semibold text-green-600 bg-green-100 px-2 sm:px-3 py-1 rounded-full">
-                      Save ₹{(product.originalPrice - (product.discountedPrice || 0)).toFixed(2)}
-                    </span>
-                  </>
-                )}
+                {product.originalPrice &&
+                  product.originalPrice > (product.discountedPrice || 0) && (
+                    <>
+                      <span className="text-lg sm:text-xl lg:text-2xl text-gray-400 line-through">
+                        ₹{Number(product.originalPrice).toFixed(2)}
+                      </span>
+                      <span className="text-xs sm:text-sm font-semibold text-green-600 bg-green-100 px-2 sm:px-3 py-1 rounded-full">
+                        Save ₹
+                        {(
+                          product.originalPrice - (product.discountedPrice || 0)
+                        ).toFixed(2)}
+                      </span>
+                    </>
+                  )}
               </div>
+              {/* Show total price if quantity > 1 */}
+              {displayQuantity > 1 && (
+                <div className="mt-2 pt-2 border-t border-blue-200">
+                  <p className="text-sm text-gray-600">
+                    Total ({displayQuantity} items):
+                    <span className="font-semibold text-gray-900 ml-1">
+                      ₹
+                      {(
+                        Number(product.discountedPrice ?? 0) * displayQuantity
+                      ).toFixed(2)}
+                    </span>
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Size Selection */}
@@ -343,65 +433,90 @@ const ProductDetails: React.FC = () => {
                     Size Guide
                   </button>
                 </div>
-                <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
                   {product.productSizes.map((size) => (
-                    <button
+                    <div
                       key={size.stockName}
-                      onClick={() => {
-                        setSelectedSize(size.stockName);
-                        // Reset quantity when changing size
-                        setQuantity(1);
-                      }}
-                      disabled={size.stock === 0}
-                      className={`
-                        relative py-2 sm:py-3 px-3 sm:px-4 rounded-lg font-medium text-sm sm:text-base transition-all duration-200
-                        ${
-                          selectedSize === size.stockName
-                            ? "bg-blue-600 text-white shadow-lg transform scale-105"
-                            : size.stock === 0
-                            ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                            : "bg-white border-2 border-gray-200 hover:border-blue-600 text-gray-700"
-                        }
-                      `}
+                      className="flex flex-col items-center"
                     >
-                      <span>{size.stockName}</span>
+                      <button
+                        onClick={() => {
+                          setSelectedSize(size.stockName);
+                          // Reset quantity when changing size
+                          const newCartItem = getCartItem(
+                            product.id!,
+                            size.stockName
+                          );
+                          if (newCartItem) {
+                            setQuantity(newCartItem.quantity);
+                          } else {
+                            setQuantity(1);
+                          }
+                          // Clear pending states
+                          if (debounceTimeoutRef.current) {
+                            clearTimeout(debounceTimeoutRef.current);
+                          }
+                        }}
+                        disabled={size.stock === 0}
+                        className={`
+                          relative py-2 px-3 rounded-xl font-medium text-sm transition-all duration-200 min-h-[45px] w-full
+                          ${
+                            selectedSize === size.stockName
+                              ? "bg-blue-600 text-white shadow-lg transform scale-105"
+                              : size.stock === 0
+                              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                              : "bg-white border-2 border-gray-200 hover:border-blue-600 text-gray-700"
+                          }
+                        `}
+                      >
+                        <span>{size.stockName}</span>
+
+                        {/* Stock indicator in top-right corner - only for low stock, not out of stock */}
+                        {size.stock > 0 && size.stock < 10 && (
+                          <span className="absolute -top-1 -right-1 bg-red-400 text-white text-xs px-1.5 py-0.5 rounded-full font-normal">
+                            {`${size.stock} left`}
+                          </span>
+                        )}
+                      </button>
+
+                      {/* Out of stock text below button */}
                       {size.stock === 0 && (
-                        <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-gray-100/90">
-                          <span className="text-xs font-normal">Out of stock</span>
-                        </div>
-                      )}
-                      {size.stock > 0 && size.stock <= 5 && (
-                        <span className="absolute -top-1 -right-1 bg-orange-500 text-white text-xs px-1.5 py-0.5 rounded-full">
-                          {size.stock}
+                        <span className="text-xs text-red-500 mt-1 font-normal">
+                          Out of stock
                         </span>
                       )}
-                    </button>
+                    </div>
                   ))}
                 </div>
               </div>
             )}
 
-            {/* Quantity Selector - Only show if not in cart */}
-            {!isProductInCart && (
+            {/* Quantity Selector - Always show when size is selected */}
+            {selectedSize && (
               <div>
                 <h3 className="font-semibold text-gray-900 mb-3 text-sm sm:text-base">
                   Quantity
+                  {isProductInCart && (
+                    <span className="text-xs font-normal text-green-600 ml-2">
+                      (Currently in cart)
+                    </span>
+                  )}
                 </h3>
                 <div className="flex items-center gap-3 sm:gap-4">
                   <div className="flex items-center border-2 border-gray-200 rounded-lg overflow-hidden bg-white">
                     <button
-                      onClick={() => handleQuantityChange(quantity - 1)}
-                      className="p-2 sm:p-3 hover:bg-blue-50 transition-colors"
-                      disabled={quantity <= 1}
+                      onClick={() => handleQuantityChange(displayQuantity - 1)}
+                      className="p-2 sm:p-3 hover:bg-blue-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      disabled={displayQuantity <= 1}
                     >
                       <Minus className="w-3 h-3 sm:w-4 sm:h-4" />
                     </button>
-                    <span className="px-4 sm:px-6 py-2 sm:py-3 font-semibold min-w-[40px] sm:min-w-[50px] text-center text-sm sm:text-base">
-                      {quantity}
-                    </span>
+                    <div className="px-4 sm:px-6 py-2 sm:py-3 font-semibold min-w-[40px] sm:min-w-[50px] text-center text-sm sm:text-base">
+                      {displayQuantity}
+                    </div>
                     <button
-                      onClick={() => handleQuantityChange(quantity + 1)}
-                      disabled={quantity >= (selectedStock?.stock || 10)}
+                      onClick={() => handleQuantityChange(displayQuantity + 1)}
+                      disabled={displayQuantity >= (selectedStock?.stock || 10)}
                       className="p-2 sm:p-3 hover:bg-blue-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -430,7 +545,9 @@ const ProductDetails: React.FC = () => {
                   flex-1 py-3 sm:py-4 px-4 sm:px-6 rounded-lg sm:rounded-xl font-semibold text-sm sm:text-base transition-all duration-200 
                   flex items-center justify-center gap-2 transform hover:scale-[1.02]
                   ${
-                    !hasStock || (product.productSizes?.length > 0 && !selectedSize) || cartLoading
+                    !hasStock ||
+                    (product.productSizes?.length > 0 && !selectedSize) ||
+                    cartLoading
                       ? "bg-gray-200 text-gray-400 cursor-not-allowed"
                       : isProductInCart
                       ? "bg-green-600 hover:bg-green-700 text-white shadow-lg"
@@ -475,7 +592,11 @@ const ProductDetails: React.FC = () => {
                   }
                 `}
               >
-                <Heart className={`w-4 h-4 sm:w-5 sm:h-5 ${isWishlisted ? "fill-current" : ""}`} />
+                <Heart
+                  className={`w-4 h-4 sm:w-5 sm:h-5 ${
+                    isWishlisted ? "fill-current" : ""
+                  }`}
+                />
               </button>
               <button className="p-3 sm:p-4 rounded-lg sm:rounded-xl border-2 border-gray-200 hover:border-gray-300 text-gray-600 transition-all duration-200 transform hover:scale-105 bg-white">
                 <Share2 className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -485,12 +606,16 @@ const ProductDetails: React.FC = () => {
             {/* Show cart item info if product is in cart */}
             {isProductInCart && cartItem && (
               <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                <p className="text-sm text-green-800 mb-2">
-                  This item is already in your cart
-                </p>
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-sm text-green-800 font-medium">
+                    ✅ This item is in your cart
+                  </p>
+                </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-gray-700">
-                    Size: {cartItem.stockName} • Qty: {cartItem.quantity}
+                  <span className="text-sm text-gray-700">
+                    Size:{" "}
+                    <span className="font-medium">{cartItem.stockName}</span> •
+                    Qty: <span className="font-medium">{displayQuantity}</span>
                   </span>
                   <button
                     onClick={() => navigate("/cart")}
@@ -507,21 +632,27 @@ const ProductDetails: React.FC = () => {
               <div className="flex items-center gap-3 p-3 sm:p-4 bg-blue-50 rounded-lg sm:rounded-xl">
                 <Truck className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 flex-shrink-0" />
                 <div>
-                  <p className="font-medium text-gray-900 text-xs sm:text-sm">Free Delivery</p>
+                  <p className="font-medium text-gray-900 text-xs sm:text-sm">
+                    Free Delivery
+                  </p>
                   <p className="text-xs text-gray-600">Orders over ₹500</p>
                 </div>
               </div>
               <div className="flex items-center gap-3 p-3 sm:p-4 bg-green-50 rounded-lg sm:rounded-xl">
                 <Shield className="w-5 h-5 sm:w-6 sm:h-6 text-green-600 flex-shrink-0" />
                 <div>
-                  <p className="font-medium text-gray-900 text-xs sm:text-sm">Secure Payment</p>
+                  <p className="font-medium text-gray-900 text-xs sm:text-sm">
+                    Secure Payment
+                  </p>
                   <p className="text-xs text-gray-600">100% Protected</p>
                 </div>
               </div>
               <div className="flex items-center gap-3 p-3 sm:p-4 bg-purple-50 rounded-lg sm:rounded-xl">
                 <RotateCcw className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600 flex-shrink-0" />
                 <div>
-                  <p className="font-medium text-gray-900 text-xs sm:text-sm">Easy Returns</p>
+                  <p className="font-medium text-gray-900 text-xs sm:text-sm">
+                    Easy Returns
+                  </p>
                   <p className="text-xs text-gray-600">30 Day Policy</p>
                 </div>
               </div>
@@ -531,10 +662,14 @@ const ProductDetails: React.FC = () => {
             <div className="bg-amber-50 rounded-lg sm:rounded-xl p-3 sm:p-4 flex items-start gap-3">
               <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-amber-600 flex-shrink-0 mt-0.5" />
               <div>
-                <p className="font-medium text-gray-900 text-sm sm:text-base">Estimated Delivery</p>
+                <p className="font-medium text-gray-900 text-sm sm:text-base">
+                  Estimated Delivery
+                </p>
                 <p className="text-xs sm:text-sm text-gray-600 mt-1">
                   Order today and receive by{" "}
-                  {new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toLocaleDateString("en-US", {
+                  {new Date(
+                    Date.now() + 5 * 24 * 60 * 60 * 1000
+                  ).toLocaleDateString("en-US", {
                     weekday: "long",
                     month: "long",
                     day: "numeric",
@@ -575,7 +710,8 @@ const ProductDetails: React.FC = () => {
                   Product Description
                 </h3>
                 <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
-                  {product.description || "No description available for this product."}
+                  {product.description ||
+                    "No description available for this product."}
                 </p>
               </div>
             )}
@@ -611,7 +747,8 @@ const ProductDetails: React.FC = () => {
                 </div>
                 <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-blue-50 rounded-lg">
                   <p className="text-xs sm:text-sm text-blue-800">
-                    <strong>Note:</strong> Delivery times may vary during peak seasons.
+                    <strong>Note:</strong> Delivery times may vary during peak
+                    seasons.
                   </p>
                 </div>
               </div>
@@ -655,21 +792,57 @@ const ProductDetails: React.FC = () => {
 
       {/* Sticky Bottom Bar for Mobile */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg p-3 sm:p-4 z-40">
+        {/* Quantity controls for mobile when product is in cart */}
+        {isProductInCart && selectedSize && (
+          <div className="flex items-center justify-between mb-3 pb-3 border-b border-gray-200">
+            <span className="text-sm text-gray-600">Quantity in cart:</span>
+            <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden bg-gray-50">
+              <button
+                onClick={() => handleQuantityChange(displayQuantity - 1)}
+                className="p-2 hover:bg-blue-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={displayQuantity <= 1}
+              >
+                <Minus className="w-3 h-3" />
+              </button>
+              <div className="px-3 py-2 font-semibold min-w-[40px] text-center text-sm">
+                {displayQuantity}
+              </div>
+              <button
+                onClick={() => handleQuantityChange(displayQuantity + 1)}
+                disabled={displayQuantity >= (selectedStock?.stock || 10)}
+                className="p-2 hover:bg-blue-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Plus className="w-3 h-3" />
+              </button>
+            </div>
+          </div>
+        )}
+
         <div className="flex items-center justify-between mb-2 sm:mb-3">
           <div>
             <p className="text-xs sm:text-sm text-gray-600">
-              {isProductInCart ? 'Already in cart' : 'Total Price'}
+              {isProductInCart ? "Total in cart" : "Total Price"}
             </p>
             <p className="text-lg sm:text-xl font-bold text-gray-900">
               {isProductInCart ? (
                 <span className="text-green-600 flex items-center gap-1">
-                  <Check className="w-4 h-4" />
-                  In Cart (Qty: {cartQuantity})
+                  <Check className="w-4 h-4" />₹
+                  {(
+                    Number(product.discountedPrice ?? 0) * displayQuantity
+                  ).toFixed(2)}
                 </span>
               ) : (
-                `₹${(Number(product.discountedPrice ?? 0) * quantity).toFixed(2)}`
+                `₹${(Number(product.discountedPrice ?? 0) * quantity).toFixed(
+                  2
+                )}`
               )}
             </p>
+            {isProductInCart && (
+              <p className="text-xs text-green-600">
+                {displayQuantity} item{displayQuantity > 1 ? "s" : ""} • Size:{" "}
+                {cartItem?.stockName}
+              </p>
+            )}
           </div>
           <button
             onClick={() => setIsWishlisted(!isWishlisted)}
@@ -682,7 +855,11 @@ const ProductDetails: React.FC = () => {
               }
             `}
           >
-            <Heart className={`w-4 h-4 sm:w-5 sm:h-5 ${isWishlisted ? "fill-current" : ""}`} />
+            <Heart
+              className={`w-4 h-4 sm:w-5 sm:h-5 ${
+                isWishlisted ? "fill-current" : ""
+              }`}
+            />
           </button>
         </div>
         <button
@@ -691,13 +868,18 @@ const ProductDetails: React.FC = () => {
             !hasStock ||
             isActionLoading ||
             cartLoading ||
-            (product.productSizes && product.productSizes.length > 0 && !selectedSize)
+            (product.productSizes &&
+              product.productSizes.length > 0 &&
+              !selectedSize)
           }
           className={`
             w-full py-2.5 sm:py-3 px-4 sm:px-6 rounded-lg sm:rounded-xl font-semibold text-sm sm:text-base transition-all duration-200 
             flex items-center justify-center gap-2
             ${
-              !hasStock || (product.productSizes && product.productSizes.length > 0 && !selectedSize)
+              !hasStock ||
+              (product.productSizes &&
+                product.productSizes.length > 0 &&
+                !selectedSize)
                 ? "bg-gray-200 text-gray-400 cursor-not-allowed"
                 : isProductInCart
                 ? "bg-green-600 text-white"
@@ -712,7 +894,9 @@ const ProductDetails: React.FC = () => {
             </>
           ) : !hasStock ? (
             <>Out of Stock</>
-          ) : product.productSizes && product.productSizes.length > 0 && !selectedSize ? (
+          ) : product.productSizes &&
+            product.productSizes.length > 0 &&
+            !selectedSize ? (
             <>Select a Size</>
           ) : isActionLoading ? (
             <>

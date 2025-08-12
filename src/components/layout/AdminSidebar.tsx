@@ -13,7 +13,8 @@ import {
   LogOut,
   FolderTree,
 } from "lucide-react";
-import useLogout from "../../hooks/useLogout";
+import { useAuth } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 interface SidebarProps {
   activeTab: string;
@@ -28,7 +29,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   isOpen,
   onToggle,
 }) => {
-  const logout = useLogout();
+  const navigate = useNavigate();
+  const { logout } = useAuth();
   const menuItems = [
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
     { id: "products", label: "Products", icon: Package },
@@ -40,6 +42,10 @@ const Sidebar: React.FC<SidebarProps> = ({
     { id: "support", label: "Support", icon: HelpCircle },
     { id: "settings", label: "Settings", icon: Settings },
   ];
+  const handleLogout = async () => {
+    await logout();
+    navigate("/signin"); // or wherever you want to redirect
+  };
 
   return (
     <>
@@ -93,15 +99,19 @@ const Sidebar: React.FC<SidebarProps> = ({
                   {activeTab === item.id && (
                     <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-amber-500 rounded-r-full" />
                   )}
-                  
-                  <Icon className={`w-5 h-5 mr-3 ${
-                    activeTab === item.id 
-                      ? "text-white" 
-                      : "text-slate-500 group-hover:text-slate-300"
-                  }`} />
-                  
-                  <span className="font-medium flex-1 text-left">{item.label}</span>
-                  
+
+                  <Icon
+                    className={`w-5 h-5 mr-3 ${
+                      activeTab === item.id
+                        ? "text-white"
+                        : "text-slate-500 group-hover:text-slate-300"
+                    }`}
+                  />
+
+                  <span className="font-medium flex-1 text-left">
+                    {item.label}
+                  </span>
+
                   {item.badge && (
                     <span className="bg-amber-500 text-slate-900 text-xs px-2 py-0.5 rounded-full font-semibold">
                       {item.badge}
@@ -115,8 +125,10 @@ const Sidebar: React.FC<SidebarProps> = ({
 
         {/* Bottom Section - Fixed at bottom */}
         <div className="p-4 border-t border-slate-800">
-          
-          <button onClick={logout} className="w-full flex items-center px-4 py-3 text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl transition-all duration-200 group">
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center px-4 py-3 text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl transition-all duration-200 group"
+          >
             <LogOut className="w-5 h-5 mr-3 text-slate-500 group-hover:text-slate-300" />
             <span className="font-medium">Logout</span>
           </button>

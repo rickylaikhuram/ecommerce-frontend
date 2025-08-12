@@ -1,6 +1,6 @@
 // pages/Cart.tsx
 import React from 'react';
-import { ShoppingBag, Package } from 'lucide-react';
+import { ShoppingBag, Package, AlertTriangle, Info } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useCartContext } from '../context/CartContext';
 import { CartItemCard } from '../components/cart/CartItemCard';
@@ -18,6 +18,11 @@ const CartPage: React.FC = () => {
   if (!cart || cart.items.length === 0) {
     return <EmptyCart />;
   }
+
+  // Get cart status information
+  const { summary } = cart;
+  const requiresAction = summary.overallStatus === 'requires_action';
+  const hasLowStock = summary.overallStatus === 'low_stock_warning';
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -50,6 +55,39 @@ const CartPage: React.FC = () => {
           </div>
         </div>
 
+        {/* Cart Status Alert */}
+        {requiresAction && (
+          <div className="mb-6 bg-red-50 border-l-4 border-red-400 p-4 rounded-r-lg">
+            <div className="flex items-center">
+              <AlertTriangle className="w-5 h-5 text-red-400 mr-3" />
+              <div>
+                <h3 className="text-sm font-medium text-red-800">
+                  Action Required
+                </h3>
+                <p className="text-sm text-red-700 mt-1">
+                  {summary.checkoutMessage}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {hasLowStock && !requiresAction && (
+          <div className="mb-6 bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg">
+            <div className="flex items-center">
+              <Info className="w-5 h-5 text-yellow-400 mr-3" />
+              <div>
+                <h3 className="text-sm font-medium text-yellow-800">
+                  Limited Stock Alert
+                </h3>
+                <p className="text-sm text-yellow-700 mt-1">
+                  {summary.checkoutMessage}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Cart Items */}
           <div className="lg:col-span-2 space-y-4">
@@ -62,7 +100,7 @@ const CartPage: React.FC = () => {
               <div className="flex items-center gap-2 text-blue-800">
                 <Package className="w-5 h-5" />
                 <p className="text-sm font-medium">
-                  Free shipping on orders over $50!
+                  Free shipping on orders over Rs-500!
                 </p>
               </div>
             </div>
@@ -77,4 +115,4 @@ const CartPage: React.FC = () => {
     </div>
   );
 };
-export default CartPage
+export default CartPage;

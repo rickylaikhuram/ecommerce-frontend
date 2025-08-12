@@ -8,7 +8,6 @@ import {
   CheckCircle2,
   XCircle,
   Lock,
-  Volleyball,
 } from "lucide-react";
 import { OTPVerification } from "./OTPVerification";
 import instance from "../../utils/axios";
@@ -210,13 +209,6 @@ const SignInOTP = () => {
                 Sign in with Password
               </span>
             </Link>
-
-            <button className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 hover:shadow-md transition-all duration-200 group">
-              <Volleyball className="w-5 h-5 text-gray-600 group-hover:text-blue-600 transition-colors" />
-              <span className="text-gray-700 font-medium">
-                Sign in with Google
-              </span>
-            </button>
           </div>
 
           <p className="text-sm text-center text-gray-600 mt-8">

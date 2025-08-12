@@ -1,6 +1,6 @@
 // components/ProductCarousel.tsx
 import React, { useRef, useState, useEffect } from 'react';
-import ProductCard from './ProductCard';
+import ProductCard from './ProductGridCard';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import type { Product } from "../../types/products.types"
 

@@ -1,5 +1,6 @@
 // services/cart.service.ts
 import type { CartResponse, AddToCartResponse } from '../types/cart.types';
+import type { CheckoutItem, CartCheckoutResponse } from '../types/checkout.types';
 import instance from '../utils/axios';
 
 class CartService {
@@ -45,9 +46,9 @@ class CartService {
     return response.data;
   }
 
-  async checkProductsInCart(productIds: string[]): Promise<Record<string, any>> {
+  async checkProductsInCart(productDatas: CheckoutItem[]): Promise<CartCheckoutResponse> {
     const response = await instance.post(`${this.baseUrl}/check-products`, {
-      productIds,
+      productDatas,
     });
     return response.data;
   }

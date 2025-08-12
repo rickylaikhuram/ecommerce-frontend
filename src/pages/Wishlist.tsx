@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Heart, ShoppingCart, Trash2, X } from "lucide-react";
+import { Heart, Trash2, X } from "lucide-react";
 import type { WishlistItem } from "../types/wishlist.types";
 import { wishlistService } from "../services/wishlist.services";
+
 const S3_BASE_URL = import.meta.env.VITE_S3_BASE_URL;
 
 const Wishlist: React.FC = () => {
@@ -39,16 +40,6 @@ const Wishlist: React.FC = () => {
       console.error("Remove error:", err);
     } finally {
       setRemovingItem(null);
-    }
-  };
-
-  const moveToCart = async (item: WishlistItem): Promise<void> => {
-    try {
-      // TODO: cartService.addToCart(item.id);
-      await removeFromWishlist(item.id);
-    } catch (err) {
-      setError("Failed to add to cart");
-      console.error("Cart error:", err);
     }
   };
 
@@ -117,7 +108,7 @@ const Wishlist: React.FC = () => {
                 className="flex-shrink-0 w-24 h-24 md:w-32 md:h-32 mr-4"
               >
                 <img
-                  src={`${S3_BASE_URL}${item.mainImage?.imageUrl}` || "/api/placeholder/128/128"}
+                  src={item.mainImage?.imageUrl ? `${S3_BASE_URL}${item.mainImage.imageUrl}` : "/api/placeholder/128/128"}
                   alt={item.mainImage?.altText || item.name}
                   className="w-full h-full object-cover rounded-lg"
                 />
@@ -134,16 +125,16 @@ const Wishlist: React.FC = () => {
 
                 <div className="mt-2 flex items-center gap-3">
                   <span className="text-xl font-bold text-gray-900">
-                    ₹{Number(item.price).toFixed(0)}
+                    ₹{Number(item.discountedPrice).toFixed(0)}
                   </span>
-                  {Number(item.fakePrice) > Number(item.price) && (
+                  {Number(item.originalPrice) > Number(item.discountedPrice) && (
                     <>
                       <span className="text-sm text-gray-500 line-through">
-                        ₹{Number(item.fakePrice).toFixed(0)}
+                        ₹{Number(item.originalPrice).toFixed(0)}
                       </span>
                       <span className="text-sm text-green-600 font-medium">
                         {Math.round(
-                          ((item.fakePrice - item.price) / item.fakePrice) * 100
+                          ((Number(item.originalPrice) - Number(item.discountedPrice)) / Number(item.originalPrice)) * 100
                         )}
                         % off
                       </span>
@@ -158,32 +149,10 @@ const Wishlist: React.FC = () => {
                     <span className="text-sm text-red-600">Out of Stock</span>
                   )}
                 </div>
-
-                {/* Mobile Actions */}
-                <div className="mt-3 flex items-center gap-2 md:hidden">
-                  <button
-                    onClick={() => moveToCart(item)}
-                    disabled={!item.inStock}
-                    className="px-3 py-1.5 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
-                  >
-                    Add to Cart
-                  </button>
-                </div>
               </div>
 
-              {/* Desktop Actions and Remove Button */}
-              <div className="flex items-center gap-3 ml-4">
-                {/* Desktop Add to Cart */}
-                <button
-                  onClick={() => moveToCart(item)}
-                  disabled={!item.inStock}
-                  className="hidden md:flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
-                >
-                  <ShoppingCart size={16} />
-                  Add to Cart
-                </button>
-
-                {/* Remove Button */}
+              {/* Remove Button */}
+              <div className="flex items-center ml-4">
                 <button
                   onClick={() => removeFromWishlist(item.id)}
                   disabled={removingItem === item.id}

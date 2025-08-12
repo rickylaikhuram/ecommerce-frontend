@@ -1,19 +1,19 @@
 // components/UserSidebar.tsx
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { 
-  FaUser, 
-  FaMapMarkerAlt, 
-  FaShoppingBag, 
-  FaHeart, 
-  FaCreditCard, 
-  FaBell, 
-  FaShieldAlt, 
+import React from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import {
+  FaUser,
+  FaMapMarkerAlt,
+  FaShoppingBag,
+  FaHeart,
+  FaCreditCard,
+  FaBell,
+  FaShieldAlt,
   FaSignOutAlt,
   FaBox,
-  FaWallet
-} from 'react-icons/fa';
-import useLogout from '../../hooks/useLogout';
+  FaWallet,
+} from "react-icons/fa";
+import { useAuth } from "../../context/AuthContext";
 
 interface SidebarItem {
   icon: React.ReactNode;
@@ -22,57 +22,61 @@ interface SidebarItem {
 }
 
 const UserSidebar: React.FC = () => {
-  const location = useLocation();
+  const { logout } = useAuth();
 
+  const navigate = useNavigate();
+  const location = useLocation();
+  const handleLogout = async () => {
+    await logout();
+    navigate("/signin"); // or wherever you want to redirect
+  };
   const sidebarItems: SidebarItem[] = [
     {
       icon: <FaUser className="w-5 h-5" />,
-      label: 'Account Details',
-      path: '/account/profile'
+      label: "Account Details",
+      path: "/account/profile",
     },
     {
       icon: <FaMapMarkerAlt className="w-5 h-5" />,
-      label: 'Addresses',
-      path: '/account/addresses'
+      label: "Addresses",
+      path: "/account/addresses",
     },
     {
       icon: <FaShoppingBag className="w-5 h-5" />,
-      label: 'Orders',
-      path: '/account/orders'
+      label: "Orders",
+      path: "/account/orders",
     },
     {
       icon: <FaBox className="w-5 h-5" />,
-      label: 'Returns & Refunds',
-      path: '/account/returns'
+      label: "Returns & Refunds",
+      path: "/account/returns",
     },
     {
       icon: <FaHeart className="w-5 h-5" />,
-      label: 'Wishlist',
-      path: '/account/wishlist'
+      label: "Wishlist",
+      path: "/account/wishlist",
     },
     {
       icon: <FaCreditCard className="w-5 h-5" />,
-      label: 'Payment Methods',
-      path: '/account/payment-methods'
+      label: "Payment Methods",
+      path: "/account/payment-methods",
     },
     {
       icon: <FaWallet className="w-5 h-5" />,
-      label: 'Wallet',
-      path: '/account/wallet'
+      label: "Wallet",
+      path: "/account/wallet",
     },
     {
       icon: <FaBell className="w-5 h-5" />,
-      label: 'Notifications',
-      path: '/account/notifications'
+      label: "Notifications",
+      path: "/account/notifications",
     },
     {
       icon: <FaShieldAlt className="w-5 h-5" />,
-      label: 'Security',
-      path: '/account/security'
-    }
+      label: "Security",
+      path: "/account/security",
+    },
   ];
-
-  const handleLogout = useLogout()
 
   return (
     <div className="bg-white shadow-lg rounded-lg p-6 h-full">
@@ -88,8 +92,8 @@ const UserSidebar: React.FC = () => {
             to={item.path}
             className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 ${
               location.pathname === item.path
-                ? 'bg-blue-50 text-blue-600 border-l-4 border-blue-600'
-                : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+                ? "bg-blue-50 text-blue-600 border-l-4 border-blue-600"
+                : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
             }`}
           >
             {item.icon}

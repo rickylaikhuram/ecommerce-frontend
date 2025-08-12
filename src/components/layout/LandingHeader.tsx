@@ -16,17 +16,30 @@ import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useCartContext } from "../../context/CartContext";
 
+type NavItem =
+  | { name: string; path: string; isDropdown?: false }
+  | {
+      name: string;
+      isDropdown: true;
+      items: { label: string; path: string }[];
+    };
+
 const LandingHeader = () => {
   const { authStatus } = useAuth();
-  const isGuest = authStatus?.role === "guest";
-  const profileHref = isGuest ? "/signin" : "/account/profile";
-  const profileLabel = isGuest ? "Sign in" : "Profile";
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [shouldFixHeader, setShouldFixHeader] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [showHeader, setShowHeader] = useState(true);
   const location = useLocation();
+
+  // Determine if user is authenticated based on authStatus
+  const isAuthenticated = authStatus?.isAuthenticated === true;
+  const isGuest = !isAuthenticated || authStatus?.role === "guest";
+
+  // Set profile navigation based on auth state
+  const profileHref = isGuest ? "/signin" : "/account/profile";
+  const profileLabel = isGuest ? "Sign in" : "Profile";
 
   // Track last clicked link for double-click detection
   const lastClickRef = useRef({ path: "", timestamp: 0 });
@@ -76,9 +89,9 @@ const LandingHeader = () => {
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  const navItems = [
-    { name: "HOME", path: "/" },
-    { name: "Products", path: "/men" },
+  const navItems: NavItem[] = [
+    { name: "Home", path: "/" },
+    { name: "Products", path: "/products" },
     {
       name: "Categories",
       isDropdown: true,
@@ -352,13 +365,13 @@ const LandingHeader = () => {
                   ) : (
                     <Link
                       key={item.name}
-                      to={item.path}
+                      to={item.path!} // Add non-null assertion since we know non-dropdown items have path
                       className={`text-sm font-medium transition-colors ${
-                        isActive(item.path)
+                        isActive(item.path!) // Add non-null assertion here too
                           ? "text-blue-600"
                           : "text-gray-700 hover:text-blue-600"
                       }`}
-                      onClick={(e) => handleNavClick(e, item.path)}
+                      onClick={(e) => handleNavClick(e, item.path!)} // And here
                     >
                       {item.name}
                     </Link>

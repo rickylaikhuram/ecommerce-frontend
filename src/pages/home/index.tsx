@@ -155,7 +155,7 @@ const Home: React.FC = () => {
     const loadWishlist = async () => {
       try {
         const res = await wishlistService.getUserWishlistedIds();
-        setWishlist(res.wishlistedIds);
+        setWishlist(res.productIds);
       } catch (err) {
         console.error("Error loading wishlist", err);
       }
@@ -179,7 +179,7 @@ const Home: React.FC = () => {
 
   const handleProductClick = useCallback(
     (productId: string) => {
-      navigate(`/product/${productId}`);
+      navigate(`/products/${productId}`);
     },
     [navigate]
   );
@@ -261,24 +261,6 @@ const Home: React.FC = () => {
       />
 
       <CategoryShowcase />
-
-      {/* Hot Deals Section - Lazy load */}
-      <LazyProductSection
-        title="Hot Deals 🔥"
-        fetcher={() =>
-          productService.getFilteredProducts({
-            sortBy: "price-desc",
-            limit: 8,
-          })
-        }
-        onToggleWishlist={handleToggleWishlist}
-        wishlistedItems={wishlist}
-        onProductClick={handleProductClick}
-        sectionClassName="bg-gradient-to-br from-red-50 to-orange-50"
-        autoScroll={true}
-        autoScrollInterval={4000}
-        cardCount={4}
-      />
 
       {/* Featured Products Section - Lazy load */}
       <LazyProductSection

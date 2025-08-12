@@ -8,7 +8,6 @@ import {
   User,
   Phone,
   Lock,
-  Volleyball,
   Sparkles,
   CheckCircle2,
   XCircle,
@@ -111,10 +110,7 @@ const SignUp = () => {
     }
   };
 
-  const handleGoogleSignIn = () => {
-    console.log("Google Sign In clicked");
-    // Add Google OAuth logic here
-  };
+  
 
   // Helper function to determine field validation state
   const getFieldState = (fieldName: keyof FormData) => {
@@ -522,29 +518,6 @@ const SignUp = () => {
               )}
             </button>
           </form>
-
-          {/* Divider */}
-          <div className="relative my-8">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-200"></div>
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-white text-gray-500">
-                Or continue with
-              </span>
-            </div>
-          </div>
-
-          {/* Google Sign In */}
-          <button
-            onClick={handleGoogleSignIn}
-            className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 hover:shadow-md hover:border-blue-200 transition-all duration-200 group"
-          >
-            <Volleyball className="w-5 h-5 text-gray-600 group-hover:text-blue-600 transition-colors" />
-            <span className="text-gray-700 font-medium">
-              Sign up with Google
-            </span>
-          </button>
 
           {/* Sign In Link */}
           <p className="text-sm text-center text-gray-600 mt-8">

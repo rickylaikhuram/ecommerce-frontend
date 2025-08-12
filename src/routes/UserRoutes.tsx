@@ -1,7 +1,7 @@
 // routes/UserRoutes.tsx
 import { Route } from "react-router-dom";
 import MainLayout from "../layout/MainLayout";
-import AccountLayout from '../components/client/AccountLayout';
+import AccountLayout from "../components/client/AccountLayout";
 import Home from "../pages/home";
 import CartPage from "../pages/CartPage";
 import LocationContainer from "../pages/LocationContainer";
@@ -12,11 +12,12 @@ import UserDetails from "../pages/client/UserDetails";
 import UserAddress from "../pages/client/UserAddress";
 import UserOrder from "../pages/client/UserOrder";
 import UserSecurity from "../pages/client/UserSecurity";
+import Checkout from "../pages/Checkout";
 
 const UserRoutes = (
   <Route element={<MainLayout />}>
     <Route path="/" element={<Home />} />
-    
+
     {/* Account Routes - Nested properly */}
     <Route path="/account" element={<AccountLayout />}>
       <Route index element={<UserDetails />} />
@@ -36,6 +37,7 @@ const UserRoutes = (
     <Route path="/cart" element={<CartPage />} />
     <Route path="/wishlist" element={<Wishlist />} />
     <Route path="/location" element={<LocationContainer />} />
+    <Route path="/checkout" element={<Checkout />} />
     <Route path="*" element={<Error />} />
   </Route>
 );

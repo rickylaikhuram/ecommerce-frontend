@@ -1,6 +1,6 @@
 // components/cart/CartButton.tsx
 import React, { useState } from "react";
-import { ShoppingCart, Check, Loader2 } from "lucide-react";
+import { ShoppingCart, Check, Loader2, AlertTriangle } from "lucide-react";
 import { useCartContext } from "../../context/CartContext";
 import { useNavigate } from "react-router-dom";
 
@@ -25,6 +25,7 @@ export const CartButton: React.FC<CartButtonProps> = ({
   const cartItem = getCartItem(productId, selectedSize);
   const quantity = cartItem?.quantity || 0;
   const inCart = quantity > 0;
+  const isLowStock = availableStock > 0 && availableStock < 10;
 
   const handleAddToCart = async () => {
     if (!selectedSize) {
@@ -60,32 +61,44 @@ export const CartButton: React.FC<CartButtonProps> = ({
   }
 
   return (
-    <button
-      onClick={handleAddToCart}
-      disabled={isLoading || availableStock === 0 || !selectedSize}
-      className={`
-        flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-medium transition-all
-        ${
-          availableStock === 0
-            ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-            : "bg-blue-600 text-white hover:bg-blue-700 active:scale-95"
-        }
-        ${!selectedSize && "opacity-50 cursor-not-allowed"}
-        ${isLoading && "opacity-75 cursor-wait"}
-        ${className}
-      `}
-    >
-      {isLoading ? (
-        <>
-          <Loader2 className="w-4 h-4 animate-spin" />
-          Adding...
-        </>
-      ) : (
-        <>
-          <ShoppingCart className="w-4 h-4" />
-          {availableStock === 0 ? "Out of Stock" : "Add to Cart"}
-        </>
+    <div className={`space-y-2 ${className}`}>
+      {/* Low stock warning */}
+      {isLowStock && (
+        <div className="flex items-center gap-1 text-orange-600 text-sm">
+          <AlertTriangle className="w-4 h-4" />
+          <span>Only {availableStock} left in stock!</span>
+        </div>
       )}
-    </button>
+      
+      <button
+        onClick={handleAddToCart}
+        disabled={isLoading || availableStock === 0 || !selectedSize}
+        className={`
+          flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-medium transition-all w-full
+          ${
+            availableStock === 0
+              ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+              : isLowStock
+              ? "bg-orange-500 text-white hover:bg-orange-600"
+              : "bg-blue-600 text-white hover:bg-blue-700 active:scale-95"
+          }
+          ${!selectedSize && "opacity-50 cursor-not-allowed"}
+          ${isLoading && "opacity-75 cursor-wait"}
+        `}
+      >
+        {isLoading ? (
+          <>
+            <Loader2 className="w-4 h-4 animate-spin" />
+            Adding...
+          </>
+        ) : (
+          <>
+            <ShoppingCart className="w-4 h-4" />
+            {availableStock === 0 ? "Out of Stock" : 
+             isLowStock ? "Add to Cart (Limited Stock)" : "Add to Cart"}
+          </>
+        )}
+      </button>
+    </div>
   );
 };

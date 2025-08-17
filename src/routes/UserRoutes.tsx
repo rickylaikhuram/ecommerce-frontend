@@ -35,6 +35,7 @@ const UserRoutes = (
     <Route path="orders/:id" element={<OrderDetails />} />
     <Route path="orders/confirmed/:id" element={<OrderConfirmation />} />
     <Route path="/products" element={<ProductsPage />} />
+    <Route path="/search" element={<ProductsPage />} />
     <Route path="/products/:id" element={<ProductDetails />} />
     <Route path="/cart" element={<CartPage />} />
     <Route path="/wishlist" element={<Wishlist />} />

@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { orderService } from "../../services/order.services";
 import WarningModal from "../../components/common/WarningModal";
 import { useNavigate } from "react-router-dom";
-import type { OrderDetails } from "../../types/order.types";
+import type { OrderDetails as OrderDetailsType } from "../../types/order.types";
+
 
 const S3_BASE_URL = import.meta.env.VITE_S3_BASE_URL;
 
@@ -35,7 +36,7 @@ const OrderDetails: React.FC = () => {
   };
 
   const [orderId] = useState(getOrderIdFromUrl());
-  const [order, setOrder] = useState<OrderDetails | null>(null);
+  const [order, setOrder] = useState<OrderDetailsType | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showCancelModal, setShowCancelModal] = useState(false);

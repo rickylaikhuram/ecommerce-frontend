@@ -17,6 +17,7 @@ const GuestRoutes = (
     <Route path="/" element={<Home />} />
     <Route path="/products" element={<ProductsPage />} />
     <Route path="/products/:id" element={<ProductDetails />} />
+    <Route path="/search/:id" element={<ProductDetails />} />
     <Route path="/wishlist" element={<Wishlist />} />
     <Route path="/cart" element={<CartPage />} />
     <Route path="/checkout" element={<Checkout/>} />

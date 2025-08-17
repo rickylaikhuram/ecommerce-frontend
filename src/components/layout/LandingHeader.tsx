@@ -15,6 +15,8 @@ import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useCartContext } from "../../context/CartContext";
+import addressService from "../../services/address.services";
+import type { Address } from "../../types/user.types";
 
 type NavItem =
   | { name: string; path: string; isDropdown?: false }
@@ -31,6 +33,8 @@ const LandingHeader = () => {
   const [shouldFixHeader, setShouldFixHeader] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [showHeader, setShowHeader] = useState(true);
+  const [userAddresses, setUserAddresses] = useState<Address[]>([]);
+  const [addressLoading, setAddressLoading] = useState(false);
   const location = useLocation();
 
   // Determine if user is authenticated based on authStatus
@@ -49,6 +53,63 @@ const LandingHeader = () => {
   // Get cart data from context
   const { cart, loading: cartLoading } = useCartContext();
   const cartCount = cart?.summary.totalItems || 0;
+
+  // Fetch user addresses when authenticated
+  useEffect(() => {
+    const fetchAddresses = async () => {
+      if (isAuthenticated && authStatus?.role !== "guest") {
+        try {
+          setAddressLoading(true);
+          const addresses = await addressService.getAddresses();
+          setUserAddresses(addresses);
+        } catch (error) {
+          console.error("Failed to fetch addresses:", error);
+          setUserAddresses([]);
+        } finally {
+          setAddressLoading(false);
+        }
+      } else {
+        setUserAddresses([]);
+      }
+    };
+
+    fetchAddresses();
+  }, [isAuthenticated, authStatus?.role]);
+
+  // Get location display info
+  const getLocationInfo = () => {
+    if (isGuest || !isAuthenticated) {
+      return {
+        text: "Manipur",
+        isDefault: true,
+      };
+    }
+
+    if (addressLoading) {
+      return {
+        text: "Loading location...",
+        isDefault: true,
+      };
+    }
+
+    if (userAddresses.length === 0) {
+      return {
+        text: "Manipur",
+        isDefault: true,
+      };
+    }
+
+    // Find default address or use first address
+    const defaultAddress =
+      userAddresses.find((addr) => addr.isDefault) || userAddresses[0];
+    return {
+      text: `${defaultAddress.city}, ${defaultAddress.state}`,
+      isDefault: false,
+      address: defaultAddress,
+    };
+  };
+
+  const locationInfo = getLocationInfo();
 
   // Prevent body scroll when menu is open
   useEffect(() => {
@@ -163,6 +224,55 @@ const LandingHeader = () => {
           <Loader2 className="w-2.5 h-2.5 animate-spin" />
         </span>
       )}
+    </div>
+  );
+
+  // Location Component - Updated for different displays
+  const LocationDisplay = ({
+    className = "",
+    size = 20,
+    isCompact = false,
+  }: {
+    className?: string;
+    size?: number;
+    isCompact?: boolean;
+  }) => (
+    <div className={`flex items-center gap-2 ${className}`}>
+      <div className="relative">
+        <MapPin
+          size={size}
+          fill={isActive("/location") ? "currentColor" : "none"}
+        />
+        {addressLoading && (
+          <Loader2 className="absolute -top-1 -right-1 w-3 h-3 animate-spin text-blue-600" />
+        )}
+      </div>
+      <div className="flex flex-col">
+        <span className="text-xs text-gray-500">
+          Delivery to
+        </span>
+        <span className={`text-sm font-medium text-gray-800 truncate ${isCompact ? 'max-w-[120px]' : 'max-w-[200px]'}`}>
+          {locationInfo.text}
+        </span>
+      </div>
+    </div>
+  );
+
+  // Mobile Location Display (one line)
+  const MobileLocationDisplay = () => (
+    <div className="flex items-center gap-1.5">
+      <div className="relative">
+        <MapPin
+          size={14}
+          fill={isActive("/location") ? "currentColor" : "none"}
+        />
+        {addressLoading && (
+          <Loader2 className="absolute -top-1 -right-1 w-2.5 h-2.5 animate-spin text-blue-600" />
+        )}
+      </div>
+      <span className="text-xs text-gray-600">
+        Delivery to <span className="font-medium text-gray-800">{locationInfo.text}</span>
+      </span>
     </div>
   );
 
@@ -365,19 +475,39 @@ const LandingHeader = () => {
                   ) : (
                     <Link
                       key={item.name}
-                      to={item.path!} // Add non-null assertion since we know non-dropdown items have path
+                      to={item.path!}
                       className={`text-sm font-medium transition-colors ${
-                        isActive(item.path!) // Add non-null assertion here too
+                        isActive(item.path!)
                           ? "text-blue-600"
                           : "text-gray-700 hover:text-blue-600"
                       }`}
-                      onClick={(e) => handleNavClick(e, item.path!)} // And here
+                      onClick={(e) => handleNavClick(e, item.path!)}
                     >
                       {item.name}
                     </Link>
                   )
                 )}
               </nav>
+
+              {/* Location Display - Desktop (lg and above) */}
+              <Link
+                to="/location"
+                className="hidden lg:flex hover:bg-gray-50 p-2 rounded-lg transition-colors"
+                onClick={(e) => handleNavClick(e, "/location")}
+              >
+                <LocationDisplay />
+              </Link>
+            </div>
+
+            {/* Middle Section - Location for md screens */}
+            <div className="hidden md:flex lg:hidden">
+              <Link
+                to="/location"
+                className="hover:bg-gray-50 p-2 rounded-lg transition-colors"
+                onClick={(e) => handleNavClick(e, "/location")}
+              >
+                <LocationDisplay isCompact />
+              </Link>
             </div>
 
             {/* Right Section */}
@@ -410,20 +540,6 @@ const LandingHeader = () => {
                   <User
                     size={20}
                     fill={isActive(profileHref) ? "currentColor" : "none"}
-                  />
-                </Link>
-                <Link
-                  to="/location"
-                  className={`p-2.5 rounded-lg transition-colors relative ${
-                    isActive("/location")
-                      ? "bg-blue-100 text-blue-600"
-                      : "hover:bg-gray-100 text-gray-700"
-                  }`}
-                  onClick={(e) => handleNavClick(e, "/location")}
-                >
-                  <MapPin
-                    size={20}
-                    fill={isActive("/location") ? "currentColor" : "none"}
                   />
                 </Link>
 
@@ -493,6 +609,17 @@ const LandingHeader = () => {
               className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors flex-shrink-0"
             >
               <CartIcon size={20} />
+            </Link>
+          </div>
+
+          {/* Mobile Location Bar - One line format */}
+          <div className="px-3 pb-2">
+            <Link
+              to="/location"
+              className="flex items-center p-2 hover:bg-gray-50 rounded-lg transition-colors"
+              onClick={(e) => handleNavClick(e, "/location")}
+            >
+              <MobileLocationDisplay />
             </Link>
           </div>
         </div>

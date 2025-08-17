@@ -18,9 +18,6 @@ interface AuthContextType {
   profileError: string | null;
   refreshAuth: () => Promise<void>;
   refreshProfile: () => Promise<void>;
-  updateUserProfile: (
-    data: Partial<Pick<User, "name" | "phone">>
-  ) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -32,7 +29,6 @@ const AuthContext = createContext<AuthContextType>({
   profileError: null,
   refreshAuth: async () => {},
   refreshProfile: async () => {},
-  updateUserProfile: async () => {},
   logout: async () => {},
 });
 
@@ -52,7 +48,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       setProfileLoading(true);
       setProfileError(null);
-      const profile = await userService.getProfile();
+      const profile = await userService.getUserProfile();
       setUserProfile(profile);
     } catch (error) {
       console.error("Failed to fetch profile:", error);
@@ -97,17 +93,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const updateUserProfile = async (
-    data: Partial<Pick<User, "name" | "phone">>
-  ) => {
-    try {
-      const updatedProfile = await userService.updateProfile(data);
-      setUserProfile(updatedProfile);
-    } catch (error) {
-      throw new Error("Failed to update profile");
-    }
-  };
-
   const logout = async () => {
     try {
       await axios.post("/api/auth/logout", {}, { withCredentials: true });
@@ -142,7 +127,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         profileError,
         refreshAuth,
         refreshProfile,
-        updateUserProfile,
         logout,
       }}
     >

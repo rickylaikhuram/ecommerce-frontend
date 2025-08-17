@@ -51,7 +51,7 @@ const ProductsHeader: React.FC<ProductsHeaderProps> = ({
               onChange={(e) =>
                 onSortChange(e.target.value as ProductFilters["sortBy"])
               }
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="px-2 py-2 border border-gray-200 rounded focus:ring-1 focus:ring-blue-300 focus:border-transparent"
               aria-label="Sort products"
             >
               {SORT_OPTIONS.map((option) => (

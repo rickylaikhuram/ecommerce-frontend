@@ -149,7 +149,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         {/* Price Section - Always at bottom */}
         <div className="mt-auto pt-3 border-t border-gray-100">
           <div className="flex items-baseline gap-2 sm:gap-3">
-            <span className="text-lg sm:text-2xl font-black text-gray-900">
+            <span className="text-lg sm:text-2xl font-bold text-gray-900">
               ₹{productData.discountedPrice.toFixed(2)}
             </span>
             {productData.discountPercentage > 0 && (

@@ -91,16 +91,8 @@ const AddressForm: React.FC<AddressFormProps> = ({
     setError,
   } = useForm<AddressFormData>({
     defaultValues: {
-      fullName: "",
-      phone: "",
-      alternatePhone: "",
-      line1: "",
-      line2: "",
-      landmark: "",
-      city: "",
       state: "Manipur",
       country: "India",
-      zipCode: "",
       label: "Home",
       isDefault: false,
     },
@@ -113,10 +105,10 @@ const AddressForm: React.FC<AddressFormProps> = ({
       reset({
         fullName: initialData.fullName,
         phone: initialData.phone,
-        alternatePhone: initialData.alternatePhone || "",
+        alternatePhone: initialData.alternatePhone || undefined,
         line1: initialData.line1,
-        line2: initialData.line2 || "",
-        landmark: initialData.landmark || "",
+        line2: initialData.line2 || undefined,
+        landmark: initialData.landmark || undefined,
         city: initialData.city,
         state: initialData.state,
         country: initialData.country,
@@ -382,7 +374,9 @@ const AddressForm: React.FC<AddressFormProps> = ({
           <div>
             <input
               type="text"
-              {...register("landmark")}
+              {...register("landmark", {
+                setValueAs: (v) => (v === "" ? undefined : v),
+              })}
               className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Landmark (Optional)"
             />
@@ -392,6 +386,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
             <input
               type="tel"
               {...register("alternatePhone", {
+                setValueAs: (v) => (v === "" ? undefined : v),
                 pattern: {
                   value: /^[6-9]\d{9}$/,
                   message: "Enter a valid 10-digit mobile number",

@@ -49,15 +49,15 @@ class OrderService {
     }
   }
 
-  async getOrderDetails(
-    orderId: string
-  ): Promise<{ success: boolean; order: any }> {
-    const response = await instance.get(`${this.baseUrl}/${orderId}`);
+  async getOrderHistory(): Promise<{ success: boolean; order: any[] }> {
+    const response = await instance.get(`${this.baseUrl}/orders`);
     return response.data;
   }
 
-  async getOrderHistory(): Promise<{ success: boolean; orders: any[] }> {
-    const response = await instance.get(`${this.baseUrl}/history`);
+  async getOrderDetails(
+    orderId: string
+  ): Promise<{ success: boolean; orderDetails: any }> {
+    const response = await instance.get(`${this.baseUrl}/orders/${orderId}`);
     return response.data;
   }
 

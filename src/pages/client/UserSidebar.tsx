@@ -47,29 +47,9 @@ const UserSidebar: React.FC = () => {
       path: "/account/orders",
     },
     {
-      icon: <FaBox className="w-5 h-5" />,
-      label: "Returns & Refunds",
-      path: "/account/returns",
-    },
-    {
       icon: <FaHeart className="w-5 h-5" />,
       label: "Wishlist",
       path: "/account/wishlist",
-    },
-    {
-      icon: <FaCreditCard className="w-5 h-5" />,
-      label: "Payment Methods",
-      path: "/account/payment-methods",
-    },
-    {
-      icon: <FaWallet className="w-5 h-5" />,
-      label: "Wallet",
-      path: "/account/wallet",
-    },
-    {
-      icon: <FaBell className="w-5 h-5" />,
-      label: "Notifications",
-      path: "/account/notifications",
     },
     {
       icon: <FaShieldAlt className="w-5 h-5" />,

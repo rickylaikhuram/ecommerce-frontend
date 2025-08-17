@@ -13,6 +13,9 @@ import UserAddress from "../pages/client/UserAddress";
 import UserOrder from "../pages/client/UserOrder";
 import UserSecurity from "../pages/client/UserSecurity";
 import Checkout from "../pages/Checkout";
+import ProductsPage from "../pages/Products";
+import OrderDetails from "../pages/client/OrderDetails";
+import OrderConfirmation from "../pages/client/OrderConfirmation";
 
 const UserRoutes = (
   <Route element={<MainLayout />}>
@@ -24,16 +27,15 @@ const UserRoutes = (
       <Route path="profile" element={<UserDetails />} />
       <Route path="addresses" element={<UserAddress />} />
       <Route path="orders" element={<UserOrder />} />
-      {/* <Route path="returns" element={<Returns />} /> */}
       <Route path="wishlist" element={<Wishlist />} />
-      {/* <Route path="payment-methods" element={<PaymentMethods />} /> */}
-      {/* <Route path="wallet" element={<Wallet />} /> */}
-      {/* <Route path="notifications" element={<Notifications />} /> */}
       <Route path="security" element={<UserSecurity />} />
     </Route>
 
     {/* Other Routes */}
-    <Route path="/product/:id" element={<ProductDetails />} />
+    <Route path="orders/:id" element={<OrderDetails />} />
+    <Route path="orders/confirmed/:id" element={<OrderConfirmation />} />
+    <Route path="/products" element={<ProductsPage />} />
+    <Route path="/products/:id" element={<ProductDetails />} />
     <Route path="/cart" element={<CartPage />} />
     <Route path="/wishlist" element={<Wishlist />} />
     <Route path="/location" element={<LocationContainer />} />

@@ -361,7 +361,7 @@ const ProductsPage = () => {
       {showMobileFilters && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div
-            className="fixed inset-0 bg-black bg-opacity-50"
+            className="fixed inset-0 bg-black/30"
             onClick={() => setShowMobileFilters(false)}
           />
           <div className="fixed right-0 top-0 h-full w-full max-w-sm bg-white shadow-xl">

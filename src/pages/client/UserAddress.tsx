@@ -85,10 +85,10 @@ const Addresses: React.FC = () => {
         const payload: CreateAddressPayload = {
           fullName: data.fullName,
           phone: data.phone,
-          alternatePhone: data.alternatePhone || "",
+          alternatePhone: data.alternatePhone,
           line1: data.line1,
-          line2: data.line2 || "",
-          landmark: data.landmark || "",
+          line2: data.line2,
+          landmark: data.landmark,
           city: data.city,
           state: data.state,
           country: data.country,

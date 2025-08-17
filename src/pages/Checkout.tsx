@@ -9,7 +9,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
-import { useCartContext  } from "../context/CartContext";
+import { useCartContext } from "../context/CartContext";
 import type {
   CartCheckoutResponse,
   CheckoutState,
@@ -123,7 +123,6 @@ const Checkout: React.FC = () => {
     try {
       setError(null);
       setIsValidatingCart(true);
-
       // Load user addresses
       const userAddresses = await addressService.getAddresses();
       setAddresses(userAddresses || []);
@@ -158,14 +157,16 @@ const Checkout: React.FC = () => {
       setIsValidatingCart(false);
     }
   };
-
+  
+  // Replace the existing calculatePricing function with this safer version:
   const calculatePricing = (cartData: CartCheckoutResponse): PricingDetails => {
     // Only calculate from valid items that can proceed to checkout
-    const validItems = cartData.products.filter(
-      (item) => item.canProceedToCheckout
-    );
+    const validItems =
+      cartData?.products?.filter((item) => item?.canProceedToCheckout) || [];
+
     const subtotal = validItems.reduce((sum, item) => {
-      return sum + parseFloat(item.cartDetails.itemTotal.toString());
+      const itemTotal = item?.cartDetails?.itemTotal;
+      return sum + (itemTotal ? parseFloat(itemTotal.toString()) : 0);
     }, 0);
 
     const discount = subtotal * 0.1;
@@ -263,20 +264,19 @@ const Checkout: React.FC = () => {
     return {
       fullName: address.fullName,
       phone: address.phone,
-      email: userProfile?.email || '', // Get email from user profile
+      email: userProfile?.email || "", // Get email from user profile
       line1: address.line1,
       line2: address.line2,
       city: address.city,
       state: address.state,
       zipCode: address.zipCode,
-      country: address.country || 'India', // Default to India if not provided
+      country: address.country || "India", // Default to India if not provided
     };
   };
 
-
   // handle payment
   const handlePayNow = async (method: string) => {
-    if (method === 'upi-qr') {
+    if (method === "upi-qr") {
       await handleGenerateQR();
       return;
     }
@@ -320,8 +320,7 @@ const Checkout: React.FC = () => {
       const orderData: CreateOrderRequest = {
         productDatas: state.items,
         address: transformAddressToShipping(selectedAddress),
-        paymentMethod: 'upi-qr',
-        // couponCode can be added later if you have coupon functionality
+        paymentMethod: "upi-qr",
       };
 
       // Create order with validation callback
@@ -334,22 +333,22 @@ const Checkout: React.FC = () => {
           setCanProceedToPayment(validationData.canProceedToCheckout);
         }
       );
-
       if (result.success) {
-        // Redirect to payment URL for UPI QR
-        window.location.href = result.paymentUrl;
+        window.location.replace(result.paymentUrl);
       } else {
-        setError('Failed to create order');
+        setError("Failed to create order");
       }
     } catch (error: any) {
       console.error("QR generation failed:", error);
-      
-      if (error.message === 'CART_VALIDATION_FAILED') {
+
+      if (error.message === "CART_VALIDATION_FAILED") {
         // Validation modal will be shown via the callback
         return;
       }
-      
-      setError(error.message || "Failed to generate QR code. Please try again.");
+
+      setError(
+        error.message || "Failed to generate QR code. Please try again."
+      );
     } finally {
       setIsProcessing(false);
     }
@@ -402,11 +401,11 @@ const Checkout: React.FC = () => {
         if (selectedAddress) {
           setCurrentStep(3);
         } else {
-          setError("Please select a delivery address");
+          setError("Please select or add a delivery address");
         }
         break;
       case 3:
-        // Check if all items can proceed to checkout
+        // Check if all items can procee d to checkout
         if (!canProceedToPayment) {
           setError(
             "Fix cart issues before payment — some items are out of stock or have quantity errors."
@@ -509,7 +508,7 @@ const Checkout: React.FC = () => {
               onContinueToAddress={() => setCurrentStep(2)}
             />
 
-                        {/* Navigation Buttons */}
+            {/* Navigation Buttons */}
             <NavigationButtons
               currentStep={currentStep}
               maxStep={4}

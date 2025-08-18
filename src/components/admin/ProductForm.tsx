@@ -327,6 +327,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
         "/api/admin/add/product/images/presigned-urls",
         {
           files: filesData,
+          folderName: "products"
         }
       );
 

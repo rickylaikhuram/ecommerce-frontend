@@ -198,14 +198,6 @@ const HeroBanner = () => {
           }}
         />
       </div>
-
-      <style jsx>{`
-        @keyframes progress {
-          to {
-            transform: scaleX(1);
-          }
-        }
-      `}</style>
     </div>
   );
 };

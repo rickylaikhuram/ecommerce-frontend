@@ -10,7 +10,6 @@ import {
   LogIn,
   CheckCircle2,
   XCircle,
-  Volleyball,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import instance from "../../utils/axios";

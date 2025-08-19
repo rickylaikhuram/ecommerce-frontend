@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { Loader2, Check, FolderOpen } from "lucide-react";
+import { Loader2, Check, FolderOpen, X } from "lucide-react";
 import instance from "../../utils/axios";
+
+const S3_BASE_URL = import.meta.env.VITE_S3_BASE_URL;
 
 interface Category {
   id: string;
@@ -11,6 +13,14 @@ interface Category {
 interface SubCategoryFormData {
   name: string;
   parentId: string;
+  imageFile?: FileList;
+}
+
+interface SignedUrlResponse {
+  index: number;
+  uploadUrl: string;
+  publicUrl: string;
+  key: string;
 }
 
 interface SubCategoryFormProps {
@@ -18,7 +28,8 @@ interface SubCategoryFormProps {
   initialData?: {
     id?: string;
     name?: string;
-    parentId?: string;
+    parentId?: string | null; // ✅ Fixed: Allow both string and null
+    imageUrl?: string;
   } | null;
   parentCategory?: Category | null;
   onSubmit: () => void;
@@ -36,6 +47,10 @@ const SubCategoryForm: React.FC<SubCategoryFormProps> = ({
   const [submitError, setSubmitError] = useState("");
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoadingCategories, setIsLoadingCategories] = useState(true);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(
+    initialData?.imageUrl || null
+  );
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const {
     register,
@@ -60,12 +75,17 @@ const SubCategoryForm: React.FC<SubCategoryFormProps> = ({
     }
   }, [parentCategory, setValue]);
 
+  useEffect(() => {
+    return () => {
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+    };
+  }, [previewUrl]);
+
   const fetchCategories = async () => {
     setIsLoadingCategories(true);
     try {
-      const response = await instance.get("/api/admin/get/topcategories");
+      const response = await instance.get("/api/admin/topcategories");
       const data = response.data.categories;
-
       setCategories(data);
     } catch (error) {
       console.error("Error fetching categories:", error);
@@ -75,25 +95,86 @@ const SubCategoryForm: React.FC<SubCategoryFormProps> = ({
     }
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
+      setSelectedFile(file);
+    }
+  };
+
+  /**
+   * Upload file to presigned S3 URL
+   */
+  const uploadToS3 = async (uploadUrl: string, file: File): Promise<void> => {
+    await fetch(uploadUrl, {
+      method: "PUT",
+      headers: {
+        "Content-Type": file.type,
+      },
+      body: file,
+    });
+  };
+
   const handleFormSubmit = async (data: SubCategoryFormData) => {
     setIsSubmitting(true);
     setSubmitError("");
 
     try {
+      let imageUrl: string | null = initialData?.imageUrl || null;
+
+      // Step 1 - If new image selected → Request signed URL & upload
+      if (selectedFile) {
+        const presignedResponse = await instance.post(
+          "/api/admin/add/images/presigned-urls",
+          {
+            files: [
+              {
+                fileName: selectedFile.name,
+                fileType: selectedFile.type,
+              },
+            ],
+            folderName: "subcategories",
+          }
+        );
+
+        const signedUrls: SignedUrlResponse[] =
+          presignedResponse.data.signedUrls;
+
+        if (!signedUrls || signedUrls.length === 0) {
+          throw new Error("Failed to get signed URL for subcategory image");
+        }
+
+        const { uploadUrl, publicUrl } = signedUrls[0];
+
+        // Step 2 - upload file to S3
+        await uploadToS3(uploadUrl, selectedFile);
+
+        // Step 3 - use returned publicUrl as DB's `imageUrl`
+        imageUrl = publicUrl;
+      }
+
+      // Step 4 - Send final JSON to backend
+      const payload = {
+        name: data.name,
+        parentId: data.parentId,
+        altText: data.name, // use subcategory name as alt text
+        imageUrl,
+      };
+
       if (mode === "edit" && initialData?.id) {
-        await instance.put(`/api/admin/update/category/${initialData.id}`, {
-          name: data.name,
-          parentId: data.parentId,
-        });
+        await instance.put(
+          `/api/admin/update/category/${initialData.id}`,
+          payload
+        );
       } else {
-        await instance.post("/api/admin/add/category", {
-          name: data.name,
-          parentId: data.parentId,
-        });
+        await instance.post("/api/admin/add/category", payload);
       }
 
       onSubmit();
     } catch (error: any) {
+      console.error("Error saving subcategory:", error);
       setSubmitError(
         error.response?.data?.message || "Failed to save subcategory"
       );
@@ -124,6 +205,7 @@ const SubCategoryForm: React.FC<SubCategoryFormProps> = ({
         {/* Form */}
         <div className="bg-white rounded-lg shadow-sm p-8">
           <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
+            {/* Parent Category */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Parent Category *
@@ -172,6 +254,7 @@ const SubCategoryForm: React.FC<SubCategoryFormProps> = ({
               )}
             </div>
 
+            {/* Subcategory Name */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Subcategory Name *
@@ -200,12 +283,57 @@ const SubCategoryForm: React.FC<SubCategoryFormProps> = ({
               )}
             </div>
 
+            {/* Image Upload */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Subcategory Image *
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                {...register("imageFile", {
+                  required: mode === "add" ? "Image is required" : false,
+                  onChange: handleImageChange,
+                })}
+                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 
+                file:rounded-md file:border-0 file:text-sm 
+                file:font-semibold file:bg-blue-50 file:text-blue-700 
+                hover:file:bg-blue-100"
+              />
+              {previewUrl && (
+                <div className="mt-3 relative w-32 h-32">
+                  <img
+                    src={`${S3_BASE_URL}${previewUrl}`}
+                    alt="Preview"
+                    className="w-full h-full object-cover rounded-lg border"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPreviewUrl(null);
+                      setSelectedFile(null);
+                    }}
+                    className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
+              {errors.imageFile && (
+                <p className="mt-1 text-sm text-red-500">
+                  {errors.imageFile.message as string}
+                </p>
+              )}
+            </div>
+
+            {/* Errors */}
             {submitError && (
               <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
                 <p className="text-sm text-red-600">{submitError}</p>
               </div>
             )}
 
+            {/* Buttons */}
             <div className="flex justify-between pt-6">
               <button
                 type="button"

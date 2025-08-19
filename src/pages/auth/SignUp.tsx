@@ -59,7 +59,7 @@ const SignUp = () => {
       setUserPhone(data.phone);
 
       // Send OTP to phone number
-      const response = await instance.post("/api/auth/signup/initiate", {
+      await instance.post("/api/auth/signup/initiate", {
         email: data.email,
         phone: data.phone,
         name: data.fullName,
@@ -81,7 +81,7 @@ const SignUp = () => {
 
     try {
       // Simulate OTP verification and account creation
-      const response = await instance.post("/api/auth/signup/confirm", {
+      await instance.post("/api/auth/signup/confirm", {
         phone: formData.phone, // Don't prefix with +91 unless your backend expects it
         otp,
       });

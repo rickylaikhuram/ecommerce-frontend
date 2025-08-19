@@ -1,18 +1,18 @@
 // components/common/Loading.tsx
-import React from 'react';
-import { ShoppingBag, Package, Truck } from 'lucide-react';
+import React from "react";
+import { ShoppingBag } from "lucide-react";
 
 interface LoadingProps {
   fullScreen?: boolean;
   message?: string;
 }
 
-const Loading: React.FC<LoadingProps> = ({ 
-  fullScreen = true, 
-  message = "Loading amazing products..." 
+const Loading: React.FC<LoadingProps> = ({
+  fullScreen = true,
+  message = "Loading amazing products...",
 }) => {
-  const containerClass = fullScreen 
-    ? "fixed inset-0 bg-white/95 backdrop-blur-sm z-50" 
+  const containerClass = fullScreen
+    ? "fixed inset-0 bg-white/95 backdrop-blur-sm z-50"
     : "relative w-full h-full min-h-[400px]";
 
   return (
@@ -24,15 +24,24 @@ const Loading: React.FC<LoadingProps> = ({
             <ShoppingBag className="w-16 h-16 text-blue-600 animate-bounce" />
           </div>
         </div>
-        
+
         {/* Loading message */}
         <p className="text-gray-600 text-lg font-medium mb-2">{message}</p>
-        
+
         {/* Animated dots */}
         <div className="flex justify-center gap-1">
-          <span className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
-          <span className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
-          <span className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+          <span
+            className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"
+            style={{ animationDelay: "0ms" }}
+          ></span>
+          <span
+            className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"
+            style={{ animationDelay: "150ms" }}
+          ></span>
+          <span
+            className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"
+            style={{ animationDelay: "300ms" }}
+          ></span>
         </div>
       </div>
     </div>

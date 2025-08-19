@@ -21,15 +21,28 @@ interface Category {
   name: string;
   parentId: string | null;
   children?: Category[];
+  imageUrl?: string; // ✅ added
+  altText?: string;  // ✅ added
 }
 
 const Categories: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
-  const [currentView, setCurrentView] = useState<"list" | "add-category" | "edit-category" | "add-subcategory" | "edit-subcategory">("list");
-  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
-  const [parentCategoryForSubCategory, setParentCategoryForSubCategory] = useState<Category | null>(null);
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
+    new Set()
+  );
+  const [currentView, setCurrentView] = useState<
+    | "list"
+    | "add-category"
+    | "edit-category"
+    | "add-subcategory"
+    | "edit-subcategory"
+  >("list");
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(
+    null
+  );
+  const [parentCategoryForSubCategory, setParentCategoryForSubCategory] =
+    useState<Category | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [submitStatus, setSubmitStatus] = useState<{
@@ -48,18 +61,23 @@ const Categories: React.FC = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await instance.get("/api/admin/get/categories");
+      const response = await instance.get("/api/admin/categories");
       const data = response.data.categories || response.data.category || [];
-      
+
       // Build hierarchy from flat list
       const categoriesMap = new Map<string, Category>();
       const rootCategories: Category[] = [];
-      
-      // First pass: create all categories
+
+      // First pass: create all categories with imageUrl + altText intact
       data.forEach((cat: Category) => {
-        categoriesMap.set(cat.id, { ...cat, children: [] });
+        categoriesMap.set(cat.id, {
+          ...cat,
+          children: [],
+          imageUrl: cat.imageUrl,
+          altText: cat.altText,
+        });
       });
-      
+
       // Second pass: build hierarchy
       data.forEach((cat: Category) => {
         const category = categoriesMap.get(cat.id)!;
@@ -73,7 +91,7 @@ const Categories: React.FC = () => {
           }
         }
       });
-      
+
       setCategories(rootCategories);
     } catch (error) {
       console.error("Error fetching categories:", error);
@@ -86,7 +104,7 @@ const Categories: React.FC = () => {
   const getAllCategoriesFlat = (categories: Category[]): Category[] => {
     const flat: Category[] = [];
     const addToFlat = (cats: Category[]) => {
-      cats.forEach(cat => {
+      cats.forEach((cat) => {
         flat.push(cat);
         if (cat.children && cat.children.length > 0) {
           addToFlat(cat.children);
@@ -127,14 +145,22 @@ const Categories: React.FC = () => {
   };
 
   const handleDeleteCategory = async (categoryId: string) => {
-    if (!confirm("Are you sure you want to delete this category? All subcategories will also be deleted.")) return;
-    
+    if (
+      !window.confirm(
+        "Are you sure you want to delete this category? All subcategories will also be deleted."
+      )
+    )
+      return;
+
     try {
       await instance.delete(`/api/admin/delete/category/${categoryId}`);
       showNotification("success", "Category deleted successfully");
       fetchCategories();
     } catch (error: any) {
-      showNotification("error", error.response?.data?.message || "Failed to delete category");
+      showNotification(
+        "error",
+        error.response?.data?.message || "Failed to delete category"
+      );
     }
   };
 
@@ -146,7 +172,8 @@ const Categories: React.FC = () => {
   };
 
   const handleFormSubmitSuccess = () => {
-    showNotification("success", 
+    showNotification(
+      "success",
       currentView.includes("add") ? "Created successfully" : "Updated successfully"
     );
     setCurrentView("list");
@@ -163,20 +190,24 @@ const Categories: React.FC = () => {
   // Filter categories based on search
   const filterCategories = (categories: Category[]): Category[] => {
     if (!searchTerm) return categories;
-    
+
     const filtered: Category[] = [];
-    categories.forEach(category => {
-      const categoryMatches = category.name.toLowerCase().includes(searchTerm.toLowerCase());
-      const childrenFiltered = category.children ? filterCategories(category.children) : [];
-      
+    categories.forEach((category) => {
+      const categoryMatches = category.name
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
+      const childrenFiltered = category.children
+        ? filterCategories(category.children)
+        : [];
+
       if (categoryMatches || childrenFiltered.length > 0) {
         filtered.push({
           ...category,
-          children: childrenFiltered
+          children: childrenFiltered,
         });
       }
     });
-    
+
     return filtered;
   };
 
@@ -184,11 +215,16 @@ const Categories: React.FC = () => {
 
   // Calculate stats
   const allCategories = getAllCategoriesFlat(categories);
-  const totalCategories = allCategories.filter(c => c.parentId === null).length;
-  const totalSubCategories = allCategories.filter(c => c.parentId !== null).length;
+  const totalCategories = allCategories.filter((c) => c.parentId === null).length;
+  const totalSubCategories = allCategories.filter(
+    (c) => c.parentId !== null
+  ).length;
 
   // Render Category Form
-  if (currentView === "add-category" || (currentView === "edit-category" && !selectedCategory?.parentId)) {
+  if (
+    currentView === "add-category" ||
+    (currentView === "edit-category" && !selectedCategory?.parentId)
+  ) {
     return (
       <CategoryForm
         mode={currentView === "add-category" ? "add" : "edit"}
@@ -200,7 +236,11 @@ const Categories: React.FC = () => {
   }
 
   // Render SubCategory Form
-  if (currentView === "add-subcategory" || (currentView === "edit-subcategory" || (currentView === "edit-category" && selectedCategory?.parentId))) {
+  if (
+    currentView === "add-subcategory" ||
+    currentView === "edit-subcategory" ||
+    (currentView === "edit-category" && selectedCategory?.parentId)
+  ) {
     return (
       <SubCategoryForm
         mode={currentView.includes("add") ? "add" : "edit"}
@@ -247,9 +287,9 @@ const Categories: React.FC = () => {
   const renderCategoryTree = (categories: Category[], level: number = 0) => {
     return categories.map((category) => (
       <div key={category.id}>
-        <div 
+        <div
           className={`px-6 py-4 hover:bg-slate-50 transition-colors ${
-            level > 0 ? 'bg-slate-50' : ''
+            level > 0 ? "bg-slate-50" : ""
           }`}
           style={{ paddingLeft: `${1.5 + level * 2}rem` }}
         >
@@ -271,7 +311,9 @@ const Categories: React.FC = () => {
                 <div className="w-7" />
               )}
               <Folder className="w-5 h-5 text-slate-400" />
-              <h3 className="text-base font-medium text-slate-800">{category.name}</h3>
+              <h3 className="text-base font-medium text-slate-800">
+                {category.name}
+              </h3>
             </div>
             <div className="flex items-center gap-4">
               <span className="text-sm text-slate-500">
@@ -303,11 +345,11 @@ const Categories: React.FC = () => {
             </div>
           </div>
         </div>
-        {expandedCategories.has(category.id) && category.children && category.children.length > 0 && (
-          <div>
-            {renderCategoryTree(category.children, level + 1)}
-          </div>
-        )}
+        {expandedCategories.has(category.id) &&
+          category.children &&
+          category.children.length > 0 && (
+            <div>{renderCategoryTree(category.children, level + 1)}</div>
+          )}
       </div>
     ));
   };
@@ -323,9 +365,6 @@ const Categories: React.FC = () => {
               ? "bg-green-50 text-green-800 border border-green-200"
               : "bg-red-50 text-red-800 border border-red-200"
           }`}
-          style={{
-            animation: "slideIn 0.3s ease-out",
-          }}
         >
           {submitStatus.type === "success" ? (
             <Check className="w-5 h-5" />
@@ -341,7 +380,9 @@ const Categories: React.FC = () => {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h1 className="text-2xl font-bold text-slate-800">Categories</h1>
-            <p className="text-slate-600 mt-1">Manage your product categories</p>
+            <p className="text-slate-600 mt-1">
+              Manage your product categories
+            </p>
           </div>
           <div className="flex items-center gap-2">
             <Button
@@ -378,7 +419,9 @@ const Categories: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-slate-600">Total Categories</p>
-                                <p className="text-2xl font-bold text-slate-800 mt-1">{totalCategories}</p>
+                <p className="text-2xl font-bold text-slate-800 mt-1">
+                  {totalCategories}
+                </p>
               </div>
               <div className="bg-blue-100 p-3 rounded-lg">
                 <Folder className="w-6 h-6 text-blue-600" />
@@ -389,7 +432,9 @@ const Categories: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-slate-600">Subcategories</p>
-                <p className="text-2xl font-bold text-purple-600 mt-1">{totalSubCategories}</p>
+                <p className="text-2xl font-bold text-purple-600 mt-1">
+                  {totalSubCategories}
+                </p>
               </div>
               <div className="bg-purple-100 p-3 rounded-lg">
                 <FolderOpen className="w-6 h-6 text-purple-600" />
@@ -400,7 +445,9 @@ const Categories: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-slate-600">Total</p>
-                <p className="text-2xl font-bold text-green-600 mt-1">{allCategories.length}</p>
+                <p className="text-2xl font-bold text-green-600 mt-1">
+                  {allCategories.length}
+                </p>
               </div>
               <div className="bg-green-100 p-3 rounded-lg">
                 <Check className="w-6 h-6 text-green-600" />
@@ -445,7 +492,6 @@ const Categories: React.FC = () => {
           </div>
         )}
       </div>
-
     </div>
   );
 };

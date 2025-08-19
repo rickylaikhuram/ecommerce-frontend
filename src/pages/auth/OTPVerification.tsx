@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { ArrowLeft, Shield, Clock, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Shield, Clock } from "lucide-react";
 
 interface OTPVerificationProps {
   phoneNumber: string;

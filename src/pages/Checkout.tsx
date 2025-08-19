@@ -157,7 +157,7 @@ const Checkout: React.FC = () => {
       setIsValidatingCart(false);
     }
   };
-  
+
   // Replace the existing calculatePricing function with this safer version:
   const calculatePricing = (cartData: CartCheckoutResponse): PricingDetails => {
     // Only calculate from valid items that can proceed to checkout
@@ -210,13 +210,6 @@ const Checkout: React.FC = () => {
     setCurrentStep(3);
   };
 
-  const handleAddAddress = () => {
-    setCurrentStep(2);
-  };
-
-  const handleEditAddress = (address: Address) => {
-    setCurrentStep(2);
-  };
 
   const fetchAddresses = async (addressToSelect?: Address) => {
     try {
@@ -489,8 +482,6 @@ const Checkout: React.FC = () => {
               addresses={addresses}
               selectedAddress={selectedAddress}
               onSelectAddress={setSelectedAddress}
-              onAddAddress={handleAddAddress}
-              onEditAddress={handleEditAddress}
               onAddressUpdated={handleAddressUpdated}
               isAddressLoading={isAddressLoading}
               cartItems={cartItems}

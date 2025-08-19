@@ -48,7 +48,7 @@ const SignInOTP = () => {
     setLoading(true);
     try {
       // Send OTP to phone number
-      const response = await instance.post("/api/auth/signin/otp/initiate", {
+      await instance.post("/api/auth/signin/otp/initiate", {
         phone: data.phone,
       });
       console.log("Sending OTP to:", `+91${data.phone}`);
@@ -63,7 +63,7 @@ const SignInOTP = () => {
 
   const handleOTPVerify = async (otp: string) => {
     // Verify OTP with backend
-    const response = await instance.post("/api/auth/signin/otp/verify", {
+    await instance.post("/api/auth/signin/otp/verify", {
       phone: phoneNumber,
       otp,
     });

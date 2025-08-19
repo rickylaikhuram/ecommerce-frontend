@@ -6,12 +6,8 @@ import {
   FaMapMarkerAlt,
   FaShoppingBag,
   FaHeart,
-  FaCreditCard,
-  FaBell,
   FaShieldAlt,
-  FaSignOutAlt,
-  FaBox,
-  FaWallet,
+  FaSignOutAlt
 } from "react-icons/fa";
 import { useAuth } from "../../context/AuthContext";
 

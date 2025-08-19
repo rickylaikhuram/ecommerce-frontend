@@ -1,7 +1,4 @@
 // types/checkout.types.ts
-
-import type { Address } from "./user.types";
-
 export interface CheckoutItem {
   productId: string;
   productVarient: string;

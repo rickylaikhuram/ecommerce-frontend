@@ -324,10 +324,10 @@ const ProductForm: React.FC<ProductFormProps> = ({
 
       // Step 2: Get presigned URLs from backend
       const presignedResponse = await instance.post(
-        "/api/admin/add/product/images/presigned-urls",
+        "/api/admin/add/images/presigned-urls",
         {
           files: filesData,
-          folderName: "products"
+          folderName: "products",
         }
       );
 

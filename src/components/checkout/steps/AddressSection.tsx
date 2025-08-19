@@ -20,8 +20,6 @@ interface AddressSectionProps {
   addresses: Address[];
   selectedAddress: Address | null;
   onSelectAddress: (address: Address) => void;
-  onAddAddress: () => void;
-  onEditAddress: (address: Address) => void;
   onAddressUpdated?: (savedAddress?: Address) => void; 
   isLoading?: boolean;
 }
@@ -30,8 +28,6 @@ const AddressSection: React.FC<AddressSectionProps> = ({
   addresses,
   selectedAddress,
   onSelectAddress,
-  onAddAddress,
-  onEditAddress,
   onAddressUpdated,
   isLoading = false,
 }) => {
@@ -204,8 +200,9 @@ const AddressSection: React.FC<AddressSectionProps> = ({
               initialData={editingAddress}
               onSubmit={handleSaveAddress}
               onCancel={handleCancel}
-              submitButtonText="SAVE AND DELIVER HERE"
+              submitButtonText={isSaving ? "SAVING..." : "SAVE AND DELIVER HERE"}
               cancelButtonText="CANCEL"
+              disabled={isSaving}
             />
           </div>
         ) : (
@@ -224,7 +221,8 @@ const AddressSection: React.FC<AddressSectionProps> = ({
                 </p>
                 <button
                   onClick={handleAddNewAddress}
-                  className="inline-flex items-center space-x-2 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 font-medium transition-colors text-sm"
+                  disabled={isSaving}
+                  className="inline-flex items-center space-x-2 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 font-medium transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Plus className="h-4 w-4" />
                   <span>Add Your First Address</span>
@@ -243,8 +241,8 @@ const AddressSection: React.FC<AddressSectionProps> = ({
                           selectedAddress?.id === address.id
                             ? "border-blue-500 bg-blue-50 shadow-sm"
                             : "border-gray-200 hover:border-blue-300 hover:bg-gray-50"
-                        }`}
-                        onClick={() => onSelectAddress(address)}
+                        } ${isSaving ? "opacity-50 pointer-events-none" : ""}`}
+                        onClick={() => !isSaving && onSelectAddress(address)}
                       >
                         {/* Selected indicator */}
                         {selectedAddress?.id === address.id && (
@@ -258,7 +256,8 @@ const AddressSection: React.FC<AddressSectionProps> = ({
                             type="radio"
                             checked={selectedAddress?.id === address.id}
                             className="mt-1 text-blue-600"
-                            onChange={() => onSelectAddress(address)}
+                            onChange={() => !isSaving && onSelectAddress(address)}
+                            disabled={isSaving}
                           />
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center space-x-2 mb-1">
@@ -308,9 +307,10 @@ const AddressSection: React.FC<AddressSectionProps> = ({
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
-                              handleEditClick(address);
+                              if (!isSaving) handleEditClick(address);
                             }}
-                            className="flex items-center space-x-1 text-blue-600 hover:text-blue-700 text-xs bg-white px-2 py-1 rounded border hover:shadow-sm transition-all"
+                            disabled={isSaving}
+                            className="flex items-center space-x-1 text-blue-600 hover:text-blue-700 text-xs bg-white px-2 py-1 rounded border hover:shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             <Edit3 className="h-3 w-3" />
                             <span>EDIT</span>
@@ -323,7 +323,8 @@ const AddressSection: React.FC<AddressSectionProps> = ({
                 {addresses.length > 3 && (
                   <button
                     onClick={() => setShowAllAddresses(!showAllAddresses)}
-                    className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 mt-3 font-medium hover:underline transition-colors text-sm"
+                    disabled={isSaving}
+                    className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 mt-3 font-medium hover:underline transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {showAllAddresses ? (
                       <>
@@ -342,7 +343,8 @@ const AddressSection: React.FC<AddressSectionProps> = ({
                 <div className="mt-4 pt-3 border-t border-gray-100">
                   <button
                     onClick={handleAddNewAddress}
-                    className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 font-medium hover:underline transition-colors text-sm"
+                    disabled={isSaving}
+                    className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 font-medium hover:underline transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <Plus className="h-4 w-4" />
                     <span>Add a new address</span>

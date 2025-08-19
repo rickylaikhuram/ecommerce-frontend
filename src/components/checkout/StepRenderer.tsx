@@ -20,8 +20,6 @@ interface StepRendererProps {
   addresses: Address[];
   selectedAddress: Address | null;
   onSelectAddress: (address: Address) => void;
-  onAddAddress: () => void;
-  onEditAddress: (address: Address) => void;
   onAddressUpdated: (savedAddress?: Address) => void;
   isAddressLoading: boolean;
   
@@ -52,8 +50,6 @@ const StepRenderer: React.FC<StepRendererProps> = ({
   addresses,
   selectedAddress,
   onSelectAddress,
-  onAddAddress,
-  onEditAddress,
   onAddressUpdated,
   isAddressLoading,
   cartItems,
@@ -136,8 +132,6 @@ const StepRenderer: React.FC<StepRendererProps> = ({
           addresses={addresses}
           selectedAddress={selectedAddress}
           onSelectAddress={onSelectAddress}
-          onAddAddress={onAddAddress}
-          onEditAddress={onEditAddress}
           onAddressUpdated={onAddressUpdated}
           isLoading={isAddressLoading}
         />

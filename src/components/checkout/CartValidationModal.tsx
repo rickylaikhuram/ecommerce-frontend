@@ -1,6 +1,6 @@
 // components/checkout/CartValidationModal.tsx
 import React from "react";
-import { AlertTriangle, ShoppingCart, X } from "lucide-react";
+import { AlertTriangle, ShoppingCart} from "lucide-react";
 
 interface CartValidationModalProps {
   isOpen: boolean;
@@ -11,7 +11,6 @@ interface CartValidationModalProps {
 
 const CartValidationModal: React.FC<CartValidationModalProps> = ({
   isOpen,
-  onClose,
   onGoToCart,
   validationMessage,
 }) => {

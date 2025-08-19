@@ -25,7 +25,6 @@ const ProductsPage = () => {
     currentPage,
     selectedSizes,
     priceRange,
-    hasActiveFilters,
     setSearchTerm,
     setSelectedCategory,
     setSortBy,

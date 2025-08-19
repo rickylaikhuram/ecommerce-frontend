@@ -55,7 +55,6 @@ const Orders: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [filter, setFilter] = useState<"all" | Order["status"]>("all");
 
   useEffect(() => {
@@ -87,33 +86,33 @@ const Orders: React.FC = () => {
     navigate(`/orders/${orderId}`);
   };
 
-  const handleCancelOrder = async (
-    orderId: string,
-    event: React.MouseEvent
-  ) => {
-    event.stopPropagation();
-    if (!confirm("Are you sure you want to cancel this order?")) return;
+  // const handleCancelOrder = async (
+  //   orderId: string,
+  //   event: React.MouseEvent
+  // ) => {
+  //   event.stopPropagation();
+  //   if (!confirm("Are you sure you want to cancel this order?")) return;
 
-    try {
-      setActionLoading(orderId);
-      const response = await orderService.cancelOrder(orderId);
-      if (response.success) {
-        setOrders((prev) =>
-          prev.map((order) =>
-            order.id === orderId
-              ? { ...order, status: "CANCELLED" as const }
-              : order
-          )
-        );
-        setError(null);
-        alert("Order cancelled successfully");
-      }
-    } catch (err: any) {
-      setError(err.message || "Failed to cancel order");
-    } finally {
-      setActionLoading(null);
-    }
-  };
+  //   try {
+  //     setActionLoading(orderId);
+  //     const response = await orderService.cancelOrder(orderId);
+  //     if (response.success) {
+  //       setOrders((prev) =>
+  //         prev.map((order) =>
+  //           order.id === orderId
+  //             ? { ...order, status: "CANCELLED" as const }
+  //             : order
+  //         )
+  //       );
+  //       setError(null);
+  //       alert("Order cancelled successfully");
+  //     }
+  //   } catch (err: any) {
+  //     setError(err.message || "Failed to cancel order");
+  //   } finally {
+  //     setActionLoading(null);
+  //   }
+  // };
 
   const getStatusBadge = (status: Order["status"]) => {
     const baseClass =

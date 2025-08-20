@@ -30,6 +30,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm<CategoryFormData>({
     defaultValues: {
       name: initialData?.name || "",
@@ -42,20 +43,28 @@ const CategoryForm: React.FC<CategoryFormProps> = ({
     
     try {
       if (mode === "edit" && initialData?.id) {
+        // For edit mode - only send the name as per your backend expects
         await instance.put(`/api/admin/update/category/${initialData.id}`, {
           name: data.name,
-          parentId: null,
         });
       } else {
+        // For add mode - send name and parentId as null for top-level category
         await instance.post("/api/admin/add/category", {
           name: data.name,
           parentId: null,
         });
       }
       
+      // Reset form after successful submission
+      reset();
       onSubmit();
     } catch (error: any) {
-      setSubmitError(error.response?.data?.message || "Failed to save category");
+      console.error("Category form error:", error);
+      setSubmitError(
+        error.response?.data?.message || 
+        error.message || 
+        `Failed to ${mode === "edit" ? "update" : "create"} category`
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -94,11 +103,16 @@ const CategoryForm: React.FC<CategoryFormProps> = ({
                     value: 50,
                     message: "Name must be less than 50 characters",
                   },
+                  pattern: {
+                    value: /^[a-zA-Z0-9\s\-_&]+$/,
+                    message: "Category name can only contain letters, numbers, spaces, hyphens, underscores, and ampersands"
+                  }
                 })}
                 placeholder="e.g., Football Jerseys"
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
                   errors.name ? "border-red-500" : "border-gray-300"
                 }`}
+                disabled={isSubmitting}
               />
               {errors.name && (
                 <p className="mt-1 text-sm text-red-500">{errors.name.message}</p>

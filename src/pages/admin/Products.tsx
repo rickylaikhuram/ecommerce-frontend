@@ -58,7 +58,7 @@ const Products: React.FC = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await instance.get("/api/product/");
+      const response = await instance.get("/api/product");
       const data = response.data;
 
       console.log("API Response Data:", data);
@@ -67,9 +67,7 @@ const Products: React.FC = () => {
         console.log("Category value is:", data.products[0].category);
       }
 
-      if (data && Array.isArray(data)) {
-        setProducts(data);
-      } else if (data && data.products && Array.isArray(data.products)) {
+      if (data && data.products && Array.isArray(data.products)) {
         setProducts(data.products);
       } else {
         console.error("Unexpected data format:", data);
@@ -149,35 +147,22 @@ const Products: React.FC = () => {
     }
   };
 
-  const handleProductSubmit = async (productData: any) => {
-    try {
-      if (currentView === "add") {
-        await fetchProducts();
-        return;
-      } else if (currentView === "edit" && selectedProduct) {
-        const response = await fetch(`/api/products/${selectedProduct.id}`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify(productData),
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to update product");
-        }
-
-        await fetchProducts();
-        handleBackToList();
-      }
-    } catch (error) {
-      console.error("Error saving product:", error);
-      if (currentView === "edit") {
-        throw error;
-      }
+const handleProductSubmit = async (productData: any) => {
+  try {
+    console.log("Parent handleProductSubmit called with:", { currentView, productData });
+    
+    // Always refresh the products list to show latest data
+    await fetchProducts();
+    handleBackToList();
+  } catch (error) {
+    console.error("Error handling product submit:", error);
+    // For add mode, let the error bubble up to the form
+    // For edit mode, just log it since the form handles its own errors
+    if (currentView === "add") {
+      throw error;
     }
-  };
+  }
+};
 
   const getProductStatusBadge = (product: Product) => {
     if (product.isActive === false) {

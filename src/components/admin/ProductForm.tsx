@@ -21,13 +21,35 @@ import type {
   UploadStatus,
   Category,
   ProductFormProps,
+  ProductImage,
 } from "../../types/products.types";
 
-// Add this interface for image data
+const S3_BASE_URL = import.meta.env.VITE_S3_BASE_URL;
+
+// Updated interface for image data to handle both new and existing images
 interface ImageData {
-  file: File;
-  previewUrl: string;
   id: string; // unique identifier
+  file?: File; // Only for new images
+  previewUrl: string; // For display
+  imageUrl?: string; // For existing images (S3 key)
+  altText: string;
+  position: number;
+  isMain: boolean;
+  isExisting: boolean; // Flag to differentiate existing vs new images
+  isDeleted?: boolean; // Flag for deleted images
+}
+
+// Interface for tracking image changes
+interface ImageChanges {
+  deletedImages: { id: string; imageUrl: string }[];
+  updatedImages: {
+    id: string;
+    imageUrl: string;
+    altText: string;
+    position: number;
+    isMain: boolean;
+  }[];
+  newImages: File[];
 }
 
 const ProductForm: React.FC<ProductFormProps> = ({
@@ -42,6 +64,13 @@ const ProductForm: React.FC<ProductFormProps> = ({
 
   // Replace the separate states with a combined one
   const [imageDataList, setImageDataList] = useState<ImageData[]>([]);
+
+  // Track image changes for edit mode
+  const [imageChanges, setImageChanges] = useState<ImageChanges>({
+    deletedImages: [],
+    updatedImages: [],
+    newImages: [],
+  });
 
   const [uploadStatuses, setUploadStatuses] = useState<UploadStatus[]>([]);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
@@ -58,7 +87,6 @@ const ProductForm: React.FC<ProductFormProps> = ({
     formState: { errors },
     watch,
     trigger,
-    setValue,
     setError,
     reset,
   } = useForm<FormData>();
@@ -67,11 +95,71 @@ const ProductForm: React.FC<ProductFormProps> = ({
     control,
     name: "sizes",
   });
-  // Remove the initial reset useEffect and replace it with this one that waits for categories
+
+  // Helper function to construct complete image URL
+  const constructImageUrl = (imageUrl: string): string => {
+    // If imageUrl is already a complete URL (starts with http/https), return as is
+    if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+      return imageUrl;
+    }
+    
+    // If S3_BASE_URL is not defined, log error and return the imageUrl as is
+    if (!S3_BASE_URL) {
+      console.error('S3_BASE_URL is not defined in environment variables');
+      return imageUrl;
+    }
+    
+    // Ensure proper URL construction with forward slashes
+    const baseUrl = S3_BASE_URL.endsWith('/') ? S3_BASE_URL : `${S3_BASE_URL}/`;
+    const imagePath = imageUrl.startsWith('/') ? imageUrl.substring(1) : imageUrl;
+    
+    return `${baseUrl}${imagePath}`;
+  };
+
+  // Function to convert existing images to ImageData format with correct positions and main status
+  const convertExistingImages = (images: ProductImage[]): ImageData[] => {
+    // Sort images by position to ensure correct order
+    const sortedImages = [...images].sort((a, b) => a.position - b.position);
+    
+    return sortedImages.map((image, index) => {
+      const fullImageUrl = constructImageUrl(image.imageUrl);
+      
+      console.log(`Converting image ${index}:`, {
+        originalUrl: image.imageUrl,
+        constructedUrl: fullImageUrl,
+        originalPosition: image.position,
+        newPosition: index,
+        originalIsMain: image.isMain,
+        newIsMain: index === 0,
+        S3_BASE_URL,
+        image
+      });
+
+      return {
+        id: image.id ? image.id.toString() : `existing-${index}`,
+        previewUrl: fullImageUrl,
+        imageUrl: image.imageUrl, // Keep original for backend operations
+        altText: image.altText || `Product image ${index + 1}`,
+        position: index, // Use sequential positions starting from 0
+        isMain: index === 0, // First image is always main
+        isExisting: true,
+      };
+    });
+  };
+
+  // Helper function to recalculate positions and main status for all images
+  const recalculateImagePositions = (imageList: ImageData[]): ImageData[] => {
+    return imageList.map((item, index) => ({
+      ...item,
+      position: index,
+      isMain: index === 0,
+    }));
+  };
+
+  // Reset form with initial data for edit mode
   useEffect(() => {
     if (initialData && mode === "edit" && categories.length > 0) {
-      // Only reset when categories are loaded
-      reset({
+      const formData = {
         name: initialData.name || "",
         description: initialData.description || "",
         originalPrice: initialData.originalPrice || 0,
@@ -83,18 +171,31 @@ const ProductForm: React.FC<ProductFormProps> = ({
                 sizeCode: size.stockName || "",
                 stock: size.stock || 0,
               }))
-            : [{ sizeCode: "S", stock: 1 }],
-        images: [],
+            : [{ sizeCode: "", stock: 0 }],
+        images: [], // We'll handle images separately
         isActive: !!initialData.isActive,
-      });
+      };
+
+      console.log("Resetting form with data:", formData);
+      console.log("Initial product sizes:", initialData.productSizes);
+      
+      reset(formData);
+
+      // Set up existing images with correct positions and main status
+      if (initialData.images && initialData.images.length > 0) {
+        const existingImages = convertExistingImages(initialData.images);
+        console.log('Converted existing images with corrected positions:', existingImages);
+        setImageDataList(existingImages);
+      } else {
+        console.log('No existing images found');
+        setImageDataList([]);
+      }
 
       console.log("Form reset with category:", initialData.category?.name);
-      console.log(
-        "Available categories:",
-        categories.map((c) => c.name)
-      );
+      console.log("Form reset with product sizes:", initialData.productSizes);
     }
-  }, [initialData, mode, reset, categories]); // Watch categories array
+  }, [initialData, mode, reset, categories]);
+
   // Fetch categories from backend
   useEffect(() => {
     fetchCategories();
@@ -103,14 +204,18 @@ const ProductForm: React.FC<ProductFormProps> = ({
   // Cleanup preview URLs on unmount
   useEffect(() => {
     return () => {
-      imageDataList.forEach((data) => URL.revokeObjectURL(data.previewUrl));
+      imageDataList.forEach((data) => {
+        if (data.file && data.previewUrl.startsWith("blob:")) {
+          URL.revokeObjectURL(data.previewUrl);
+        }
+      });
       uploadRequestsRef.current.forEach((xhr) => xhr?.abort());
     };
   }, []); // Empty dependency array for cleanup on unmount only
 
   const fetchCategories = async () => {
     try {
-      const response = await instance.get("/api/admin/get/lowcategories");
+      const response = await instance.get("/api/admin/lowcategories");
       setCategories(response.data.categories);
     } catch (error) {
       console.error("Error fetching categories:", error);
@@ -183,49 +288,60 @@ const ProductForm: React.FC<ProductFormProps> = ({
     }
 
     // Create new image data objects with unique IDs
-    const newImageDataList = validFiles.map((file) => ({
+    const newImageDataList = validFiles.map((file, index) => ({
+      id: `new-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       file,
       previewUrl: URL.createObjectURL(file),
-      id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`, // Unique ID
+      altText: file.name,
+      position: imageDataList.length + index, // Temporary position
+      isMain: false, // Will be recalculated
+      isExisting: false,
     }));
 
-    // Update both states
+    // Update image data list and recalculate positions
     const updatedImageDataList = [...imageDataList, ...newImageDataList];
-    setImageDataList(updatedImageDataList);
-
-    // Update form value with just the files
-    setValue(
-      "images",
-      updatedImageDataList.map((item) => item.file)
-    );
+    const reorderedImageDataList = recalculateImagePositions(updatedImageDataList);
+    
+    setImageDataList(reorderedImageDataList);
 
     // Reset the input
     e.target.value = "";
   };
 
   const removeImage = (index: number) => {
-    // Revoke the URL being removed
-    URL.revokeObjectURL(imageDataList[index].previewUrl);
+    const imageToRemove = imageDataList[index];
 
-    // Remove from imageDataList
+    // If it's an existing image, add to deleted array
+    if (imageToRemove.isExisting && imageToRemove.imageUrl) {
+      setImageChanges((prev) => ({
+        ...prev,
+        deletedImages: [
+          ...prev.deletedImages,
+          { id: imageToRemove.id, imageUrl: imageToRemove.imageUrl! },
+        ],
+      }));
+    }
+
+    // Revoke blob URL if it's a new image
+    if (imageToRemove.file && imageToRemove.previewUrl.startsWith("blob:")) {
+      URL.revokeObjectURL(imageToRemove.previewUrl);
+    }
+
+    // Remove from imageDataList and recalculate positions
     const newImageDataList = imageDataList.filter((_, i) => i !== index);
-    setImageDataList(newImageDataList);
+    const reorderedImageDataList = recalculateImagePositions(newImageDataList);
 
-    // Update form value
-    setValue(
-      "images",
-      newImageDataList.map((item) => item.file)
-    );
+    setImageDataList(reorderedImageDataList);
   };
 
-  // Drag and drop handlers
+  // Drag and drop handlers - updated to handle position changes correctly
   const handleDragStart = (
     e: React.DragEvent<HTMLDivElement>,
     index: number
   ) => {
     setDraggedIndex(index);
     e.dataTransfer.effectAllowed = "move";
-    const dragImage = e.currentTarget.querySelector("img");
+    const dragImage = e.currentTarget.querySelector("img, video");
     if (dragImage) {
       e.dataTransfer.setDragImage(dragImage, 50, 50);
     }
@@ -250,12 +366,36 @@ const ProductForm: React.FC<ProductFormProps> = ({
     const [draggedItem] = newImageDataList.splice(draggedIndex, 1);
     newImageDataList.splice(dropIndex, 0, draggedItem);
 
-    setImageDataList(newImageDataList);
-    setValue(
-      "images",
-      newImageDataList.map((item) => item.file)
-    );
+    // Recalculate positions and main status
+    const reorderedImageDataList = recalculateImagePositions(newImageDataList);
+
+    setImageDataList(reorderedImageDataList);
     setDraggedIndex(null);
+
+    console.log('Images reordered:', reorderedImageDataList.map(img => ({ id: img.id, position: img.position, isMain: img.isMain })));
+  };
+
+  // Prepare image changes for submission
+  const prepareImageChanges = (): ImageChanges => {
+    const updatedImages = imageDataList
+      .filter((item) => item.isExisting)
+      .map((item) => ({
+        id: item.id,
+        imageUrl: item.imageUrl!,
+        altText: item.altText,
+        position: item.position,
+        isMain: item.isMain,
+      }));
+
+    const newImages = imageDataList
+      .filter((item) => !item.isExisting && item.file)
+      .map((item) => item.file!);
+
+    return {
+      deletedImages: imageChanges.deletedImages,
+      updatedImages,
+      newImages,
+    };
   };
 
   // Upload to S3 with progress tracking and retry
@@ -303,7 +443,9 @@ const ProductForm: React.FC<ProductFormProps> = ({
     });
   };
 
-  const uploadImages = async (images: File[]) => {
+  const uploadNewImages = async (images: File[]) => {
+    if (images.length === 0) return [];
+
     try {
       setSubmitStatus("uploading");
 
@@ -340,6 +482,10 @@ const ProductForm: React.FC<ProductFormProps> = ({
       // Step 3: Upload images to S3 using presigned URLs with progress tracking
       const uploadPromises = images.map(async (file, index) => {
         const signedUrlData = signedUrls[index];
+        const imageDataIndex = imageDataList.findIndex(
+          (item) => item.file === file
+        );
+
         try {
           // Upload to S3 with progress tracking
           await uploadToS3WithProgress(
@@ -368,8 +514,14 @@ const ProductForm: React.FC<ProductFormProps> = ({
           return {
             imageKey: signedUrlData.key,
             altText: file.name,
-            position: index,
-            isMain: index === 0,
+            position:
+              imageDataIndex >= 0
+                ? imageDataList[imageDataIndex].position
+                : index,
+            isMain:
+              imageDataIndex >= 0
+                ? imageDataList[imageDataIndex].isMain
+                : index === 0,
           };
         } catch (error) {
           setUploadStatuses((prev) =>
@@ -391,39 +543,88 @@ const ProductForm: React.FC<ProductFormProps> = ({
 
   const handleFormSubmit = async (data: FormData) => {
     console.log("Form submitted!", data);
+    console.log("Form data sizes:", data.sizes);
+    console.log("Form fields length:", fields.length);
+    
     setIsSubmitting(true);
     setSubmitStatus("idle");
     setSubmitError("");
     setUploadStatuses([]);
 
     try {
-      // Upload images and get image data
-      const uploadedImages = await uploadImages(data.images);
+      let submitData: any;
 
-      setSubmitStatus("saving");
+      // Prepare consistent stock data structure for both add and edit modes
+      const productStocks = (data.sizes || []).map((size) => ({
+        stockName: size.sizeCode,
+        stock: size.stock,
+      }));
 
-      // Prepare product data for backend with stock data as requested
-      const submitData = {
-        category: data.category,
-        name: data.name,
-        description: data.description,
-        originalPrice: data.originalPrice,
-        discountedPrice: data.discountedPrice,
-        images: uploadedImages,
-        productStocks: data.sizes.map((size) => ({
-          stockName: size.sizeCode,
-          stock: size.stock,
-        })),
-        isActive: data.isActive,
-      };
+      console.log("Prepared product stocks:", productStocks);
+      console.log("Form data:", data);
 
-      // Submit to backend
-      const response = await instance.post(
-        "/api/admin/add/product",
-        submitData
-      );
+      // Validate that we have at least one size
+      if (!productStocks || productStocks.length === 0) {
+        throw new Error("No product stocks found. Please add at least one size.");
+      }
 
-      console.log("Product created:", response.data);
+      if (mode === "add") {
+        // For add mode, upload all images as before
+        const allImages = imageDataList.map((item) => item.file!);
+        const uploadedImages = await uploadNewImages(allImages);
+
+        submitData = {
+          category: data.category,
+          name: data.name,
+          description: data.description,
+          originalPrice: data.originalPrice,
+          discountedPrice: data.discountedPrice,
+          images: uploadedImages,
+          productStocks: productStocks, // Use consistent key
+          isActive: data.isActive,
+        };
+
+        // Submit to backend
+        const response = await instance.post(
+          "/api/admin/add/product",
+          submitData
+        );
+        console.log("Product created:", response.data);
+      } else {
+        // For edit mode, handle image changes separately
+        const changes = prepareImageChanges();
+
+        // Upload only new images
+        const uploadedNewImages = await uploadNewImages(changes.newImages);
+
+        setSubmitStatus("saving");
+
+        submitData = {
+          id: initialData?.id,
+          category: data.category,
+          name: data.name,
+          description: data.description,
+          originalPrice: data.originalPrice,
+          discountedPrice: data.discountedPrice,
+          productStocks: productStocks, // Use consistent key for edit mode too
+          isActive: data.isActive,
+          // Separate image arrays for edit
+          deletedImages: changes.deletedImages,
+          updatedImages: changes.updatedImages,
+          newImages: uploadedNewImages,
+        };
+
+        console.log("Edit mode submit data:", submitData);
+        console.log("Product stocks being sent:", submitData.productStocks);
+
+        // Submit to backend
+        const response = await instance.put(
+          `/api/admin/edit/product/${initialData?.id}`,
+          submitData
+        );
+        console.log("Product updated:", response.data);
+      }
+
       setSubmitStatus("success");
       console.log("Submit status set to success");
 
@@ -440,7 +641,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
         if (onCancel) {
           onCancel();
         }
-      }, 1000);
+      }, 400);
     } catch (error: any) {
       console.error("Error submitting form:", error);
       setSubmitStatus("error");
@@ -537,8 +738,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
       }
     } else if (currentStep === 3) {
       // Validate images
-      const images = watch("images");
-      if (!images || images.length === 0) {
+      if (imageDataList.length === 0) {
         alert("Please upload at least one product image");
         return;
       }
@@ -551,6 +751,10 @@ const ProductForm: React.FC<ProductFormProps> = ({
   };
 
   const handleFinalSubmit = () => {
+    console.log("Final submit triggered");
+    console.log("Current form fields:", fields);
+    console.log("Current watch data:", watch());
+    console.log("Current watch sizes:", watch("sizes"));
     handleSubmit(handleFormSubmit)();
   };
 
@@ -862,7 +1066,9 @@ const ProductForm: React.FC<ProductFormProps> = ({
               </label>
               <p className="text-sm text-gray-500 mb-4">
                 Upload high-quality images of the jersey from different angles.
-                Drag to reorder.
+                Drag to reorder.{" "}
+                {mode === "edit" &&
+                  "You can add new images, remove existing ones, or reorder them."}
               </p>
 
               <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
@@ -903,6 +1109,8 @@ const ProductForm: React.FC<ProductFormProps> = ({
                   <p className="text-sm text-gray-600 mb-3">
                     Drag images to reorder. First image will be the main product
                     image.
+                    {mode === "edit" &&
+                      " Blue border indicates existing images, green border indicates new images."}
                   </p>
                   <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                     {imageDataList.map((item, index) => (
@@ -916,22 +1124,44 @@ const ProductForm: React.FC<ProductFormProps> = ({
                           draggedIndex === index ? "opacity-50" : ""
                         }`}
                       >
-                        {index === 0 && (
+                        {item.isMain && (
                           <span className="absolute top-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded z-10">
                             Main
                           </span>
                         )}
-                        {item.file.type.startsWith("video/") ? (
+                        {mode === "edit" && (
+                          <span
+                            className={`absolute top-2 right-8 text-white text-xs px-1 py-0.5 rounded z-10 ${
+                              item.isExisting ? "bg-blue-500" : "bg-green-500"
+                            }`}
+                          >
+                            {item.isExisting ? "Existing" : "New"}
+                          </span>
+                        )}
+                        {item.file && item.file.type.startsWith("video/") ? (
                           <video
                             src={item.previewUrl}
-                            className="w-full h-32 object-cover rounded-lg border-2 border-gray-200 hover:border-blue-400 transition-colors"
+                            className={`w-full h-32 object-cover rounded-lg border-2 hover:border-blue-400 transition-colors ${
+                              item.isExisting
+                                ? "border-blue-200"
+                                : "border-green-200"
+                            }`}
                             muted
                           />
                         ) : (
                           <img
                             src={item.previewUrl}
                             alt={`Preview ${index + 1}`}
-                            className="w-full h-32 object-cover rounded-lg border-2 border-gray-200 hover:border-blue-400 transition-colors"
+                            className={`w-full h-32 object-cover rounded-lg border-2 hover:border-blue-400 transition-colors ${
+                              item.isExisting
+                                ? "border-blue-200"
+                                : "border-green-200"
+                            }`}
+                            onError={(e) => {
+                              console.error(`Failed to load image: ${item.previewUrl}`, e);
+                              // Optional: Set a fallback image
+                              e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDIwMCAxMjgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMTI4IiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik04NyA0OEMxMDMuNTY5IDQ4IDExNyA2MS40MzE1IDExNyA3OFY4M0g4M1Y3OEM4MyA2MS40MzE1IDk2LjQzMTUgNDggMTEzIDQ4WiIgZmlsbD0iIzlDQTNBRiIvPgo8L3N2Zz4K';
+                            }}
                           />
                         )}
                         <button
@@ -1035,28 +1265,61 @@ const ProductForm: React.FC<ProductFormProps> = ({
                 <span className="text-sm text-gray-500">Images:</span>
                 <p className="font-medium text-gray-900 mb-3">
                   {imageDataList.length} images selected
+                  {mode === "edit" && (
+                    <span className="text-sm text-gray-500 ml-2">
+                      ({imageDataList.filter((img) => img.isExisting).length}{" "}
+                      existing,
+                      {
+                        imageDataList.filter((img) => !img.isExisting).length
+                      }{" "}
+                      new,
+                      {imageChanges.deletedImages.length} to be deleted)
+                    </span>
+                  )}
                 </p>
 
                 {imageDataList.length > 0 && (
                   <div className="grid grid-cols-4 md:grid-cols-6 gap-2">
                     {imageDataList.map((item, index) => (
                       <div key={item.id} className="relative">
-                        {item.file.type.startsWith("video/") ? (
+                        {item.file && item.file.type.startsWith("video/") ? (
                           <video
                             src={item.previewUrl}
-                            className="w-full h-16 object-cover rounded-lg"
+                            className={`w-full h-16 object-cover rounded-lg border-2 ${
+                              item.isExisting
+                                ? "border-blue-200"
+                                : "border-green-200"
+                            }`}
                             muted
                           />
                         ) : (
                           <img
                             src={item.previewUrl}
                             alt={`Preview ${index + 1}`}
-                            className="w-full h-16 object-cover rounded-lg"
+                            className={`w-full h-16 object-cover rounded-lg border-2 ${
+                              item.isExisting
+                                ? "border-blue-200"
+                                : "border-green-200"
+                            }`}
+                            onError={(e) => {
+                              console.error(`Failed to load preview image: ${item.previewUrl}`, e);
+                              // Optional: Set a fallback image
+                              e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjY0IiB2aWV3Qm94PSIwIDAgMjAwIDY0IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjY0IiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik04NyAyNEMxMDMuNTY5IDI0IDExNyAzNy40MzE1IDExNyA1NFY1OUg4M1Y1NEM4MyAzNy40MzE1IDk2LjQzMTUgMjQgMTEzIDI0WiIgZmlsbD0iIzlDQTNBRiIvPgo8L3N2Zz4K';
+                            }}
                           />
                         )}
-                        {index === 0 && (
+                        {item.isMain && (
                           <span className="absolute top-1 left-1 bg-blue-500 text-white text-xs px-1 py-0.5 rounded text-[10px]">
                             Main
+                          </span>
+                        )}
+                        {mode === "edit" && (
+                          <span
+                            className={`absolute bottom-1 right-1 text-white text-xs px-1 py-0.5 rounded text-[10px] ${
+                              item.isExisting ? "bg-blue-500" : "bg-green-500"
+                            }`}
+                          >
+                            {item.isExisting ? "E" : "N"}
                           </span>
                         )}
                       </div>
@@ -1071,9 +1334,19 @@ const ProductForm: React.FC<ProductFormProps> = ({
               <div className="bg-white border border-gray-200 rounded-lg p-6 space-y-4">
                 <div className="flex items-center justify-between">
                   <h4 className="text-sm font-semibold text-gray-900">
-                    {submitStatus === "uploading" && "Uploading Images..."}
-                    {submitStatus === "saving" && "Saving Product..."}
-                    {submitStatus === "success" && "Product Created!"}
+                    {submitStatus === "uploading" && "Uploading New Images..."}
+                    {submitStatus === "saving" &&
+                      mode === "add" &&
+                      "Creating Product..."}
+                    {submitStatus === "saving" &&
+                      mode === "edit" &&
+                      "Updating Product..."}
+                    {submitStatus === "success" &&
+                      mode === "add" &&
+                      "Product Created!"}
+                    {submitStatus === "success" &&
+                      mode === "edit" &&
+                      "Product Updated!"}
                     {submitStatus === "error" && "Upload Failed"}
                   </h4>
                   <div className="flex items-center gap-2">
@@ -1095,6 +1368,9 @@ const ProductForm: React.FC<ProductFormProps> = ({
                 {/* Individual file progress */}
                 {uploadStatuses.length > 0 && submitStatus === "uploading" && (
                   <div className="space-y-2">
+                    <p className="text-sm text-gray-600">
+                      Uploading new images...
+                    </p>
                     {uploadStatuses.map((status, index) => (
                       <div key={index} className="space-y-1">
                         <div className="flex items-center justify-between text-xs">
@@ -1161,7 +1437,10 @@ const ProductForm: React.FC<ProductFormProps> = ({
                 {submitStatus === "success" && (
                   <div className="mt-2 p-3 bg-green-50 rounded-lg">
                     <p className="text-sm text-green-600">
-                      Product created successfully! Redirecting...
+                      {mode === "add"
+                        ? "Product created successfully!"
+                        : "Product updated successfully!"}{" "}
+                      Redirecting...
                     </p>
                   </div>
                 )}
@@ -1186,7 +1465,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
           <p className="text-gray-600 mt-1">
             {mode === "add"
               ? "Create a new product listing"
-              : `Edit Product with id ${initialData?.id || ""}`}
+              : `Edit Product: ${initialData?.name || initialData?.id || ""}`}
           </p>
         </div>
 
@@ -1293,7 +1572,9 @@ const ProductForm: React.FC<ProductFormProps> = ({
                 {isSubmitting ? (
                   <>
                     <Loader2 className="w-5 h-5 animate-spin" />
-                    Creating Product...
+                    {mode === "add"
+                      ? "Creating Product..."
+                      : "Updating Product..."}
                   </>
                 ) : (
                   <>

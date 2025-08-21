@@ -273,8 +273,6 @@ const Checkout: React.FC = () => {
       await handleGenerateQR();
       return;
     }
-
-    console.log(`Processing ${method} payment...`);
     setIsProcessing(true);
     setError(null);
 
@@ -304,7 +302,6 @@ const Checkout: React.FC = () => {
       return;
     }
 
-    console.log("Generating UPI QR code...");
     setIsProcessing(true);
     setError(null);
 
@@ -349,7 +346,6 @@ const Checkout: React.FC = () => {
 
   const handlePlaceOrder = async () => {
     // For COD orders, you can create a similar service method
-    console.log("Placing COD order...");
     setIsProcessing(true);
     setError(null);
 

@@ -51,7 +51,6 @@ const SignInOTP = () => {
       await instance.post("/api/auth/signin/otp/initiate", {
         phone: data.phone,
       });
-      console.log("Sending OTP to:", `+91${data.phone}`);
       setPhoneNumber(data.phone);
       setShowOTPScreen(true);
     } catch (err) {
@@ -67,7 +66,6 @@ const SignInOTP = () => {
       phone: phoneNumber,
       otp,
     });
-    console.log("Verifying OTP:", { phone: `+91${phoneNumber}`, otp });
     // On success, navigate to dashboard
     await refreshAuth();
     navigate("/");

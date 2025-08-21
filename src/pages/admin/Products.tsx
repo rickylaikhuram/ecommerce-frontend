@@ -61,20 +61,12 @@ const Products: React.FC = () => {
       const response = await instance.get("/api/product");
       const data = response.data;
 
-      console.log("API Response Data:", data);
-      if (data.products && data.products.length > 0) {
-        console.log("Category type is:", typeof data.products[0].category);
-        console.log("Category value is:", data.products[0].category);
-      }
-
       if (data && data.products && Array.isArray(data.products)) {
         setProducts(data.products);
       } else {
-        console.error("Unexpected data format:", data);
         setError("Unexpected data format received");
       }
     } catch (error) {
-      console.error("Error fetching products:", error);
       setError(
         error instanceof Error ? error.message : "Failed to fetch products"
       );
@@ -147,22 +139,17 @@ const Products: React.FC = () => {
     }
   };
 
-const handleProductSubmit = async (productData: any) => {
-  try {
-    console.log("Parent handleProductSubmit called with:", { currentView, productData });
-    
-    // Always refresh the products list to show latest data
-    await fetchProducts();
-    handleBackToList();
-  } catch (error) {
-    console.error("Error handling product submit:", error);
-    // For add mode, let the error bubble up to the form
-    // For edit mode, just log it since the form handles its own errors
-    if (currentView === "add") {
-      throw error;
+  const handleProductSubmit = async () => {
+    try {
+      // Always refresh the products list to show latest data
+      await fetchProducts();
+      handleBackToList();
+    } catch (error) {
+      if (currentView === "add") {
+        throw error;
+      }
     }
-  }
-};
+  };
 
   const getProductStatusBadge = (product: Product) => {
     if (product.isActive === false) {

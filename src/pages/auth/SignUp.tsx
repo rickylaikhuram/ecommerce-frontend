@@ -65,7 +65,6 @@ const SignUp = () => {
         name: data.fullName,
         password: data.password,
       });
-      console.log("Sending OTP to:", `+91${data.phone}`);
 
       // Show OTP verification screen
       setShowOTPScreen(true);
@@ -97,20 +96,14 @@ const SignUp = () => {
     if (!userPhone) return;
 
     try {
-      console.log("📲 Resending OTP to:", `+91${userPhone}`);
-
       await instance.post("/api/auth/signup/resend", {
         phone: userPhone,
       });
-
-      console.log("✅ OTP resent successfully");
     } catch (error) {
       console.error("❌ Failed to resend OTP:", error);
       // Optionally show error to user (e.g. toast or alert)
     }
   };
-
-  
 
   // Helper function to determine field validation state
   const getFieldState = (fieldName: keyof FormData) => {

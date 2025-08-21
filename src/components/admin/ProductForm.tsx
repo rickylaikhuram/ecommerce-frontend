@@ -99,20 +99,22 @@ const ProductForm: React.FC<ProductFormProps> = ({
   // Helper function to construct complete image URL
   const constructImageUrl = (imageUrl: string): string => {
     // If imageUrl is already a complete URL (starts with http/https), return as is
-    if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+    if (imageUrl.startsWith("http://") || imageUrl.startsWith("https://")) {
       return imageUrl;
     }
-    
+
     // If S3_BASE_URL is not defined, log error and return the imageUrl as is
     if (!S3_BASE_URL) {
-      console.error('S3_BASE_URL is not defined in environment variables');
+      console.error("S3_BASE_URL is not defined in environment variables");
       return imageUrl;
     }
-    
+
     // Ensure proper URL construction with forward slashes
-    const baseUrl = S3_BASE_URL.endsWith('/') ? S3_BASE_URL : `${S3_BASE_URL}/`;
-    const imagePath = imageUrl.startsWith('/') ? imageUrl.substring(1) : imageUrl;
-    
+    const baseUrl = S3_BASE_URL.endsWith("/") ? S3_BASE_URL : `${S3_BASE_URL}/`;
+    const imagePath = imageUrl.startsWith("/")
+      ? imageUrl.substring(1)
+      : imageUrl;
+
     return `${baseUrl}${imagePath}`;
   };
 
@@ -120,20 +122,9 @@ const ProductForm: React.FC<ProductFormProps> = ({
   const convertExistingImages = (images: ProductImage[]): ImageData[] => {
     // Sort images by position to ensure correct order
     const sortedImages = [...images].sort((a, b) => a.position - b.position);
-    
+
     return sortedImages.map((image, index) => {
       const fullImageUrl = constructImageUrl(image.imageUrl);
-      
-      console.log(`Converting image ${index}:`, {
-        originalUrl: image.imageUrl,
-        constructedUrl: fullImageUrl,
-        originalPosition: image.position,
-        newPosition: index,
-        originalIsMain: image.isMain,
-        newIsMain: index === 0,
-        S3_BASE_URL,
-        image
-      });
 
       return {
         id: image.id ? image.id.toString() : `existing-${index}`,
@@ -176,23 +167,15 @@ const ProductForm: React.FC<ProductFormProps> = ({
         isActive: !!initialData.isActive,
       };
 
-      console.log("Resetting form with data:", formData);
-      console.log("Initial product sizes:", initialData.productSizes);
-      
       reset(formData);
 
       // Set up existing images with correct positions and main status
       if (initialData.images && initialData.images.length > 0) {
         const existingImages = convertExistingImages(initialData.images);
-        console.log('Converted existing images with corrected positions:', existingImages);
         setImageDataList(existingImages);
       } else {
-        console.log('No existing images found');
         setImageDataList([]);
       }
-
-      console.log("Form reset with category:", initialData.category?.name);
-      console.log("Form reset with product sizes:", initialData.productSizes);
     }
   }, [initialData, mode, reset, categories]);
 
@@ -300,8 +283,9 @@ const ProductForm: React.FC<ProductFormProps> = ({
 
     // Update image data list and recalculate positions
     const updatedImageDataList = [...imageDataList, ...newImageDataList];
-    const reorderedImageDataList = recalculateImagePositions(updatedImageDataList);
-    
+    const reorderedImageDataList =
+      recalculateImagePositions(updatedImageDataList);
+
     setImageDataList(reorderedImageDataList);
 
     // Reset the input
@@ -371,8 +355,6 @@ const ProductForm: React.FC<ProductFormProps> = ({
 
     setImageDataList(reorderedImageDataList);
     setDraggedIndex(null);
-
-    console.log('Images reordered:', reorderedImageDataList.map(img => ({ id: img.id, position: img.position, isMain: img.isMain })));
   };
 
   // Prepare image changes for submission
@@ -542,10 +524,6 @@ const ProductForm: React.FC<ProductFormProps> = ({
   };
 
   const handleFormSubmit = async (data: FormData) => {
-    console.log("Form submitted!", data);
-    console.log("Form data sizes:", data.sizes);
-    console.log("Form fields length:", fields.length);
-    
     setIsSubmitting(true);
     setSubmitStatus("idle");
     setSubmitError("");
@@ -560,12 +538,11 @@ const ProductForm: React.FC<ProductFormProps> = ({
         stock: size.stock,
       }));
 
-      console.log("Prepared product stocks:", productStocks);
-      console.log("Form data:", data);
-
       // Validate that we have at least one size
       if (!productStocks || productStocks.length === 0) {
-        throw new Error("No product stocks found. Please add at least one size.");
+        throw new Error(
+          "No product stocks found. Please add at least one size."
+        );
       }
 
       if (mode === "add") {
@@ -585,11 +562,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
         };
 
         // Submit to backend
-        const response = await instance.post(
-          "/api/admin/add/product",
-          submitData
-        );
-        console.log("Product created:", response.data);
+        await instance.post("/api/admin/add/product", submitData);
       } else {
         // For edit mode, handle image changes separately
         const changes = prepareImageChanges();
@@ -614,25 +587,18 @@ const ProductForm: React.FC<ProductFormProps> = ({
           newImages: uploadedNewImages,
         };
 
-        console.log("Edit mode submit data:", submitData);
-        console.log("Product stocks being sent:", submitData.productStocks);
-
         // Submit to backend
-        const response = await instance.put(
+        await instance.put(
           `/api/admin/edit/product/${initialData?.id}`,
           submitData
         );
-        console.log("Product updated:", response.data);
       }
 
       setSubmitStatus("success");
-      console.log("Submit status set to success");
 
       // Call the onSubmit prop if needed
       if (onSubmit) {
-        console.log("Calling onSubmit...");
         await onSubmit(submitData);
-        console.log("onSubmit completed");
       }
 
       // Wait a bit to show success status
@@ -643,7 +609,6 @@ const ProductForm: React.FC<ProductFormProps> = ({
         }
       }, 400);
     } catch (error: any) {
-      console.error("Error submitting form:", error);
       setSubmitStatus("error");
       const errorMessage =
         error.response?.data?.message ||
@@ -670,8 +635,6 @@ const ProductForm: React.FC<ProductFormProps> = ({
   };
 
   const nextStep = async () => {
-    console.log("Next step clicked, current step:", currentStep);
-
     if (currentStep === 1) {
       const fieldsToValidate = ["name", "description", "category"];
       const isValid = await trigger(fieldsToValidate as any);
@@ -751,10 +714,6 @@ const ProductForm: React.FC<ProductFormProps> = ({
   };
 
   const handleFinalSubmit = () => {
-    console.log("Final submit triggered");
-    console.log("Current form fields:", fields);
-    console.log("Current watch data:", watch());
-    console.log("Current watch sizes:", watch("sizes"));
     handleSubmit(handleFormSubmit)();
   };
 
@@ -1158,9 +1117,13 @@ const ProductForm: React.FC<ProductFormProps> = ({
                                 : "border-green-200"
                             }`}
                             onError={(e) => {
-                              console.error(`Failed to load image: ${item.previewUrl}`, e);
+                              console.error(
+                                `Failed to load image: ${item.previewUrl}`,
+                                e
+                              );
                               // Optional: Set a fallback image
-                              e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDIwMCAxMjgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMTI4IiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik04NyA0OEMxMDMuNTY5IDQ4IDExNyA2MS40MzE1IDExNyA3OFY4M0g4M1Y3OEM4MyA2MS40MzE1IDk2LjQzMTUgNDggMTEzIDQ4WiIgZmlsbD0iIzlDQTNBRiIvPgo8L3N2Zz4K';
+                              e.currentTarget.src =
+                                "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDIwMCAxMjgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMTI4IiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik04NyA0OEMxMDMuNTY5IDQ4IDExNyA2MS40MzE1IDExNyA3OFY4M0g4M1Y3OEM4MyA2MS40MzE1IDk2LjQzMTUgNDggMTEzIDQ4WiIgZmlsbD0iIzlDQTNBRiIvPgo8L3N2Zz4K";
                             }}
                           />
                         )}
@@ -1302,9 +1265,13 @@ const ProductForm: React.FC<ProductFormProps> = ({
                                 : "border-green-200"
                             }`}
                             onError={(e) => {
-                              console.error(`Failed to load preview image: ${item.previewUrl}`, e);
+                              console.error(
+                                `Failed to load preview image: ${item.previewUrl}`,
+                                e
+                              );
                               // Optional: Set a fallback image
-                              e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjY0IiB2aWV3Qm94PSIwIDAgMjAwIDY0IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjY0IiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik04NyAyNEMxMDMuNTY5IDI0IDExNyAzNy40MzE1IDExNyA1NFY1OUg4M1Y1NEM4MyAzNy40MzE1IDk2LjQzMTUgMjQgMTEzIDI0WiIgZmlsbD0iIzlDQTNBRiIvPgo8L3N2Zz4K';
+                              e.currentTarget.src =
+                                "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjY0IiB2aWV3Qm94PSIwIDAgMjAwIDY0IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjY0IiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik04NyAyNEMxMDMuNTY5IDI0IDExNyAzNy40MzE1IDExNyA1NFY1OUg4M1Y1NEM4MyAzNy40MzE1IDk2LjQzMTUgMjQgMTEzIDI0WiIgZmlsbD0iIzlDQTNBRiIvPgo8L3N2Zz4K";
                             }}
                           />
                         )}

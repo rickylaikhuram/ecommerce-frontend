@@ -60,14 +60,8 @@ export const useProductData = (): UseProductDataReturn => {
     setError(null);
 
     try {
-      console.log("Fetching products with filters:", filters);
       const response: ProductResponse =
         await productService.getFilteredProducts(filters);
-
-      console.log("Products fetched successfully:", {
-        count: response.products.length,
-        total: response.pagination.total,
-      });
 
       setProducts(response.products);
       setPagination(response.pagination);
@@ -97,14 +91,9 @@ export const useProductData = (): UseProductDataReturn => {
   // Fetch categories with error handling
   const fetchCategories = useCallback(async () => {
     try {
-      console.log("Fetching categories...");
       const categoriesResponse: CategoryResponse =
         await productService.getCategories();
 
-      console.log(
-        "Categories fetched successfully:",
-        categoriesResponse.categories?.length || 0
-      );
       setCategories(categoriesResponse.categories || []);
     } catch (error) {
       console.error("Error fetching categories:", error);
@@ -116,14 +105,8 @@ export const useProductData = (): UseProductDataReturn => {
   // Load user's wishlist
   const loadWishlist = useCallback(async () => {
     try {
-      console.log("Loading wishlist...");
       const res = await wishlistService.getUserWishlistedIds();
 
-      console.log(
-        "Wishlist loaded successfully:",
-        res.productIds.length,
-        "items"
-      );
       setWishlistedItems(res.productIds);
     } catch (err) {
       console.error("Error loading wishlist:", err);
@@ -135,19 +118,12 @@ export const useProductData = (): UseProductDataReturn => {
   // Toggle wishlist item
   const toggleWishlist = useCallback(async (productId: string) => {
     try {
-      console.log("Toggling wishlist for product:", productId);
       await wishlistService.toggleWishlist(productId);
 
       setWishlistedItems((prev) => {
         const newWishlist = prev.includes(productId)
           ? prev.filter((id) => id !== productId)
           : [...prev, productId];
-
-        console.log("Wishlist updated:", {
-          productId,
-          action: prev.includes(productId) ? "removed" : "added",
-          newCount: newWishlist.length,
-        });
 
         return newWishlist;
       });

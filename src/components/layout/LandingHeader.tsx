@@ -40,12 +40,10 @@ const LandingHeader = () => {
 
   // Search handlers
   const handleSearch = (query: string) => {
-    console.log("Searching for:", query);
     navigate(`/products?search=${encodeURIComponent(query)}`);
   };
 
   const handleSuggestionClick = (suggestion: AutocompleteResult) => {
-    console.log("Suggestion clicked:", suggestion);
 
     if (suggestion.type === "product") {
       navigate(`/products/${suggestion.id}`);

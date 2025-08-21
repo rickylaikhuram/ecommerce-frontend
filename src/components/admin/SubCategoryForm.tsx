@@ -389,8 +389,7 @@ const SubCategoryForm: React.FC<SubCategoryFormProps> = ({
         };
 
         // Submit to backend
-        const response = await instance.post("/api/admin/add/category", submitData);
-        console.log("Subcategory created:", response.data);
+       await instance.post("/api/admin/add/category", submitData);
       } else {
         // For edit mode, prepare data according to new backend format
         let updatedImages: any[] = [];
@@ -414,14 +413,11 @@ const SubCategoryForm: React.FC<SubCategoryFormProps> = ({
           updatedImages: updatedImages, // Array (empty if no new image)
         };
 
-        console.log("Edit mode submit data:", submitData);
-
         // Submit to backend
-        const response = await instance.put(
+        await instance.put(
           `/api/admin/update/subcategory/${initialData?.id}`,
           submitData
         );
-        console.log("Subcategory updated:", response.data);
       }
 
       setSubmitStatus("success");

@@ -85,8 +85,6 @@ const SignIn = () => {
         password: data.password,
       };
 
-      console.log("Login payload:", payload);
-
       await instance.post("/api/auth/signin/password", payload);
 
       await refreshAuth();

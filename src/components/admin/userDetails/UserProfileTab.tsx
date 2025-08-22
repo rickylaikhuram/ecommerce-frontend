@@ -1,7 +1,7 @@
 // components/admin/userDetail/UserProfileTab.tsx
-import React from 'react';
-import { User, Mail, Phone, Calendar, ShoppingBag } from 'lucide-react';
-import type { UserProfile } from '../../../types/admin/userDetail.types';
+import React from "react";
+import { User, Mail, Phone, Calendar, ShoppingBag } from "lucide-react";
+import type { UserProfile } from "../../../types/admin/userDetail.types";
 
 interface UserProfileTabProps {
   profile: UserProfile | null;
@@ -10,11 +10,11 @@ interface UserProfileTabProps {
   formatCurrency: (amount: number) => string;
 }
 
-export const UserProfileTab: React.FC<UserProfileTabProps> = ({ 
-  profile, 
-  loading, 
+export const UserProfileTab: React.FC<UserProfileTabProps> = ({
+  profile,
+  loading,
   formatDate,
-  formatCurrency 
+  formatCurrency,
 }) => {
   if (loading) {
     return (
@@ -51,7 +51,9 @@ export const UserProfileTab: React.FC<UserProfileTabProps> = ({
       {/* Profile Details */}
       <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="text-lg font-medium text-gray-900">Profile Information</h3>
+          <h3 className="text-lg font-medium text-gray-900">
+            Profile Information
+          </h3>
         </div>
         <div className="p-6 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -66,7 +68,9 @@ export const UserProfileTab: React.FC<UserProfileTabProps> = ({
               <Phone className="h-5 w-5 text-gray-400" />
               <div>
                 <p className="text-sm font-medium text-gray-500">Phone</p>
-                <p className="text-gray-900">{profile.phone || 'Not provided'}</p>
+                <p className="text-gray-900">
+                  {profile.phone || "Not provided"}
+                </p>
               </div>
             </div>
             <div className="flex items-center space-x-3">
@@ -88,22 +92,36 @@ export const UserProfileTab: React.FC<UserProfileTabProps> = ({
           </div>
           <div className="p-6">
             {profile.orders.map((order) => (
-              <div key={order.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <div
+                key={order.id}
+                className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
+              >
                 <div className="flex items-center space-x-3">
                   <ShoppingBag className="h-5 w-5 text-gray-400" />
                   <div>
-                    <p className="font-medium text-gray-900">Order #{order.id}</p>
-                    <p className="text-sm text-gray-500">{formatDate(order.createdAt)}</p>
+                    <p className="font-medium text-gray-900">
+                      Order #{order.id}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      {formatDate(order.createdAt)}
+                    </p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="font-medium text-gray-900">{formatCurrency(order.totalAmount)}</p>
-                  <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                    order.status === 'delivered' ? 'bg-green-100 text-green-800' :
-                    order.status === 'shipped' ? 'bg-blue-100 text-blue-800' :
-                    order.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                    'bg-gray-100 text-gray-800'
-                  }`}>
+                  <p className="font-medium text-gray-900">
+                    {formatCurrency(order.totalAmount)}
+                  </p>
+                  <span
+                    className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                      order.status === "delivered"
+                        ? "bg-green-100 text-green-800"
+                        : order.status === "shipped"
+                        ? "bg-blue-100 text-blue-800"
+                        : order.status === "pending"
+                        ? "bg-yellow-100 text-yellow-800"
+                        : "bg-gray-100 text-gray-800"
+                    }`}
+                  >
                     {order.status}
                   </span>
                 </div>

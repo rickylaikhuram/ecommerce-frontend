@@ -1,6 +1,11 @@
 // components/StatsFooter.tsx
-import React from 'react';
-import type{ User, Admin, TabType, TabConfig } from '../../../types/admin/user.types';
+import React from "react";
+import type {
+  User,
+  Admin,
+  TabType,
+  TabConfig,
+} from "../../../types/admin/user.types";
 
 interface StatsFooterProps {
   data: (User | Admin)[];
@@ -9,21 +14,26 @@ interface StatsFooterProps {
   formatCurrency: (amount: number) => string;
 }
 
-export const StatsFooter: React.FC<StatsFooterProps> = ({ 
-  data, 
-  activeTab, 
-  currentTab, 
-  formatCurrency 
+export const StatsFooter: React.FC<StatsFooterProps> = ({
+  data,
+  activeTab,
+  currentTab,
+  formatCurrency,
 }) => {
   if (data.length === 0) return null;
 
-  const usersWithOrders = activeTab !== 'admins' 
-    ? (data as User[]).filter(item => item.latestOrder).length 
-    : 0;
+  const usersWithOrders =
+    activeTab !== "admins"
+      ? (data as User[]).filter((item) => item.latestOrder).length
+      : 0;
 
-  const totalOrderValue = activeTab !== 'admins' 
-    ? (data as User[]).reduce((sum, item) => sum + (item.latestOrder?.totalAmount || 0), 0)
-    : 0;
+  const totalOrderValue =
+    activeTab !== "admins"
+      ? (data as User[]).reduce(
+          (sum, item) => sum + (item.latestOrder?.totalAmount || 0),
+          0
+        )
+      : 0;
 
   return (
     <div className="mt-6 bg-white rounded-lg shadow-sm p-6">
@@ -32,17 +42,21 @@ export const StatsFooter: React.FC<StatsFooterProps> = ({
           <div className="text-2xl font-bold text-blue-600">{data.length}</div>
           <div className="text-sm text-gray-500">Total {currentTab?.label}</div>
         </div>
-        {activeTab !== 'admins' && (
+        {activeTab !== "admins" && (
           <>
             <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">{usersWithOrders}</div>
+              <div className="text-2xl font-bold text-green-600">
+                {usersWithOrders}
+              </div>
               <div className="text-sm text-gray-500">With Orders</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-purple-600">
                 {formatCurrency(totalOrderValue)}
               </div>
-              <div className="text-sm text-gray-500">Total Latest Order Value</div>
+              <div className="text-sm text-gray-500">
+                Total Latest Order Value
+              </div>
             </div>
           </>
         )}

@@ -40,7 +40,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({
   const handleFormSubmit = async (data: CategoryFormData) => {
     setIsSubmitting(true);
     setSubmitError("");
-    
+
     try {
       if (mode === "edit" && initialData?.id) {
         // For edit mode - only send the name as per your backend expects
@@ -54,16 +54,16 @@ const CategoryForm: React.FC<CategoryFormProps> = ({
           parentId: null,
         });
       }
-      
+
       // Reset form after successful submission
       reset();
       onSubmit();
     } catch (error: any) {
       console.error("Category form error:", error);
       setSubmitError(
-        error.response?.data?.message || 
-        error.message || 
-        `Failed to ${mode === "edit" ? "update" : "create"} category`
+        error.response?.data?.message ||
+          error.message ||
+          `Failed to ${mode === "edit" ? "update" : "create"} category`
       );
     } finally {
       setIsSubmitting(false);
@@ -105,8 +105,9 @@ const CategoryForm: React.FC<CategoryFormProps> = ({
                   },
                   pattern: {
                     value: /^[a-zA-Z0-9\s\-_&]+$/,
-                    message: "Category name can only contain letters, numbers, spaces, hyphens, underscores, and ampersands"
-                  }
+                    message:
+                      "Category name can only contain letters, numbers, spaces, hyphens, underscores, and ampersands",
+                  },
                 })}
                 placeholder="e.g., Football Jerseys"
                 className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors ${
@@ -115,7 +116,9 @@ const CategoryForm: React.FC<CategoryFormProps> = ({
                 disabled={isSubmitting}
               />
               {errors.name && (
-                <p className="mt-1 text-sm text-red-500">{errors.name.message}</p>
+                <p className="mt-1 text-sm text-red-500">
+                  {errors.name.message}
+                </p>
               )}
             </div>
 

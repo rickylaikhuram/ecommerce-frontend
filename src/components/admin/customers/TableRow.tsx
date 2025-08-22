@@ -1,10 +1,10 @@
 // components/admin/customers/TableRow.tsx
-import React from 'react';
-import type{ User, Admin, TabType } from '../../../types/admin/user.types';
-import { UserAvatar } from './UserAvatar';
-import { ContactInfo } from './ContactInfo';
-import { OrderInfo } from './OrderInfo';
-import { DateInfo } from './DateInfo';
+import React from "react";
+import type { User, Admin, TabType } from "../../../types/admin/user.types";
+import { UserAvatar } from "./UserAvatar";
+import { ContactInfo } from "./ContactInfo";
+import { OrderInfo } from "./OrderInfo";
+import { DateInfo } from "./DateInfo";
 
 interface TableRowProps {
   item: User | Admin;
@@ -15,15 +15,15 @@ interface TableRowProps {
   onUserClick: (userId: string, userName: string) => void;
 }
 
-export const TableRow: React.FC<TableRowProps> = ({ 
-  item, 
-  index, 
-  activeTab, 
-  formatCurrency, 
+export const TableRow: React.FC<TableRowProps> = ({
+  item,
+  index,
+  activeTab,
+  formatCurrency,
   formatDate,
-  onUserClick 
+  onUserClick,
 }) => {
-  const isAdmin = activeTab === 'admins';
+  const isAdmin = activeTab === "admins";
   const user = item as User;
 
   const handleRowClick = () => {
@@ -31,9 +31,11 @@ export const TableRow: React.FC<TableRowProps> = ({
   };
 
   return (
-    <tr 
-      key={item.id} 
-      className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} hover:bg-blue-50 transition-colors cursor-pointer`}
+    <tr
+      key={item.id}
+      className={`${
+        index % 2 === 0 ? "bg-white" : "bg-gray-50"
+      } hover:bg-blue-50 transition-colors cursor-pointer`}
       onClick={handleRowClick}
     >
       {/* User Details */}
@@ -41,7 +43,9 @@ export const TableRow: React.FC<TableRowProps> = ({
         <div className="flex items-center">
           <UserAvatar isAdmin={isAdmin} />
           <div className="ml-4">
-            <div className="text-sm font-medium text-gray-900 hover:text-blue-600">{item.name}</div>
+            <div className="text-sm font-medium text-gray-900 hover:text-blue-600">
+              {item.name}
+            </div>
             <div className="text-sm text-gray-500">ID: {item.id}</div>
           </div>
         </div>
@@ -55,10 +59,10 @@ export const TableRow: React.FC<TableRowProps> = ({
       {/* Order Info (only for users/customers) */}
       {!isAdmin && (
         <td className="px-6 py-4 whitespace-nowrap">
-          <OrderInfo 
-            order={user.latestOrder} 
-            formatCurrency={formatCurrency} 
-            formatDate={formatDate} 
+          <OrderInfo
+            order={user.latestOrder}
+            formatCurrency={formatCurrency}
+            formatDate={formatDate}
           />
         </td>
       )}

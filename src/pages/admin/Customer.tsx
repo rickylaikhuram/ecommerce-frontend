@@ -1,35 +1,48 @@
-// Customers.tsx 
-import React, { useState, useEffect } from 'react';
-import { Users, ShoppingBag, Shield } from 'lucide-react';
-import type { TabType, TabConfig } from '../../types/admin/user.types';
-import { useUserData } from '../../hooks/admin/useUserData';
-import { formatDate, formatCurrency } from '../../utils/admin/formatters';
-import { TabNavigation } from '../../components/admin/customers/TabNavigation';
-import { TableHeaders } from '../../components/admin/customers/TableHeaders';
-import { TableRow } from '../../components/admin/customers/TableRow';
-import { EmptyState } from '../../components/admin/customers/EmptyState';
-import { StatsFooter } from '../../components/admin/customers/StatsFooter';
-import { UserDetailModal } from '../../components/admin/userDetails/UserDetailModal'
+// Customers.tsx
+import React, { useState, useEffect } from "react";
+import { Users, ShoppingBag, Shield } from "lucide-react";
+import type { TabType, TabConfig } from "../../types/admin/user.types";
+import { useUserData } from "../../hooks/admin/useUserData";
+import { formatDate, formatCurrency } from "../../utils/admin/formatters";
+import { TabNavigation } from "../../components/admin/customers/TabNavigation";
+import { TableHeaders } from "../../components/admin/customers/TableHeaders";
+import { TableRow } from "../../components/admin/customers/TableRow";
+import { EmptyState } from "../../components/admin/customers/EmptyState";
+import { StatsFooter } from "../../components/admin/customers/StatsFooter";
+import { UserDetailModal } from "../../components/admin/userDetails/UserDetailModal";
 
 const Customers: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<TabType>('users');
-  const [selectedUser, setSelectedUser] = useState<{id: string, name: string} | null>(null);
+  const [activeTab, setActiveTab] = useState<TabType>("users");
+  const [selectedUser, setSelectedUser] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
   const { data, loading, error, fetchData } = useUserData();
 
   const tabs: TabConfig[] = [
-    { key: 'users', label: 'Users', icon: Users, endpoint: '/api/admin/users' },
-    { key: 'customers', label: 'Customers', icon: ShoppingBag, endpoint: '/api/admin/customers' },
-    { key: 'admins', label: 'Admins', icon: Shield, endpoint: '/api/admin/admins' }
+    { key: "users", label: "Users", icon: Users, endpoint: "/api/admin/users" },
+    {
+      key: "customers",
+      label: "Customers",
+      icon: ShoppingBag,
+      endpoint: "/api/admin/customers",
+    },
+    {
+      key: "admins",
+      label: "Admins",
+      icon: Shield,
+      endpoint: "/api/admin/admins",
+    },
   ];
 
   useEffect(() => {
-    const currentTab = tabs.find(tab => tab.key === activeTab);
+    const currentTab = tabs.find((tab) => tab.key === activeTab);
     if (currentTab) {
       fetchData(currentTab.endpoint, activeTab);
     }
   }, [activeTab, fetchData]);
 
-  const currentTab = tabs.find(tab => tab.key === activeTab);
+  const currentTab = tabs.find((tab) => tab.key === activeTab);
 
   const handleRefresh = (): void => {
     if (currentTab) {
@@ -63,12 +76,16 @@ const Customers: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">User Management</h1>
-          <p className="text-gray-600">Manage users, customers, and administrators</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            User Management
+          </h1>
+          <p className="text-gray-600">
+            Manage users, customers, and administrators
+          </p>
         </div>
 
         {/* Tab Navigation */}
-        <TabNavigation 
+        <TabNavigation
           tabs={tabs}
           activeTab={activeTab}
           setActiveTab={setActiveTab}
@@ -90,7 +107,7 @@ const Customers: React.FC = () => {
                 disabled={loading}
                 className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
-                {loading ? 'Refreshing...' : 'Refresh'}
+                {loading ? "Refreshing..." : "Refresh"}
               </button>
             </div>
           </div>
@@ -141,7 +158,7 @@ const Customers: React.FC = () => {
 
         {/* Footer Stats */}
         {!loading && !error && (
-          <StatsFooter 
+          <StatsFooter
             data={data}
             activeTab={activeTab}
             currentTab={currentTab}

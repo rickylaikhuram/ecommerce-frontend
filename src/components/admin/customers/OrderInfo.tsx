@@ -1,8 +1,8 @@
 // components/OrderInfo.tsx
-import React from 'react';
-import { Package, DollarSign } from 'lucide-react';
-import type{ Order } from '../../../types/admin/user.types';
-import { StatusBadge } from './StatusBadge';
+import React from "react";
+import { Package, DollarSign } from "lucide-react";
+import type { Order } from "../../../types/admin/user.types";
+import { StatusBadge } from "./StatusBadge";
 
 interface OrderInfoProps {
   order: Order | null;
@@ -10,7 +10,11 @@ interface OrderInfoProps {
   formatDate: (date: string) => string;
 }
 
-export const OrderInfo: React.FC<OrderInfoProps> = ({ order, formatCurrency, formatDate }) => {
+export const OrderInfo: React.FC<OrderInfoProps> = ({
+  order,
+  formatCurrency,
+  formatDate,
+}) => {
   if (!order) {
     return <div className="text-sm text-gray-500 italic">No orders</div>;
   }
@@ -19,8 +23,7 @@ export const OrderInfo: React.FC<OrderInfoProps> = ({ order, formatCurrency, for
     <div className="flex flex-col space-y-2">
       <div className="flex items-center justify-between">
         <div className="flex items-center text-sm text-gray-900">
-          <Package className="h-4 w-4 mr-2 text-gray-400" />
-          #{order.id}
+          <Package className="h-4 w-4 mr-2 text-gray-400" />#{order.id}
         </div>
         <StatusBadge status={order.status} />
       </div>

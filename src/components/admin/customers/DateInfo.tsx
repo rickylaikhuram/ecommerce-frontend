@@ -1,6 +1,6 @@
 // components/DateInfo.tsx
-import React from 'react';
-import { Calendar } from 'lucide-react';
+import React from "react";
+import { Calendar } from "lucide-react";
 
 interface DateInfoProps {
   date: string;

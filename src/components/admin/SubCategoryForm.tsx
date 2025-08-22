@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
-import { 
-  Loader2, 
-  Check, 
-  FolderOpen, 
-  X, 
+import {
+  Loader2,
+  Check,
+  FolderOpen,
+  X,
   Upload,
   Image as ImageIcon,
   CheckCircle2,
-  XCircle 
+  XCircle,
 } from "lucide-react";
 import instance from "../../utils/axios";
 
@@ -72,16 +72,16 @@ const SubCategoryForm: React.FC<SubCategoryFormProps> = ({
   const [submitError, setSubmitError] = useState("");
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoadingCategories, setIsLoadingCategories] = useState(true);
-  
+
   // Simplified image state management
   const [imageData, setImageData] = useState<ImageData | null>(null);
   const [deleteImage, setDeleteImage] = useState(false); // Boolean flag for deletion
-  
+
   const [uploadStatus, setUploadStatus] = useState<UploadStatus | null>(null);
   const [submitStatus, setSubmitStatus] = useState<
     "idle" | "uploading" | "saving" | "success" | "error"
   >("idle");
-  
+
   const uploadRequestRef = useRef<XMLHttpRequest | null>(null);
 
   const {
@@ -100,30 +100,32 @@ const SubCategoryForm: React.FC<SubCategoryFormProps> = ({
 
   // Helper function to construct complete image URL
   const constructImageUrl = (imageUrl: string): string => {
-    if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+    if (imageUrl.startsWith("http://") || imageUrl.startsWith("https://")) {
       return imageUrl;
     }
-    
+
     if (!S3_BASE_URL) {
-      console.error('S3_BASE_URL is not defined in environment variables');
+      console.error("S3_BASE_URL is not defined in environment variables");
       return imageUrl;
     }
-    
-    const baseUrl = S3_BASE_URL.endsWith('/') ? S3_BASE_URL : `${S3_BASE_URL}/`;
-    const imagePath = imageUrl.startsWith('/') ? imageUrl.substring(1) : imageUrl;
-    
+
+    const baseUrl = S3_BASE_URL.endsWith("/") ? S3_BASE_URL : `${S3_BASE_URL}/`;
+    const imagePath = imageUrl.startsWith("/")
+      ? imageUrl.substring(1)
+      : imageUrl;
+
     return `${baseUrl}${imagePath}`;
   };
 
   // Convert existing image to ImageData format
   const convertExistingImage = (imageUrl: string): ImageData => {
     const fullImageUrl = constructImageUrl(imageUrl);
-    
+
     return {
-      id: initialData?.id ? `existing-${initialData.id}` : 'existing-1',
+      id: initialData?.id ? `existing-${initialData.id}` : "existing-1",
       previewUrl: fullImageUrl,
       imageUrl: imageUrl, // Keep original for backend operations
-      altText: initialData?.name || 'Subcategory image',
+      altText: initialData?.name || "Subcategory image",
       isExisting: true,
     };
   };
@@ -155,7 +157,7 @@ const SubCategoryForm: React.FC<SubCategoryFormProps> = ({
       } else {
         setImageData(null);
       }
-      
+
       // Reset delete flag
       setDeleteImage(false);
     }
@@ -190,7 +192,7 @@ const SubCategoryForm: React.FC<SubCategoryFormProps> = ({
     const MAX_SIZE = 10 * 1024 * 1024; // 10MB
     const ALLOWED_TYPES = [
       "image/jpeg",
-      "image/png", 
+      "image/png",
       "image/webp",
       "image/gif",
       "image/avif",
@@ -212,7 +214,7 @@ const SubCategoryForm: React.FC<SubCategoryFormProps> = ({
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    
+
     if (!file) return;
 
     // Validate file
@@ -284,7 +286,11 @@ const SubCategoryForm: React.FC<SubCategoryFormProps> = ({
           resolve();
         } else {
           console.error("Upload failed:", xhr.responseText);
-          reject(new Error(`Upload failed with status ${xhr.status}: ${xhr.responseText}`));
+          reject(
+            new Error(
+              `Upload failed with status ${xhr.status}: ${xhr.responseText}`
+            )
+          );
         }
       });
 
@@ -317,10 +323,12 @@ const SubCategoryForm: React.FC<SubCategoryFormProps> = ({
       const presignedResponse = await instance.post(
         "/api/admin/add/images/presigned-urls",
         {
-          files: [{
-            fileName: file.name,
-            fileType: file.type,
-          }],
+          files: [
+            {
+              fileName: file.name,
+              fileType: file.type,
+            },
+          ],
           folderName: "subcategories",
         }
       );
@@ -337,26 +345,34 @@ const SubCategoryForm: React.FC<SubCategoryFormProps> = ({
         signedUrlData.uploadUrl,
         file,
         (progress) => {
-          setUploadStatus(prev => prev ? { ...prev, progress } : null);
+          setUploadStatus((prev) => (prev ? { ...prev, progress } : null));
         }
       );
 
       // Update status to completed
-      setUploadStatus(prev => prev ? { 
-        ...prev, 
-        progress: 100, 
-        status: "completed" 
-      } : null);
+      setUploadStatus((prev) =>
+        prev
+          ? {
+              ...prev,
+              progress: 100,
+              status: "completed",
+            }
+          : null
+      );
 
       return {
         imageKey: signedUrlData.key,
         altText: file.name,
       };
     } catch (error) {
-      setUploadStatus(prev => prev ? { 
-        ...prev, 
-        status: "error" 
-      } : null);
+      setUploadStatus((prev) =>
+        prev
+          ? {
+              ...prev,
+              status: "error",
+            }
+          : null
+      );
       throw error;
     }
   };
@@ -373,7 +389,7 @@ const SubCategoryForm: React.FC<SubCategoryFormProps> = ({
       if (mode === "add") {
         // For add mode, upload image if provided
         let imageUrl: string | null = null;
-        
+
         if (imageData?.file) {
           const uploadedImage = await uploadNewImage(imageData.file);
           imageUrl = uploadedImage.imageKey;
@@ -389,7 +405,7 @@ const SubCategoryForm: React.FC<SubCategoryFormProps> = ({
         };
 
         // Submit to backend
-       await instance.post("/api/admin/add/category", submitData);
+        await instance.post("/api/admin/add/category", submitData);
       } else {
         // For edit mode, prepare data according to new backend format
         let updatedImages: any[] = [];
@@ -397,10 +413,12 @@ const SubCategoryForm: React.FC<SubCategoryFormProps> = ({
         // If there's a new image, upload it first
         if (imageData && !imageData.isExisting && imageData.file) {
           const uploadedImage = await uploadNewImage(imageData.file);
-          updatedImages = [{
-            imageKey: uploadedImage.imageKey,
-            altText: uploadedImage.altText || data.name,
-          }];
+          updatedImages = [
+            {
+              imageKey: uploadedImage.imageKey,
+              altText: uploadedImage.altText || data.name,
+            },
+          ];
         }
 
         setSubmitStatus("saving");
@@ -494,8 +512,7 @@ const SubCategoryForm: React.FC<SubCategoryFormProps> = ({
                     <div className="mt-2 flex items-center gap-2 text-sm text-gray-600">
                       <FolderOpen className="w-4 h-4" />
                       <span>
-                        Selected parent:{" "}
-                        <strong>{selectedCategoryName}</strong>
+                        Selected parent: <strong>{selectedCategoryName}</strong>
                       </span>
                     </div>
                   )}
@@ -544,7 +561,8 @@ const SubCategoryForm: React.FC<SubCategoryFormProps> = ({
               </label>
               <p className="text-sm text-gray-500 mb-4">
                 Upload a high-quality image for the subcategory.
-                {mode === "edit" && " You can replace the existing image or remove it."}
+                {mode === "edit" &&
+                  " You can replace the existing image or remove it."}
               </p>
 
               {!imageData ? (
@@ -578,11 +596,17 @@ const SubCategoryForm: React.FC<SubCategoryFormProps> = ({
                       src={imageData.previewUrl}
                       alt={imageData.altText}
                       className={`w-48 h-48 object-cover rounded-lg border-2 ${
-                        imageData.isExisting ? "border-blue-200" : "border-green-200"
+                        imageData.isExisting
+                          ? "border-blue-200"
+                          : "border-green-200"
                       }`}
                       onError={(e) => {
-                        console.error(`Failed to load image: ${imageData.previewUrl}`, e);
-                        e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik04NyA3NEMxMDMuNTY5IDc0IDExNyA4Ny40MzE1IDExNyAxMDRWMTA5SDgzVjEwNEM4MyA4Ny40MzE1IDk2LjQzMTUgNzQgMTEzIDc0WiIgZmlsbD0iIzlDQTNBRiIvPgo8L3N2Zz4K';
+                        console.error(
+                          `Failed to load image: ${imageData.previewUrl}`,
+                          e
+                        );
+                        e.currentTarget.src =
+                          "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik04NyA3NEMxMDMuNTY5IDc0IDExNyA4Ny40MzE1IDExNyAxMDRWMTA5SDgzVjEwNEM4MyA4Ny40MzE1IDk2LjQzMTUgNzQgMTEzIDc0WiIgZmlsbD0iIzlDQTNBRiIvPgo8L3N2Zz4K";
                       }}
                     />
                     <button
@@ -602,7 +626,7 @@ const SubCategoryForm: React.FC<SubCategoryFormProps> = ({
                       </span>
                     )}
                   </div>
-                  
+
                   {/* Replace button */}
                   <div>
                     <input
@@ -629,7 +653,8 @@ const SubCategoryForm: React.FC<SubCategoryFormProps> = ({
                   type="hidden"
                   {...register("imageFile", {
                     required: "Image is required for new subcategory",
-                    validate: () => imageData !== null || "Please select an image",
+                    validate: () =>
+                      imageData !== null || "Please select an image",
                   })}
                 />
               )}
@@ -646,8 +671,14 @@ const SubCategoryForm: React.FC<SubCategoryFormProps> = ({
                 <div className="flex items-center justify-between">
                   <h4 className="text-sm font-semibold text-gray-900">
                     {submitStatus === "uploading" && "Uploading Image..."}
-                    {submitStatus === "saving" && (mode === "add" ? "Creating Subcategory..." : "Updating Subcategory...")}
-                    {submitStatus === "success" && (mode === "add" ? "Subcategory Created!" : "Subcategory Updated!")}
+                    {submitStatus === "saving" &&
+                      (mode === "add"
+                        ? "Creating Subcategory..."
+                        : "Updating Subcategory...")}
+                    {submitStatus === "success" &&
+                      (mode === "add"
+                        ? "Subcategory Created!"
+                        : "Subcategory Updated!")}
                     {submitStatus === "error" && "Upload Failed"}
                   </h4>
                   <div className="flex items-center gap-2">

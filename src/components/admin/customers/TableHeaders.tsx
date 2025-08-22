@@ -1,13 +1,13 @@
 // components/TableHeaders.tsx
-import React from 'react';
-import type{ TabType } from '../../../types/admin/user.types';
+import React from "react";
+import type { TabType } from "../../../types/admin/user.types";
 
 interface TableHeadersProps {
   activeTab: TabType;
 }
 
 export const TableHeaders: React.FC<TableHeadersProps> = ({ activeTab }) => {
-  if (activeTab === 'admins') {
+  if (activeTab === "admins") {
     return (
       <tr className="bg-gray-50">
         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">

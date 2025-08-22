@@ -38,8 +38,8 @@ export const UserProfileTab: React.FC<UserProfileTabProps> = ({
       {/* Profile Header */}
       <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg p-6 text-white">
         <div className="flex items-center space-x-4">
-          <div className="h-20 w-20 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-            <User className="h-10 w-10" />
+          <div className="h-20 w-20 bg-blue-600 bg-opacity-20 rounded-full flex items-center justify-center">
+            <User className="h-10 w-10 bg-blue" />
           </div>
           <div>
             <h2 className="text-2xl font-bold">{profile.name}</h2>

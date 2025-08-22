@@ -2,6 +2,7 @@
 import React from 'react';
 import { ShoppingCart, DollarSign, Calendar } from 'lucide-react';
 import type { CartItem } from '../../../types/admin/userDetail.types';
+const S3_BASE_URL = import.meta.env.VITE_S3_BASE_URL;
 
 interface UserCartTabProps {
   cart: CartItem[];
@@ -40,7 +41,7 @@ export const UserCartTab: React.FC<UserCartTabProps> = ({
           <div className="flex space-x-4">
             {item.product.images.length > 0 ? (
               <img 
-                src={item.product.images[0].imageUrl} 
+              src={`${S3_BASE_URL}${item.product.images[0].imageUrl}`} 
                 alt={item.product.name}
                 className="w-20 h-20 object-cover rounded-md"
               />

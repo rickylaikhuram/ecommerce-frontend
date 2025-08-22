@@ -3,6 +3,7 @@ import React from 'react';
 import { Heart, DollarSign, Calendar } from 'lucide-react';
 import type { WishlistItem } from '../../../types/admin/userDetail.types';
 
+const S3_BASE_URL = import.meta.env.VITE_S3_BASE_URL;
 interface UserWishlistTabProps {
   wishlist: WishlistItem[];
   loading: boolean;
@@ -39,7 +40,7 @@ export const UserWishlistTab: React.FC<UserWishlistTabProps> = ({
         <div key={item.id} className="bg-white rounded-lg border border-gray-200 overflow-hidden">
           {item.product.images.length > 0 ? (
             <img 
-              src={item.product.images[0].imageUrl} 
+              src={`${S3_BASE_URL}${item.product.images[0].imageUrl}`} 
               alt={item.product.name}
               className="w-full h-48 object-cover"
             />

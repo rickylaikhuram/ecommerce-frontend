@@ -17,6 +17,7 @@ import {
   Star,
 } from "lucide-react";
 import { wishlistService } from "../../services/wishlist.services";
+import Footer from "../../components/layout/Footer";
 
 // Error component
 const ErrorSection: React.FC<{
@@ -223,7 +224,7 @@ const Home: React.FC = () => {
   ];
 
   return (
-    <main className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen">
       <HeroSection />
 
       {/* New Arrivals Section - Load immediately */}
@@ -340,7 +341,8 @@ const Home: React.FC = () => {
           </div>
         </div>
       </section>
-    </main>
+      <Footer />
+    </div>
   );
 };
 

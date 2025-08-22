@@ -91,7 +91,7 @@ const ProductDetails: React.FC = () => {
       const sortedImages = [...response.data.product.images].sort(
         (a: any, b: any) => a.position - b.position
       );
-
+      
       setProduct({
         ...response.data.product,
         images: sortedImages,

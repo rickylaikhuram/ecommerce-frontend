@@ -11,6 +11,7 @@ import Products from "../pages/admin/Products";
 // import Settings from "../pages/admin/Setting";
 import Error from "../pages/error/index";
 import Categories from "../pages/admin/Category";
+import Customers from "../pages/admin/Customer";
 
 const AdminRoutes = (
     <Route path="/" element={<AdminMainLayout />}>
@@ -18,8 +19,8 @@ const AdminRoutes = (
       <Route path="dashboard" element={<Dashboard />} /> */}
       <Route path="products" element={<Products />} />
       <Route path="categories" element={<Categories />} />
-      {/* <Route path="orders" element={<Orders />} />
       <Route path="customers" element={<Customers />} />
+      {/* <Route path="orders" element={<Orders />} />
       <Route path="analytics" element={<Analytics />} />
       <Route path="notifications" element={<Notifications />} />
       <Route path="support" element={<Support />} />

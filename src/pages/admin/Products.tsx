@@ -8,11 +8,13 @@ import {
   Package,
   AlertCircle,
   X,
-  HelpCircle, // Add this import for the question mark icon
+  HelpCircle,
+  AlertTriangle,
 } from "lucide-react";
 import Button from "../../components/ui/Button";
 import Badge from "../../components/ui/Badge";
 import ProductForm from "../../components/admin/ProductForm";
+import WarningModal from "../../components/common/WarningModal"; // Import the WarningModal
 import type { Product, ProductStock } from "../../types/products.types";
 import instance from "../../utils/axios";
 const S3_BASE_URL = import.meta.env.VITE_S3_BASE_URL;
@@ -28,7 +30,13 @@ const Products: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeTooltip, setActiveTooltip] = useState<any>(null); // Track which tooltip is open
+  const [activeTooltip, setActiveTooltip] = useState<any>(null);
+
+  // Delete modal states
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [productToDelete, setProductToDelete] = useState<Product | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const tooltipRef = useRef<HTMLDivElement>(null);
   const itemsPerPage = 10;
 
@@ -116,26 +124,41 @@ const Products: React.FC = () => {
     setSelectedProduct(null);
   };
 
-  const handleDeleteProduct = async (productId: string | number) => {
-    if (window.confirm("Are you sure you want to delete this product?")) {
-      try {
-        const response = await fetch(`/api/products/${productId}`, {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-        });
+  // Open delete confirmation modal
+  const handleDeleteProduct = (product: Product) => {
+    setProductToDelete(product);
+    setIsDeleteModalOpen(true);
+  };
 
-        if (!response.ok) {
-          throw new Error("Failed to delete product");
-        }
+  // Close delete modal
+  const handleCloseDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+    setProductToDelete(null);
+    setIsDeleting(false);
+  };
 
-        setProducts(products.filter((p) => p.id !== productId));
-      } catch (error) {
-        console.error("Error deleting product:", error);
-        alert("Failed to delete product. Please try again.");
-      }
+  // Confirm delete product
+  const handleConfirmDelete = async () => {
+    if (!productToDelete?.id) return;
+
+    setIsDeleting(true);
+    try {
+      await instance.delete(`/api/admin/delete/product/${productToDelete.id}`);
+
+      // Remove product from local state
+      setProducts(products.filter((p) => p.id !== productToDelete.id));
+
+      // Close modal
+      handleCloseDeleteModal();
+
+      // Show success message (you can add toast notification here if you have one)
+      console.log("Product deleted successfully");
+    } catch (error) {
+      console.error("Error deleting product:", error);
+      // You can add error toast notification here
+      alert("Failed to delete product. Please try again.");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -443,15 +466,15 @@ const Products: React.FC = () => {
                           product.originalPrice > product.discountedPrice ? (
                             <>
                               <span className="font-semibold text-slate-800">
-                                ${Number(product.discountedPrice).toFixed(2)}
+                                ₹ {Number(product.discountedPrice).toFixed(2)}
                               </span>
                               <span className="text-sm text-slate-500 line-through ml-1">
-                                ${Number(product.originalPrice).toFixed(2)}
+                                ₹ {Number(product.originalPrice).toFixed(2)}
                               </span>
                             </>
                           ) : (
                             <span className="font-semibold text-slate-800">
-                              ${Number(product.discountedPrice).toFixed(2)}
+                              ₹ {Number(product.discountedPrice).toFixed(2)}
                             </span>
                           )}
                         </div>
@@ -523,9 +546,7 @@ const Products: React.FC = () => {
                             <Edit className="w-4 h-4" />
                           </button>
                           <button
-                            onClick={() =>
-                              product.id && handleDeleteProduct(product.id)
-                            }
+                            onClick={() => handleDeleteProduct(product)}
                             className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
                             title="Delete product"
                           >
@@ -696,6 +717,93 @@ const Products: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <WarningModal
+        isOpen={isDeleteModalOpen}
+        onClose={handleCloseDeleteModal}
+        title="Delete Product"
+        size="md"
+      >
+        <div className="space-y-4">
+          {/* Warning Icon and Message */}
+          <div className="flex items-start gap-4">
+            <div className="flex-shrink-0">
+              <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
+                <AlertTriangle className="w-5 h-5 text-red-600" />
+              </div>
+            </div>
+            <div className="flex-1">
+              <h4 className="text-lg font-semibold text-slate-800 mb-2">
+                Are you sure you want to delete this product?
+              </h4>
+              <p className="text-slate-600 mb-4">
+                You are about to permanently delete{" "}
+                <span className="font-semibold text-slate-800">
+                  "{productToDelete?.name}"
+                </span>
+                . This action cannot be undone and will remove all associated
+                data including:
+              </p>
+              <ul className="text-sm text-slate-600 space-y-1 ml-4">
+                <li>• Product information and images</li>
+                <li>• Stock levels and size variations</li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Product Preview */}
+          {productToDelete && (
+            <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-lg overflow-hidden bg-slate-100 flex-shrink-0">
+                  <ProductImage
+                    imageUrl={getMainImage(productToDelete)}
+                    alt={productToDelete.name}
+                  />
+                </div>
+                <div>
+                  <p className="font-semibold text-slate-800">
+                    {productToDelete.name}
+                  </p>
+                  <p className="text-sm text-slate-600">
+                    {productToDelete.category.name} • Stock:{" "}
+                    {getTotalStock(productToDelete.productSizes || [])} units
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Action Buttons */}
+          <div className="flex items-center justify-end gap-3 pt-4">
+            <Button
+              onClick={handleCloseDeleteModal}
+              className="px-4 py-2 text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-300 rounded-lg transition-colors"
+              disabled={isDeleting}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleConfirmDelete}
+              className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors flex items-center gap-2"
+              disabled={isDeleting}
+            >
+              {isDeleting ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  Deleting...
+                </>
+              ) : (
+                <>
+                  <Trash2 className="w-4 h-4" />
+                  Delete Product
+                </>
+              )}
+            </Button>
+          </div>
+        </div>
+      </WarningModal>
     </div>
   );
 };

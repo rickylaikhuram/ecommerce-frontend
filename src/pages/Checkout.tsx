@@ -310,7 +310,7 @@ const Checkout: React.FC = () => {
       const orderData: CreateOrderRequest = {
         productDatas: state.items,
         address: transformAddressToShipping(selectedAddress),
-        paymentMethod: "upi-qr",
+        paymentMethod: "UPI",
       };
 
       // Create order with validation callback

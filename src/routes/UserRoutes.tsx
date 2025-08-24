@@ -6,7 +6,7 @@ import Home from "../pages/home";
 import CartPage from "../pages/CartPage";
 import LocationContainer from "../pages/LocationContainer";
 import ProductDetails from "../pages/ProductDetails";
-import Error from "../pages/Error";
+import Error from "../pages/error";
 import Wishlist from "../pages/Wishlist";
 import UserDetails from "../pages/client/UserDetails";
 import UserAddress from "../pages/client/UserAddress";

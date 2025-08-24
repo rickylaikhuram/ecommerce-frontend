@@ -8,7 +8,7 @@ import Orders from "../pages/admin/Orders";
 // import Notifications from "../pages/admin/Notification";
 // import Support from "../pages/admin/Support";
 // import Settings from "../pages/admin/Setting";
-import Error from "../pages/Error";
+import Error from "../pages/error";
 import Categories from "../pages/admin/Category";
 import Customers from "../pages/admin/Customer";
 import PriceSetting from "../pages/admin/PriceSetting";

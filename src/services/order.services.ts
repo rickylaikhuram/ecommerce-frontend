@@ -49,6 +49,51 @@ class OrderService {
     }
   }
 
+  async createCodOrder(
+    orderData: CreateOrderRequest,
+    onValidationFailed?: (validationData: CartCheckoutResponse) => void
+  ): Promise<OrderResponse> {
+    try {
+      const response = await instance.post(
+        `${this.baseUrl}/create-order/cod`,
+        orderData
+      );
+      return response.data;
+    } catch (error: any) {
+      // Handle specific error cases
+      if (error.response?.status === 400) {
+        const errorCode = error.response.data?.code;
+        const errorMessage = error.response.data?.message;
+
+        // Handle cart validation failure specifically
+        if (errorCode === "CART_VALIDATION_FAILED") {
+          // If validation data is provided in the error response, use it
+          const validationData = error.response.data?.validationData;
+          if (validationData && onValidationFailed) {
+            onValidationFailed(validationData);
+          }
+          throw new Error("CART_VALIDATION_FAILED");
+        }
+
+        // Handle insufficient stock error specifically for COD
+        if (errorCode === "INSUFFICIENT_STOCK") {
+          throw new Error("INSUFFICIENT_STOCK");
+        }
+
+        throw new Error(errorMessage || "Invalid order data");
+      }
+      if (error.response?.status === 401) {
+        throw new Error("Authentication required");
+      }
+      if (error.response?.status === 422) {
+        throw new Error("Validation failed");
+      }
+      throw new Error(
+        error.response?.data?.message || "Failed to create COD order"
+      );
+    }
+  }
+  
   async getOrderHistory(): Promise<{ success: boolean; order: any[] }> {
     const response = await instance.get(`${this.baseUrl}/orders`);
     return response.data;

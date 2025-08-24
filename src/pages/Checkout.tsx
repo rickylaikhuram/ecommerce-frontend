@@ -420,29 +420,71 @@ const Checkout: React.FC = () => {
     }
   };
 
-  const handlePlaceOrder = async () => {
-    // For COD orders, you can create a similar service method
-    setIsProcessing(true);
-    setError(null);
+const handlePlaceOrder = async () => {
+  if (!state || !state.items || state.items.length === 0) {
+    setError("Session expired. Redirecting to cart...");
+    navigate("/cart", { replace: true });
+    return;
+  }
+  if (!selectedAddress) {
+    setError("Please select a delivery address");
+    return;
+  }
 
-    try {
-      // Simulate order placement for now
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+  setIsProcessing(true);
+  setError(null);
 
-      navigate("/order-success/123", {
+  try {
+    // Prepare order data
+    const orderData: CreateOrderRequest = {
+      productDatas: state.items,
+      address: transformAddressToShipping(selectedAddress),
+      paymentMethod: "COD",
+    };
+
+    // Create COD order with validation callback
+    const result = await orderService.createCodOrder(
+      orderData,
+      // Callback for validation failure
+      (validationData: CartCheckoutResponse) => {
+        setCartValidation(validationData);
+        setShowValidationModal(true);
+        setCanProceedToPayment(validationData.canProceedToCheckout);
+      }
+    );
+
+    if (result.success) {
+      // Navigate to order success page with real order data
+      navigate(`/order-success/${result.orderId}`, {
         state: {
           paymentMethod: "cod",
-          amount: pricingDetails.total,
-          orderId: "ORD" + Date.now(),
+          amount: result.amount,
+          orderId: result.orderId,
         },
       });
-    } catch (error) {
-      console.error("Order placement failed:", error);
-      setError("Failed to place order. Please try again.");
-    } finally {
-      setIsProcessing(false);
+    } else {
+      setError("Failed to place order");
     }
-  };
+  } catch (error: any) {
+    console.error("COD order placement failed:", error);
+
+    if (error.message === "CART_VALIDATION_FAILED") {
+      // Validation modal will be shown via the callback
+      return;
+    }
+
+    if (error.message === "INSUFFICIENT_STOCK") {
+      setError("Some items are out of stock. Please update your cart and try again.");
+      return;
+    }
+
+    setError(
+      error.message || "Failed to place order. Please try again."
+    );
+  } finally {
+    setIsProcessing(false);
+  }
+};
 
   // Add the modal handler
   const handleModalGoToCart = () => {

@@ -33,7 +33,7 @@ const UserRoutes = (
 
     {/* Other Routes */}
     <Route path="orders/:id" element={<OrderDetails />} />
-    <Route path="orders/confirmed/:id" element={<OrderConfirmation />} />
+    <Route path="orders-success/:id" element={<OrderConfirmation />} />
     <Route path="/products" element={<ProductsPage />} />
     <Route path="/search" element={<ProductsPage />} />
     <Route path="/products/:id" element={<ProductDetails />} />

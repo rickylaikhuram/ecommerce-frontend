@@ -17,5 +17,5 @@ export interface WishlistResponse {
 }
 
 export interface WishlistIdsResponse {
-  productIds: string[];
+  wishlistedIds: string[];
 }

@@ -1,13 +1,11 @@
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App.tsx";
-import { AuthProvider } from "./context/AuthContext.tsx";
-import { CartProvider } from "./context/CartContext.tsx"; 
+import { Provider } from "react-redux";
+import { store } from "./redux/store.ts";
 
 createRoot(document.getElementById("root")!).render(
-  <AuthProvider>
-    <CartProvider> 
-      <App />
-    </CartProvider>
-  </AuthProvider>
+  <Provider store={store}>
+    <App />
+  </Provider>
 );

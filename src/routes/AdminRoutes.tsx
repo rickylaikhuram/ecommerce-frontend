@@ -8,9 +8,10 @@ import Orders from "../pages/admin/Orders";
 // import Notifications from "../pages/admin/Notification";
 // import Support from "../pages/admin/Support";
 // import Settings from "../pages/admin/Setting";
-import Error from "../pages/error/index";
+import Error from "../pages/Error/index";
 import Categories from "../pages/admin/Category";
 import Customers from "../pages/admin/Customer";
+import PriceSetting from "../pages/admin/PriceSetting";
 
 const AdminRoutes = (
   <Route path="/" element={<AdminMainLayout />}>
@@ -20,6 +21,7 @@ const AdminRoutes = (
     <Route path="categories" element={<Categories />} />
     <Route path="orders" element={<Orders />} />
     <Route path="customers" element={<Customers />} />
+    <Route path="pricesetting" element={<PriceSetting />} />
     {/*<Route path="analytics" element={<Analytics />} />
       <Route path="notifications" element={<Notifications />} />
       <Route path="support" element={<Support />} />

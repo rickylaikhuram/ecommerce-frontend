@@ -1,16 +1,31 @@
 // components/ProductListCard.tsx
 import React, { useState, useMemo } from "react";
 import { Heart, ShoppingCart } from "lucide-react";
-import type { ProductCardProps } from "../../types/products.types";
+import { useAppSelector, useAppDispatch } from "../../redux/hook";
+import { toggleWishlist, selectIsProductWishlisted } from "../../redux/slice/wishlist";
+import type { Product } from "../../types/products.types";
 
-const ProductListCard: React.FC<ProductCardProps> = ({
+interface ProductListCardProps {
+  product: Product;
+  className?: string;
+  onProductClick?: (productId: string) => void;
+}
+
+const ProductListCard: React.FC<ProductListCardProps> = ({
   product,
-  onToggleWishlist,
-  isWishlisted = false,
   className = "",
   onProductClick,
 }) => {
+  const dispatch = useAppDispatch();
   const [isHovered, setIsHovered] = useState(false);
+
+  // Get auth state to check if user is logged in
+  const { user, status } = useAppSelector((state) => state.auth);
+  const isAuthenticated = user && status === "succeeded";
+  
+  // Get wishlist state for this specific product
+  const isWishlisted = useAppSelector(selectIsProductWishlisted(product.id!));
+  const wishlistLoading = useAppSelector((state) => state.wishlist.loading);
 
   // Memoize expensive calculations - same as grid card
   const productData = useMemo(() => {
@@ -50,14 +65,23 @@ const ProductListCard: React.FC<ProductCardProps> = ({
     onProductClick?.(product.id!);
   };
 
-  const handleToggleWishlist = (e: React.MouseEvent) => {
+  const handleToggleWishlist = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    onToggleWishlist?.(product.id!);
+    
+    if (!isAuthenticated) {
+      // Handle unauthenticated user - could show login modal or redirect
+      console.warn("Please log in to add items to wishlist");
+      // You might want to dispatch a modal action or navigate to login
+      // dispatch(openLoginModal()) or navigate('/login')
+      return;
+    }
+    
+    dispatch(toggleWishlist(product.id!));
   };
 
   return (
     <div
-      className={`bg-white rounded  hover:border-gray-100 shadow-xs hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer ${className}`}
+      className={`bg-white rounded hover:border-gray-100 shadow-xs hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer ${className}`}
       onClick={handleProductClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -73,7 +97,10 @@ const ProductListCard: React.FC<ProductCardProps> = ({
           >
             <button
               onClick={handleToggleWishlist}
-              className="wishlist-button p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-200 group/wishlist"
+              disabled={wishlistLoading}
+              className={`wishlist-button p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-200 group/wishlist ${
+                wishlistLoading ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
               aria-label="Toggle wishlist"
             >
               <Heart
@@ -158,7 +185,7 @@ const ProductListCard: React.FC<ProductCardProps> = ({
 
         {/* Price Section */}
         <div className="flex p-8 items-center">
-          <div className="flex flex-col  ">
+          <div className="flex flex-col">
             <span className="text-2xl font-bold text-gray-900">
               ₹{productData.discountedPrice.toFixed(2)}
             </span>

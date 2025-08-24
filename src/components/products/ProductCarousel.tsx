@@ -18,8 +18,6 @@ interface ProductCarouselProps {
 const ProductCarousel: React.FC<ProductCarouselProps> = ({
   title,
   products,
-  onToggleWishlist,
-  wishlistedItems = [],
   onProductClick,
   showNavigation = true,
   autoScroll = false,
@@ -217,8 +215,6 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({
             >
               <ProductCard
                 product={product}
-                onToggleWishlist={onToggleWishlist}
-                isWishlisted={wishlistedItems.includes(product.id!)}
                 onProductClick={onProductClick}
               />
             </div>

@@ -6,8 +6,6 @@ import type { Product } from "../../types/products.types";
 interface ProductSectionProps {
   title: string;
   products: Product[];
-  onToggleWishlist: (productId: string) => void;
-  wishlistedItems: string[];
   onProductClick: (productId: string) => void;
   sectionClassName?: string;
   containerClassName?: string;
@@ -18,9 +16,7 @@ interface ProductSectionProps {
 
 const ProductSection: React.FC<ProductSectionProps> = ({ 
   title,
-  products, 
-  onToggleWishlist, 
-  wishlistedItems, 
+  products,
   onProductClick,
   sectionClassName = "",
   containerClassName = "container mx-auto px-4 py-8",
@@ -34,8 +30,6 @@ const ProductSection: React.FC<ProductSectionProps> = ({
         <ProductCarousel
           title={title}
           products={products}
-          onToggleWishlist={onToggleWishlist}
-          wishlistedItems={wishlistedItems}
           onProductClick={onProductClick}
           autoScroll={autoScroll}
           autoScrollInterval={autoScrollInterval}

@@ -1,15 +1,16 @@
 // components/UserSidebar.tsx
 import React from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import {
   FaUser,
   FaMapMarkerAlt,
   FaShoppingBag,
   FaHeart,
   FaShieldAlt,
-  FaSignOutAlt
+  FaSignOutAlt,
 } from "react-icons/fa";
-import { useAuth } from "../../context/AuthContext";
+import { useAppDispatch } from "../../redux/hook";
+import { logoutUser } from "../../redux/slice/auth";
 
 interface SidebarItem {
   icon: React.ReactNode;
@@ -18,13 +19,11 @@ interface SidebarItem {
 }
 
 const UserSidebar: React.FC = () => {
-  const { logout } = useAuth();
-
-  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const location = useLocation();
   const handleLogout = async () => {
-    await logout();
-    navigate("/signin"); // or wherever you want to redirect
+    await dispatch(logoutUser()).unwrap();
+    window.location.href = "/signin";
   };
   const sidebarItems: SidebarItem[] = [
     {

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import {
   Eye,
@@ -14,7 +14,9 @@ import {
 } from "lucide-react";
 import { OTPVerification } from "./OTPVerification"; // Import the OTP component
 import instance from "../../utils/axios";
-import { useAuth } from "../../context/AuthContext";
+
+import { useAppDispatch } from "../../redux/hook";
+import { fetchAuth } from "../../redux/slice/auth";
 
 type FormData = {
   fullName: string;
@@ -29,8 +31,7 @@ const SignUp = () => {
   const [formData, setFormData] = useState<FormData | null>(null); // Store form data
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { refreshAuth } = useAuth();
-  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const {
     register,
@@ -84,8 +85,7 @@ const SignUp = () => {
         phone: formData.phone, // Don't prefix with +91 unless your backend expects it
         otp,
       });
-      await refreshAuth();
-      navigate("/");
+      await dispatch(fetchAuth());
     } catch (err) {
       console.error("Registration failed:", err);
       throw err; // Re-throw to handle in OTP component

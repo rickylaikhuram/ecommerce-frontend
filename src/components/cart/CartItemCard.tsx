@@ -11,7 +11,14 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import type { CartItem } from "../../types/cart.types";
-import { useCartContext } from "../../context/CartContext";
+import { useAppDispatch, useAppSelector } from "../../redux/hook";
+import {
+  updateQuantity,
+  removeFromCart,
+  updateQuantityOptimistic,
+  removeItemOptimistic,
+} from "../../redux/slice/cart";
+
 const S3_BASE_URL = import.meta.env.VITE_S3_BASE_URL;
 
 interface CartItemCardProps {
@@ -19,7 +26,8 @@ interface CartItemCardProps {
 }
 
 export const CartItemCard: React.FC<CartItemCardProps> = ({ item }) => {
-  const { updateQuantity, removeFromCart, actionLoading } = useCartContext();
+  const dispatch = useAppDispatch();
+  const actionLoading = useAppSelector((state) => state.cart.actionLoading);
   const [imageError, setImageError] = useState(false);
 
   const isLoading = actionLoading === item.id;
@@ -33,11 +41,14 @@ export const CartItemCard: React.FC<CartItemCardProps> = ({ item }) => {
   const maxQuantityAllowed =
     item.stockInfo?.availableStock || item.availableStock;
   const suggestedQuantity = item.stockInfo?.maxAllowed || item.availableStock; // For the "Fix" button
-  
+
   const handleQuantityChange = async (newQuantity: number) => {
     // Remove item if quantity goes to 0
     if (newQuantity < 1) {
-      await removeFromCart(item.id);
+      // Optimistic update first
+      dispatch(removeItemOptimistic(item.id));
+      // Then dispatch the actual removal
+      dispatch(removeFromCart(item.id));
       return;
     }
 
@@ -46,21 +57,27 @@ export const CartItemCard: React.FC<CartItemCardProps> = ({ item }) => {
 
     if (isReducing) {
       // Always allow reducing quantity - no stock check needed
-      await updateQuantity(item.id, newQuantity);
+      dispatch(updateQuantityOptimistic({ itemId: item.id, quantity: newQuantity }));
+      dispatch(updateQuantity({ itemId: item.id, quantity: newQuantity }));
     } else if (isIncreasing && newQuantity <= maxQuantityAllowed) {
       // Only check stock limit when increasing
-      await updateQuantity(item.id, newQuantity);
+      dispatch(updateQuantityOptimistic({ itemId: item.id, quantity: newQuantity }));
+      dispatch(updateQuantity({ itemId: item.id, quantity: newQuantity }));
     }
     // If same quantity or trying to increase beyond stock, do nothing
   };
 
   const handleRemove = async () => {
-    await removeFromCart(item.id);
+    // Optimistic update first
+    dispatch(removeItemOptimistic(item.id));
+    // Then dispatch the actual removal
+    dispatch(removeFromCart(item.id));
   };
 
   // Fix quantity to suggested amount
   const handleFixQuantity = async () => {
-    await updateQuantity(item.id, suggestedQuantity);
+    dispatch(updateQuantityOptimistic({ itemId: item.id, quantity: suggestedQuantity }));
+    dispatch(updateQuantity({ itemId: item.id, quantity: suggestedQuantity }));
   };
 
   // Card styling based on status
@@ -98,7 +115,7 @@ export const CartItemCard: React.FC<CartItemCardProps> = ({ item }) => {
         }`}
       >
         {/* Product Image */}
-        <Link to={`/product/${item.productId}`} className="flex-shrink-0">
+        <Link to={`/products/${item.productId}`} className="flex-shrink-0">
           <div className="w-full sm:w-32 h-32 bg-gray-100 rounded-lg overflow-hidden">
             {item.mainImage && !imageError ? (
               <img
@@ -122,7 +139,7 @@ export const CartItemCard: React.FC<CartItemCardProps> = ({ item }) => {
           <div className="flex flex-col sm:flex-row sm:justify-between gap-4">
             <div className="flex-1">
               <Link
-                to={`/product/${item.productId}`}
+                to={`/products/${item.productId}`}
                 className="text-lg font-semibold text-gray-900 hover:text-blue-600 transition-colors"
               >
                 {item.name}

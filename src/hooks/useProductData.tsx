@@ -7,8 +7,13 @@ import type {
   CategoryResponse,
 } from "../types/products.types";
 import { productService } from "../services/product.services";
-import { wishlistService } from "../services/wishlist.services";
 import extractUniqueSizes from "../utils/extractSizes";
+import { useAppSelector, useAppDispatch } from "../redux/hook";
+import {
+  toggleWishlist as toggleWish,
+  fetchWishlistedIds,
+  selectWishlistedIds,
+} from "../redux/slice/wishlist";
 
 interface UseProductDataReturn {
   // Data states
@@ -38,10 +43,18 @@ interface UseProductDataReturn {
 }
 
 export const useProductData = (): UseProductDataReturn => {
+  const dispatch = useAppDispatch();
+  // Get auth state from Redux
+  const { user, status } = useAppSelector((state) => state.auth);
+  const isAuthenticated = user && status === "succeeded";
+  // Get wishlist state from Redux
+  const wishlistedIds = useAppSelector(selectWishlistedIds);
+
   // Data states
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [wishlistedItems, setWishlistedItems] = useState<string[]>([]);
+  const [wishlistedItems, setWishlistedItems] =
+    useState<string[]>(wishlistedIds);
   const [sizes, setSizes] = useState<string[]>([]);
   const [pagination, setPagination] = useState({
     total: 0,
@@ -102,36 +115,42 @@ export const useProductData = (): UseProductDataReturn => {
     }
   }, []);
 
-  // Load user's wishlist
+  // Load user's wishlist - only for authenticated users
   const loadWishlist = useCallback(async () => {
-    try {
-      const res = await wishlistService.getUserWishlistedIds();
+    // Only load wishlist if user is authenticated
+    if (!isAuthenticated) {
+      setWishlistedItems([]);
+      return;
+    }
 
-      setWishlistedItems(res.productIds);
+    try {
+      dispatch(fetchWishlistedIds());
     } catch (err) {
       console.error("Error loading wishlist:", err);
       // Don't show error to user for wishlist, just log it
       setWishlistedItems([]);
     }
-  }, []);
+  }, [isAuthenticated]);
 
-  // Toggle wishlist item
-  const toggleWishlist = useCallback(async (productId: string) => {
-    try {
-      await wishlistService.toggleWishlist(productId);
+  // Toggle wishlist item - only for authenticated users
+  const toggleWishlist = useCallback(
+    async (productId: string) => {
+      // Only allow wishlist toggle for authenticated users
+      if (!isAuthenticated) {
+        console.warn("User must be authenticated to use wishlist");
+        // You might want to show a login modal or redirect here
+        return;
+      }
 
-      setWishlistedItems((prev) => {
-        const newWishlist = prev.includes(productId)
-          ? prev.filter((id) => id !== productId)
-          : [...prev, productId];
-
-        return newWishlist;
-      });
-    } catch (err) {
-      console.error("Failed to toggle wishlist:", err);
-      // Could show a toast notification here instead of setting main error
-    }
-  }, []);
+      try {
+        await dispatch(toggleWish(productId)).unwrap();
+      } catch (err) {
+        console.error("Failed to toggle wishlist:", err);
+        // Could show a toast notification here instead of setting main error
+      }
+    },
+    [isAuthenticated]
+  );
 
   // Clear error state
   const clearError = useCallback(() => {

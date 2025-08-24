@@ -2,7 +2,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { X, ChevronDown, Heart, User, Loader2 } from "lucide-react";
-import { useCartContext } from "../../context/CartContext";
+import { useAppSelector } from "../../redux/hook";
+import { selectCart } from "../../redux/slice/cart";
 import { CartIcon } from "./CartIcon";
 import type { NavItem } from "./Navigation";
 
@@ -23,7 +24,10 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
   profileLabel,
   onNavClick,
 }) => {
-  const { cart, loading: cartLoading } = useCartContext();
+  const cartLoading = useAppSelector(
+    (state) => state.cart.status === "loading"
+  );
+  const cart = useAppSelector(selectCart);
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
   const cartCount = cart?.summary.totalItems || 0;
 
@@ -116,7 +120,7 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
               />
               Wishlist
             </Link>
-            
+
             <Link
               to="/cart"
               className={`flex items-center gap-3 py-2.5 px-3 text-sm font-medium rounded-lg transition-all duration-200 ${
@@ -138,7 +142,7 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
                 ) : null}
               </span>
             </Link>
-            
+
             <Link
               to={profileHref}
               className={`flex items-center gap-3 py-2.5 px-3 text-sm font-medium rounded-lg transition-all duration-200 ${

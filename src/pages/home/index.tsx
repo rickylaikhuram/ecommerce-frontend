@@ -16,8 +16,12 @@ import {
   HeartHandshake,
   Star,
 } from "lucide-react";
-import { wishlistService } from "../../services/wishlist.services";
 import Footer from "../../components/layout/Footer";
+import { useAppSelector, useAppDispatch } from "../../redux/hook";
+import {
+  fetchWishlistedIds,
+  selectWishlistError,
+} from "../../redux/slice/wishlist";
 
 // Error component
 const ErrorSection: React.FC<{
@@ -47,8 +51,6 @@ const ErrorSection: React.FC<{
 const LazyProductSection: React.FC<{
   title: string;
   fetcher: () => Promise<ProductResponse>;
-  onToggleWishlist: (productId: string) => void;
-  wishlistedItems: string[];
   onProductClick: (productId: string) => void;
   sectionClassName?: string;
   containerClassName?: string;
@@ -123,7 +125,14 @@ const LazyProductSection: React.FC<{
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
-  const [wishlist, setWishlist] = useState<string[]>([]);
+  const dispatch = useAppDispatch();
+
+  // Get auth state from Redux
+  const { user, status } = useAppSelector((state) => state.auth);
+  const isAuthenticated = user && status === "succeeded";
+
+  // Get wishlist state from Redux
+  const wishlistError = useAppSelector(selectWishlistError);
 
   // Initial loading state for critical content
   const [isInitialLoading, setIsInitialLoading] = useState(true);
@@ -152,31 +161,12 @@ const Home: React.FC = () => {
     loadInitialData();
   }, []);
 
+  // Load wishlist only for authenticated users
   useEffect(() => {
-    const loadWishlist = async () => {
-      try {
-        const res = await wishlistService.getUserWishlistedIds();
-        setWishlist(res.productIds);
-      } catch (err) {
-        console.error("Error loading wishlist", err);
-      }
-    };
-
-    loadWishlist();
-  }, []);
-
-  const handleToggleWishlist = useCallback(async (productId: string) => {
-    try {
-      await wishlistService.toggleWishlist(productId);
-      setWishlist((prev) =>
-        prev.includes(productId)
-          ? prev.filter((id) => id !== productId)
-          : [...prev, productId]
-      );
-    } catch (err) {
-      console.error("Failed to toggle wishlist", err);
+    if (isAuthenticated) {
+      dispatch(fetchWishlistedIds());
     }
-  }, []);
+  }, [isAuthenticated, dispatch]);
 
   const handleProductClick = useCallback(
     (productId: string) => {
@@ -240,8 +230,6 @@ const Home: React.FC = () => {
         <ProductSection
           title="New Arrivals"
           products={newArrivals}
-          onToggleWishlist={handleToggleWishlist}
-          wishlistedItems={wishlist}
           onProductClick={handleProductClick}
           sectionClassName="bg-gray-50"
         />
@@ -253,8 +241,6 @@ const Home: React.FC = () => {
       <LazyProductSection
         title="Best Sellers"
         fetcher={() => productService.getBestsellers("week", 10)}
-        onToggleWishlist={handleToggleWishlist}
-        wishlistedItems={wishlist}
         onProductClick={handleProductClick}
         autoScroll={true}
         autoScrollInterval={5000}
@@ -267,8 +253,6 @@ const Home: React.FC = () => {
       <LazyProductSection
         title="Featured Products"
         fetcher={() => productService.getTrendingProducts(8)}
-        onToggleWishlist={handleToggleWishlist}
-        wishlistedItems={wishlist}
         onProductClick={handleProductClick}
         sectionClassName="bg-gradient-to-r from-blue-50 to-purple-50"
         containerClassName="container mx-auto px-4 py-12"
@@ -281,8 +265,6 @@ const Home: React.FC = () => {
         fetcher={() =>
           productService.getProductsByCategory("electronics", "popular", 6)
         }
-        onToggleWishlist={handleToggleWishlist}
-        wishlistedItems={wishlist}
         onProductClick={handleProductClick}
         showNavigation={false}
         cardCount={3}
@@ -297,8 +279,6 @@ const Home: React.FC = () => {
             limit: 5,
           })
         }
-        onToggleWishlist={handleToggleWishlist}
-        wishlistedItems={wishlist}
         onProductClick={handleProductClick}
         sectionClassName="border-t border-gray-200 bg-gray-50"
         containerClassName="container mx-auto px-4 py-8 mt-8"
@@ -341,6 +321,12 @@ const Home: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {wishlistError && (
+        <div className="fixed bottom-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg shadow-lg z-50">
+          <p className="text-sm">{wishlistError}</p>
+        </div>
+      )}
       <Footer />
     </div>
   );

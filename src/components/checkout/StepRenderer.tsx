@@ -2,7 +2,7 @@
 import React from "react";
 import { LogIn, Check, Package } from "lucide-react";
 import type { Address } from "../../types/user.types";
-import type { User } from "../../types/user.types";
+import type { UserProfile } from "../../types/user.types";
 import type { ProductResponse } from "../../types/checkout.types";
 
 // Import your existing step components
@@ -14,7 +14,7 @@ import UserInfo from "./steps/UserInfo";
 interface StepRendererProps {
   currentStep: number;
   isAuthenticated: boolean;
-  userProfile: User | null;
+  userProfile: UserProfile | null;
   
   // Address related props
   addresses: Address[];

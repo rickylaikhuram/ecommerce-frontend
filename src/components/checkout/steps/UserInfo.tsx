@@ -4,14 +4,13 @@ import {
   UserCircle,
   Phone,
   Mail,
-  Crown,
   CheckCircle,
   LogOut
 } from "lucide-react";
-import type { User } from "../../../types/user.types";
+import type { UserProfile } from "../../../types/user.types";
 
 interface UserInfoProps {
-  user: User | null;
+  user: UserProfile | null;
   onChangeClick: () => void;
 }
 
@@ -38,12 +37,6 @@ const UserInfo: React.FC<UserInfoProps> = ({ user, onChangeClick }) => {
               <h3 className="text-xl font-bold text-gray-900">
                 {user?.name || "Guest User"}
               </h3>
-              {user?.isAdmin && (
-                <div className="flex items-center space-x-1 bg-gradient-to-r from-purple-500 to-purple-600 text-white px-3 py-1 rounded-full text-xs font-bold">
-                  <Crown className="h-3 w-3" />
-                  <span>ADMIN</span>
-                </div>
-              )}
             </div>
 
             <div className="space-y-2">

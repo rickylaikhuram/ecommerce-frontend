@@ -1,9 +1,9 @@
-
 // components/Header/CartIcon.tsx
-import React from "react";
+import React, { useEffect } from "react";
 import { ShoppingCart, Loader2 } from "lucide-react";
 import { useLocation } from "react-router-dom";
-import { useCartContext } from "../../context/CartContext";
+import { useAppDispatch, useAppSelector } from "../../redux/hook";
+import { fetchCart } from "../../redux/slice/cart";
 
 interface CartIconProps {
   size?: number;
@@ -17,9 +17,16 @@ export const CartIcon: React.FC<CartIconProps> = ({
   className = "",
 }) => {
   const location = useLocation();
-  const { cart, loading: cartLoading } = useCartContext();
+  const dispatch = useAppDispatch();
+  const cart = useAppSelector((state) => state.cart.cart);
+  const cartLoading = useAppSelector(
+    (state) => state.cart.status === "loading"
+  );
   const cartCount = cart?.summary.totalItems || 0;
   const isActive = location.pathname === "/cart";
+  useEffect(() => {
+    dispatch(fetchCart());
+  }, [dispatch]);
 
   return (
     <div className={`relative ${className}`}>

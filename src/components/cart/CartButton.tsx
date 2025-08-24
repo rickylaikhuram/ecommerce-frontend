@@ -1,7 +1,12 @@
 // components/cart/CartButton.tsx
 import React, { useState } from "react";
 import { ShoppingCart, Check, Loader2, AlertTriangle } from "lucide-react";
-import { useCartContext } from "../../context/CartContext";
+import { useAppDispatch, useAppSelector } from "../../redux/hook"; // Adjust path as needed
+import {
+  addToCart,
+  selectCartItem,
+  selectActionLoading,
+} from "../../redux/slice/cart"; // Adjust path as needed
 import { useNavigate } from "react-router-dom";
 
 interface CartButtonProps {
@@ -19,10 +24,12 @@ export const CartButton: React.FC<CartButtonProps> = ({
   className = "",
 }) => {
   const navigate = useNavigate();
-  const { addToCart, getCartItem, actionLoading } = useCartContext();
+  const dispatch = useAppDispatch();
   const [localLoading, setLocalLoading] = useState(false);
+  // Use Redux selectors instead of context
+  const actionLoading = useAppSelector(selectActionLoading);
+  const cartItem = useAppSelector(selectCartItem(productId, selectedSize));
 
-  const cartItem = getCartItem(productId, selectedSize);
   const quantity = cartItem?.quantity || 0;
   const inCart = quantity > 0;
   const isLowStock = availableStock > 0 && availableStock < 10;
@@ -35,7 +42,16 @@ export const CartButton: React.FC<CartButtonProps> = ({
 
     setLocalLoading(true);
     try {
-      await addToCart(productId, selectedSize, 1);
+      await dispatch(
+        addToCart({
+          productId,
+          stockName: selectedSize,
+          quantity: 1,
+        })
+      ).unwrap();
+    } catch (error) {
+      console.error("Failed to add to cart:", error);
+      // You might want to show a toast notification here
     } finally {
       setLocalLoading(false);
     }
@@ -69,7 +85,7 @@ export const CartButton: React.FC<CartButtonProps> = ({
           <span>Only {availableStock} left in stock!</span>
         </div>
       )}
-      
+
       <button
         onClick={handleAddToCart}
         disabled={isLoading || availableStock === 0 || !selectedSize}
@@ -94,8 +110,11 @@ export const CartButton: React.FC<CartButtonProps> = ({
         ) : (
           <>
             <ShoppingCart className="w-4 h-4" />
-            {availableStock === 0 ? "Out of Stock" : 
-             isLowStock ? "Add to Cart (Limited Stock)" : "Add to Cart"}
+            {availableStock === 0
+              ? "Out of Stock"
+              : isLowStock
+              ? "Add to Cart (Limited Stock)"
+              : "Add to Cart"}
           </>
         )}
       </button>

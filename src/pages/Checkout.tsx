@@ -1,5 +1,5 @@
 // pages/Checkout.tsx
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   LogIn,
@@ -8,8 +8,9 @@ import {
   CreditCard,
   type LucideIcon,
 } from "lucide-react";
-import { useAuth } from "../context/AuthContext";
-import { useCartContext } from "../context/CartContext";
+import { useAppDispatch, useAppSelector } from "../redux/hook";
+import { logoutUser } from "../redux/slice/auth";
+import { fetchCart, removeFromCart, removeItemOptimistic } from "../redux/slice/cart";
 import type {
   CartCheckoutResponse,
   CheckoutState,
@@ -30,6 +31,7 @@ import PricingSidebar from "../components/checkout/PricingSidebar";
 import NavigationButtons from "../components/checkout/NavigationButtons";
 import StepRenderer from "../components/checkout/StepRenderer";
 import CartValidationModal from "../components/checkout/CartValidationModal";
+import { fetchProfile } from "../redux/slice/userProfile";
 
 type Step = {
   id: number;
@@ -62,15 +64,21 @@ interface PricingDetails {
 const Checkout: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { authStatus, userProfile, logout } = useAuth();
-  const { removeFromCart, refreshCart } = useCartContext();
+  const dispatch = useAppDispatch();
+  const { user, status } = useAppSelector((state) => state.auth);
+  const { user: userProfile, status: userStatus } = useAppSelector(
+    (state) => state.user
+  );
   const state = location.state as CheckoutState | null;
 
   const [currentStep, setCurrentStep] = useState(1);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const isValidState = state && state.items && state.items.length > 0;
+  const [isValidCheckout, setIsValidCheckout] = useState(isValidState);
   const [isValidatingCart, setIsValidatingCart] = useState(false);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
 
   // User data state
   const [addresses, setAddresses] = useState<Address[]>([]);
@@ -94,35 +102,52 @@ const Checkout: React.FC = () => {
     savings: 0,
   });
 
-  // If no items were passed, redirect to cart
+  // Check for valid checkout state
   useEffect(() => {
+    if (!isValidState) {
+      navigate("/cart", { replace: true });
+      setIsValidCheckout(false);
+    }
+  }, [isValidState, navigate]);
+
+  // Replace the existing calculatePricing function with this safer version:
+  const calculatePricing = useCallback(
+    (cartData: CartCheckoutResponse): PricingDetails => {
+      const validItems =
+        cartData?.products?.filter((item) => item?.canProceedToCheckout) || [];
+
+      const subtotal = validItems.reduce((sum, item) => {
+        const itemTotal = item?.cartDetails?.itemTotal;
+        return sum + (itemTotal ? parseFloat(itemTotal.toString()) : 0);
+      }, 0);
+
+      const discount = subtotal * 0.1;
+      const deliveryFee = subtotal > 500 ? 0 : 50;
+      const protectFee = subtotal > 0 ? 25 : 0;
+      const total = subtotal - discount + deliveryFee + protectFee;
+
+      return {
+        subtotal,
+        protectFee,
+        discount,
+        deliveryFee,
+        total,
+        savings: discount,
+      };
+    },
+    []
+  );
+
+  const loadCheckoutUserData = useCallback(async () => {
     if (!state || !state.items || state.items.length === 0) {
       navigate("/cart", { replace: true });
-    }
-  }, [state, navigate]);
-
-  if (!state || !state.items || state.items.length === 0) {
-    return null;
-  }
-
-  // Wait for auth status to be determined
-  useEffect(() => {
-    if (authStatus === null) {
       return;
     }
-    if (authStatus.isAuthenticated) {
-      setCurrentStep(2);
-    }
-    setIsAuthenticated(authStatus.isAuthenticated);
-    if (userProfile) {
-      loadCheckoutUserData();
-    }
-  }, [authStatus, userProfile]);
 
-  const loadCheckoutUserData = async () => {
     try {
       setError(null);
       setIsValidatingCart(true);
+
       // Load user addresses
       const userAddresses = await addressService.getAddresses();
       setAddresses(userAddresses || []);
@@ -146,9 +171,19 @@ const Checkout: React.FC = () => {
         setSelectedAddress(defaultAddr);
       }
 
-      // Auto-advance to review step if authenticated
-      if (authStatus?.isAuthenticated && userAddresses?.length > 0) {
+      // Auto-advance to review step if authenticated and has addresses
+      if (user !== null && userAddresses?.length > 0) {
         setCurrentStep(3);
+      }
+
+      // Handle userProfile
+      if (userProfile) {
+        console.log("User profile is available:", userProfile);
+      } else if (userStatus === "loading") {
+        console.log("User profile is still loading...");
+      } else {
+        console.log("User profile is not available, fetching...");
+        dispatch(fetchProfile());
       }
     } catch (error) {
       console.error("Error loading checkout data:", error);
@@ -156,42 +191,78 @@ const Checkout: React.FC = () => {
     } finally {
       setIsValidatingCart(false);
     }
-  };
+  }, [
+    state,
+    user,
+    userProfile,
+    userStatus,
+    dispatch,
+    navigate,
+    calculatePricing,
+  ]);
 
-  // Replace the existing calculatePricing function with this safer version:
-  const calculatePricing = (cartData: CartCheckoutResponse): PricingDetails => {
-    // Only calculate from valid items that can proceed to checkout
-    const validItems =
-      cartData?.products?.filter((item) => item?.canProceedToCheckout) || [];
+  useEffect(() => {
+    let isMounted = true;
 
-    const subtotal = validItems.reduce((sum, item) => {
-      const itemTotal = item?.cartDetails?.itemTotal;
-      return sum + (itemTotal ? parseFloat(itemTotal.toString()) : 0);
-    }, 0);
+    const loadData = async () => {
+      // Wait for auth to be resolved
+      if (status === "loading" || status === "idle") {
+        return;
+      }
 
-    const discount = subtotal * 0.1;
-    const deliveryFee = subtotal > 500 ? 0 : 50; // Free delivery over ₹500
-    const protectFee = subtotal > 0 ? 25 : 0; // Protection fee
-    const total = subtotal - discount + deliveryFee + protectFee;
+      if (!isMounted) return;
 
-    return {
-      subtotal,
-      protectFee,
-      discount,
-      deliveryFee,
-      total,
-      savings: discount,
+      setIsInitialLoading(false);
+
+      if (status === "succeeded" && user !== null) {
+        setCurrentStep(2);
+        setIsAuthenticated(true);
+        await loadCheckoutUserData();
+      } else if (status === "succeeded" && user === null) {
+        setIsAuthenticated(false);
+        setCurrentStep(1);
+      } else if (status === "failed") {
+        setIsAuthenticated(false);
+        setCurrentStep(1);
+      }
     };
-  };
+
+    loadData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [status, user, loadCheckoutUserData]);
+
+  if (!isValidCheckout) {
+    return null;
+  }
+
+  if (isInitialLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white flex items-center justify-center">
+        <div className="text-gray-600">Loading checkout...</div>
+      </div>
+    );
+  }
 
   const handleRefreshCart = async () => {
-    await loadCheckoutUserData();
-    await refreshCart(); // Refresh the global cart context as well
+    try {
+      await loadCheckoutUserData();
+      dispatch(fetchCart()).unwrap()
+    } catch (error) {
+      console.error("Error refreshing cart:", error);
+      setError("Failed to refresh cart. Please try again.");
+    }
   };
 
   const handleRemoveInvalidItem = async (cartItemId: string) => {
     try {
-      await removeFromCart(cartItemId);
+      // instant update in ui
+      dispatch(removeItemOptimistic(cartItemId));
+      // Make API call in background
+      await dispatch(removeFromCart(cartItemId)).unwrap();
+
       // Refresh checkout data after removal
       await loadCheckoutUserData();
     } catch (error) {
@@ -201,15 +272,14 @@ const Checkout: React.FC = () => {
   };
 
   const handleLogout = async () => {
-    await logout();
-    navigate("/signin");
+    await dispatch(logoutUser()).unwrap();
+    window.location.href = "/";
   };
 
   const handleAddressUpdated = async (savedAddress?: Address) => {
     await fetchAddresses(savedAddress);
     setCurrentStep(3);
   };
-
 
   const fetchAddresses = async (addressToSelect?: Address) => {
     try {
@@ -257,9 +327,10 @@ const Checkout: React.FC = () => {
     return {
       fullName: address.fullName,
       phone: address.phone,
-      email: userProfile?.email || "", // Get email from user profile
+      alternatePhone: address?.alternatePhone || null,
       line1: address.line1,
       line2: address.line2,
+      landmark: address?.landmark || null,
       city: address.city,
       state: address.state,
       zipCode: address.zipCode,
@@ -297,6 +368,11 @@ const Checkout: React.FC = () => {
   };
 
   const handleGenerateQR = async () => {
+    if (!state || !state.items || state.items.length === 0) {
+      setError("Session expired. Redirecting to cart...");
+      navigate("/cart", { replace: true });
+      return;
+    }
     if (!selectedAddress) {
       setError("Please select a delivery address");
       return;
@@ -371,7 +447,7 @@ const Checkout: React.FC = () => {
   // Add the modal handler
   const handleModalGoToCart = () => {
     setShowValidationModal(false);
-    refreshCart(); // Just refresh the cart
+    dispatch(fetchCart()).unwrap(); // Just refresh the cart
     navigate("/cart");
   };
 

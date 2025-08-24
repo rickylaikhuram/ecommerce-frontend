@@ -2,6 +2,8 @@ import { useEffect, useCallback, useState } from "react";
 import { SlidersHorizontal, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import type { ProductFilters } from "../types/products.types";
+import { useAppSelector, useAppDispatch } from "../redux/hook";
+import { fetchWishlistedIds } from "../redux/slice/wishlist";
 
 // Custom hooks
 import { useProductFilters } from "../hooks/useProductFilters";
@@ -17,6 +19,11 @@ import Footer from "../components/layout/Footer";
 
 const ProductsPage = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  
+  // Get auth state from Redux
+  const { user, status } = useAppSelector((state) => state.auth);
+  const isAuthenticated = user && status === "succeeded";
 
   // Custom hooks
   const {
@@ -40,15 +47,12 @@ const ProductsPage = () => {
   const {
     products,
     categories,
-    wishlistedItems,
     pagination,
     sizes,
     loading,
     error,
     fetchProducts,
     fetchCategories,
-    loadWishlist,
-    toggleWishlist,
     clearError,
     totalPages,
   } = useProductData();
@@ -77,8 +81,14 @@ const ProductsPage = () => {
     const initialFilters = initializeFromURL();
     fetchCategories();
     fetchProducts(initialFilters);
-    loadWishlist();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    
+    // Load wishlist data if user is authenticated
+    if (isAuthenticated) {
+      // You can choose to fetch just IDs for performance or full wishlist
+      dispatch(fetchWishlistedIds()); // Lighter weight
+      // OR dispatch(fetchWishlist()); // If you need full product data elsewhere
+    }
+  }, [isAuthenticated, dispatch]);
 
   // Product click handler
   const handleProductClick = useCallback(
@@ -103,13 +113,7 @@ const ProductsPage = () => {
       updateURL(filters);
       fetchProducts(filters);
     },
-    [
-      setSearchTerm,
-      setCurrentPage,
-      buildFiltersFromState,
-      updateURL,
-      fetchProducts,
-    ]
+    [setSearchTerm, setCurrentPage, buildFiltersFromState, updateURL, fetchProducts]
   );
 
   const handleCategoryChange = useCallback(
@@ -234,7 +238,6 @@ const ProductsPage = () => {
     fetchProducts(buildFiltersFromState());
   }, [clearError, fetchProducts, buildFiltersFromState]);
 
-  // SORT_OPTIONS for mobile dropdown
   const SORT_OPTIONS = [
     { value: "newest", label: "Newest First" },
     { value: "popular", label: "Most Popular" },
@@ -340,8 +343,6 @@ const ProductsPage = () => {
               products={products}
               viewMode={viewMode}
               loading={loading}
-              wishlistedItems={wishlistedItems}
-              onToggleWishlist={toggleWishlist}
               onProductClick={handleProductClick}
               onClearFilters={handleClearAllFilters}
             />

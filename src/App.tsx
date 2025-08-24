@@ -1,24 +1,40 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { RouterProvider, createBrowserRouter, createRoutesFromElements } from "react-router-dom";
-import { useAuth } from "./context/AuthContext";
+import { useAppDispatch, useAppSelector } from "./redux/hook";
+import { fetchAuth } from "./redux/slice/auth";
 import { getRoutesByRole } from "./routes/AppRoutes";
 import Loading from "./components/common/Loading";
 
 function App() {
-  const { authStatus } = useAuth();
+  const dispatch = useAppDispatch();
+  const { status, user } = useAppSelector((state) => state.auth);
 
-  // Memoize the router to prevent recreation on every render
+  const userRole = user?.role || 'guest'; // Default to guest if no role
+
+  useEffect(() => {
+    if (status === "idle") {
+      dispatch(fetchAuth());
+    }
+  }, [status, dispatch]);
+
   const router = useMemo(() => {
-    if (!authStatus) return null;
+    console.log('Creating router for role:', userRole);
     
     return createBrowserRouter(
-      createRoutesFromElements(getRoutesByRole(authStatus.role))
+      createRoutesFromElements(getRoutesByRole(userRole))
     );
-  }, [authStatus?.role]);
+  }, [userRole]);
 
-  if (!authStatus || !router) return <Loading />;
+  if (status === "loading" || status === "idle") {
+    return <Loading />;
+  }
 
-  return <RouterProvider router={router} />;
+  if (status === "failed") {
+    return <div>Authentication failed. Please try again.</div>;
+  }
+
+  // Use key prop to force RouterProvider to completely remount when role changes
+  return <RouterProvider key={userRole} router={router} />;
 }
 
 export default App;

@@ -46,9 +46,10 @@ export interface OrderItemPartial {
 export interface ShippingAddress {
   fullName: string;
   phone: string;
-  email: string;
+  alternatePhone: string | null;
   line1: string;
   line2?: string;
+  landmark: string | null;
   city: string;
   state: string;
   zipCode: string;

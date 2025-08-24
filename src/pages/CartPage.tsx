@@ -1,17 +1,29 @@
 // pages/Cart.tsx
-import React from 'react';
-import { ShoppingBag, Package, AlertTriangle, Info } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { useCartContext } from '../context/CartContext';
-import { CartItemCard } from '../components/cart/CartItemCard';
-import { CartSummary } from '../components/cart/CartSummary.tsx';
-import { EmptyCart } from '../components/cart/EmptyCart';
-import { CartSkeleton } from '../components/cart/CartSkeleton';
+import React, { useEffect } from "react";
+import { ShoppingBag, Package, AlertTriangle, Info } from "lucide-react";
+import { Link } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../redux/hook";
+import { fetchCart, clearCart } from "../redux/slice/cart";
+
+import { CartItemCard } from "../components/cart/CartItemCard";
+import { CartSummary } from "../components/cart/CartSummary.tsx";
+import { EmptyCart } from "../components/cart/EmptyCart";
+import { CartSkeleton } from "../components/cart/CartSkeleton";
 
 const CartPage: React.FC = () => {
-  const { cart, loading, clearCart, actionLoading } = useCartContext();
+  // NEW - Redux
+  const dispatch = useAppDispatch();
+  const cart = useAppSelector((state) => state.cart.cart);
+  const cartLoading = useAppSelector(
+    (state) => state.cart.status === "loading"
+  );
+  const actionLoading = useAppSelector((state) => state.cart.actionLoading);
 
-  if (loading) {
+  useEffect(() => {
+    dispatch(fetchCart());
+  }, [dispatch]);
+
+  if (cartLoading) {
     return <CartSkeleton />;
   }
 
@@ -21,9 +33,11 @@ const CartPage: React.FC = () => {
 
   // Get cart status information
   const { summary } = cart;
-  const requiresAction = summary.overallStatus === 'requires_action';
-  const hasLowStock = summary.overallStatus === 'low_stock_warning';
-
+  const requiresAction = summary.overallStatus === "requires_action";
+  const hasLowStock = summary.overallStatus === "low_stock_warning";
+  const handleClearCart = () => {
+    dispatch(clearCart());
+  };
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -36,18 +50,18 @@ const CartPage: React.FC = () => {
               ({cart.summary.totalItems} items)
             </span>
           </h1>
-          
+
           <div className="mt-4 flex items-center justify-between">
-            <Link 
-              to="/products" 
+            <Link
+              to="/products"
               className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center gap-1"
             >
               ← Continue Shopping
             </Link>
-            
+
             <button
-              onClick={clearCart}
-              disabled={actionLoading === 'clear'}
+              onClick={handleClearCart}
+              disabled={actionLoading === "clear"}
               className="text-red-600 hover:text-red-700 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Clear Cart

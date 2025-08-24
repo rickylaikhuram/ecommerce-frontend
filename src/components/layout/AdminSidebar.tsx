@@ -12,9 +12,10 @@ import {
   X,
   LogOut,
   FolderTree,
+  TruckElectric,
 } from "lucide-react";
-import { useAuth } from "../../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useAppDispatch } from "../../redux/hook";
+import { logoutUser } from "../../redux/slice/auth";
 
 interface SidebarProps {
   activeTab: string;
@@ -29,8 +30,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   isOpen,
   onToggle,
 }) => {
-  const navigate = useNavigate();
-  const { logout } = useAuth();
+  const dispatch = useAppDispatch();
   const menuItems = [
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
     { id: "products", label: "Products", icon: Package },
@@ -38,13 +38,14 @@ const Sidebar: React.FC<SidebarProps> = ({
     { id: "orders", label: "Orders", icon: ShoppingCart },
     { id: "customers", label: "Customers", icon: Users },
     { id: "analytics", label: "Analytics", icon: TrendingUp },
+    { id: "pricesetting", label: "Price Setting", icon: TruckElectric },
     { id: "notifications", label: "Notifications", icon: Bell, badge: "3" },
     { id: "support", label: "Support", icon: HelpCircle },
     { id: "settings", label: "Settings", icon: Settings },
   ];
   const handleLogout = async () => {
-    await logout();
-    navigate("/signin"); // or wherever you want to redirect
+    await dispatch(logoutUser()).unwrap();
+    window.location.href = "/signin";
   };
 
   return (

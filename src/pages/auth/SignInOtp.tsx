@@ -1,17 +1,13 @@
 // SignInOTP.tsx - Simplified for phone-only
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import {
-  Phone,
-  LogIn,
-  CheckCircle2,
-  XCircle,
-  Lock,
-} from "lucide-react";
+import { Phone, LogIn, CheckCircle2, XCircle, Lock } from "lucide-react";
 import { OTPVerification } from "./OTPVerification";
 import instance from "../../utils/axios";
-import { useAuth } from "../../context/AuthContext";
+
+import { useAppDispatch } from "../../redux/hook";
+import { fetchAuth } from "../../redux/slice/auth";
 
 type FormData = {
   phone: string;
@@ -21,8 +17,7 @@ const SignInOTP = () => {
   const [loading, setLoading] = useState(false);
   const [showOTPScreen, setShowOTPScreen] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
-  const { refreshAuth } = useAuth();
-  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const {
     register,
@@ -67,8 +62,7 @@ const SignInOTP = () => {
       otp,
     });
     // On success, navigate to dashboard
-    await refreshAuth();
-    navigate("/");
+    await dispatch(fetchAuth());
   };
 
   const handleResendOTP = async () => {

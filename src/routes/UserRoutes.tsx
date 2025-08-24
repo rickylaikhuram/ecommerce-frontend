@@ -1,12 +1,12 @@
 // routes/UserRoutes.tsx
-import { Route } from "react-router-dom";
+import { Navigate, Route } from "react-router-dom";
 import MainLayout from "../layout/MainLayout";
 import AccountLayout from "../components/client/AccountLayout";
 import Home from "../pages/home";
 import CartPage from "../pages/CartPage";
 import LocationContainer from "../pages/LocationContainer";
 import ProductDetails from "../pages/ProductDetails";
-import Error from "../pages/error";
+import Error from "../pages/Error";
 import Wishlist from "../pages/Wishlist";
 import UserDetails from "../pages/client/UserDetails";
 import UserAddress from "../pages/client/UserAddress";
@@ -41,6 +41,13 @@ const UserRoutes = (
     <Route path="/wishlist" element={<Wishlist />} />
     <Route path="/location" element={<LocationContainer />} />
     <Route path="/checkout" element={<Checkout />} />
+
+    {/* Routes to Navigate to home */}
+    <Route path="/signin" element={<Navigate to="/" replace />} />
+    <Route path="/signinwithotp" element={<Navigate to="/" replace />} />
+    <Route path="/signup" element={<Navigate to="/" replace />} />
+    <Route path="/forgot-password" element={<Navigate to="/" replace />} />
+    
     <Route path="*" element={<Error />} />
   </Route>
 );

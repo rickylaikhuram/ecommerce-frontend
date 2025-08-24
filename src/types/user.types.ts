@@ -7,7 +7,12 @@ export interface User {
   isAdmin: boolean;
   createdAt: string;
 }
-
+export interface UserProfile {
+  name: string;
+  email: string;
+  phone: string;
+  createdAt: string;
+}
 export interface AuthStatus {
   isAuthenticated: boolean;
   role: "user" | "admin" | "guest";

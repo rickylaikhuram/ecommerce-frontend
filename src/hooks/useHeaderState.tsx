@@ -1,12 +1,11 @@
-
 // hooks/useHeaderState.ts
 import { useState, useEffect, useRef } from "react";
-import { useAuth } from "../context/AuthContext";
+import { useAppSelector } from "../redux/hook";
 import addressService from "../services/address.services";
 import type { Address } from "../types/user.types";
 
 export const useHeaderState = () => {
-  const { authStatus } = useAuth();
+  const { user, status } = useAppSelector((state) => state.auth);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [shouldFixHeader, setShouldFixHeader] = useState(false);
@@ -17,15 +16,15 @@ export const useHeaderState = () => {
 
   const lastClickRef = useRef({ path: "", timestamp: 0 });
 
-  const isAuthenticated = authStatus?.isAuthenticated === true;
-  const isGuest = !isAuthenticated || authStatus?.role === "guest";
+  const isAuthenticated = user !== null && status === "succeeded";
+  const isGuest = user?.role === "guest";
   const profileHref = isGuest ? "/signin" : "/account/profile";
   const profileLabel = isGuest ? "Sign in" : "Profile";
 
   // Fetch user addresses when authenticated
   useEffect(() => {
     const fetchAddresses = async () => {
-      if (isAuthenticated && authStatus?.role !== "guest") {
+      if (isAuthenticated && user?.role !== "guest") {
         try {
           setAddressLoading(true);
           const addresses = await addressService.getAddresses();
@@ -42,7 +41,7 @@ export const useHeaderState = () => {
     };
 
     fetchAddresses();
-  }, [isAuthenticated, authStatus?.role]);
+  }, [isAuthenticated, user?.role]);
 
   // Prevent body scroll when menu is open
   useEffect(() => {

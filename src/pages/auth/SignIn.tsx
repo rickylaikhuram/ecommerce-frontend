@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import {
   Eye,
@@ -11,7 +11,8 @@ import {
   CheckCircle2,
   XCircle,
 } from "lucide-react";
-import { useAuth } from "../../context/AuthContext";
+import { useAppDispatch } from "../../redux/hook";
+import { fetchAuth } from "../../redux/slice/auth";
 import instance from "../../utils/axios";
 
 type FormData = {
@@ -23,9 +24,7 @@ const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [inputType, setInputType] = useState<"email" | "phone" | null>(null);
-  const { refreshAuth } = useAuth();
-  const navigate = useNavigate();
-
+  const dispatch = useAppDispatch();
   const {
     register,
     handleSubmit,
@@ -56,7 +55,7 @@ const SignIn = () => {
       setInputType("email");
       return value; // Return the original value without modification
     }
-    
+
     // If it's only numbers (and possibly spaces, +, -, etc.), it's a phone
     if (/^[\d\s\-\+\(\)]*$/.test(cleanValue)) {
       setInputType("phone");
@@ -87,16 +86,13 @@ const SignIn = () => {
 
       await instance.post("/api/auth/signin/password", payload);
 
-      await refreshAuth();
-      navigate("/");
+      await dispatch(fetchAuth());
     } catch (err) {
       console.error("Sign in failed:", err);
     } finally {
       setLoading(false);
     }
   };
-
-
 
   // Custom validation for email or phone
   const validateEmailOrPhone = (value: string) => {
@@ -393,7 +389,6 @@ const SignIn = () => {
                 Sign in without Password
               </span>
             </Link>
-
           </div>
 
           {/* Sign Up Link */}

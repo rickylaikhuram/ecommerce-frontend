@@ -2,8 +2,9 @@
 import React from "react";
 import { ShoppingBag, Tag, Truck, CreditCard, AlertTriangle, Lock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useCartContext } from "../../context/CartContext";
-import type { CartSummary as CartSummaryType } from "../../types/cart.types";
+import { useAppSelector } from "../../redux/hook";
+import { selectCart } from "../../redux/slice/cart";
+import type { CartSummary as CartSummaryType, CartItem } from "../../types/cart.types";
 import type { CheckoutState } from "../../types/checkout.types";
 
 interface CartSummaryProps {
@@ -12,7 +13,9 @@ interface CartSummaryProps {
 
 export const CartSummary: React.FC<CartSummaryProps> = ({ summary }) => {
   const navigate = useNavigate();
-  const { cart } = useCartContext();
+  
+  // Use Redux selector instead of context
+  const cart = useAppSelector(selectCart);
 
   const shippingCost = summary.totalPrice > 50 ? 0 : 10;
   const finalTotal = summary.totalPrice + shippingCost;
@@ -26,8 +29,8 @@ export const CartSummary: React.FC<CartSummaryProps> = ({ summary }) => {
 
     const checkoutState: CheckoutState = {
       items: cart.items
-        .filter(item => item.canProceedToCheckout)
-        .map((item) => ({
+        .filter((item: CartItem) => item.canProceedToCheckout)
+        .map((item: CartItem) => ({
           productId: item.productId,
           productVarient: item.stockName,
           quantity: item.quantity,

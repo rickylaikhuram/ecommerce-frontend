@@ -8,8 +8,6 @@ interface ProductsGridProps {
   products: Product[];
   viewMode: "grid" | "list";
   loading: boolean;
-  wishlistedItems: string[];
-  onToggleWishlist: (productId: string) => void;
   onProductClick: (productId: string) => void;
   onClearFilters: () => void;
 }
@@ -18,11 +16,10 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({
   products,
   viewMode,
   loading,
-  wishlistedItems,
-  onToggleWishlist,
   onProductClick,
   onClearFilters,
 }) => {
+
   // Loading state
   if (loading) {
     return (
@@ -62,8 +59,6 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({
           <div key={product.id} className="flex-shrink-0 xs:w-48">
             <ProductGridCard
               product={product}
-              onToggleWishlist={onToggleWishlist}
-              isWishlisted={wishlistedItems.includes(product.id!)}
               onProductClick={onProductClick}
             />
           </div>
@@ -79,8 +74,6 @@ const ProductsGrid: React.FC<ProductsGridProps> = ({
         <div key={product.id}>
           <ProductListCard
             product={product}
-            onToggleWishlist={onToggleWishlist}
-            isWishlisted={wishlistedItems.includes(product.id!)}
             onProductClick={onProductClick}
           />
         </div>

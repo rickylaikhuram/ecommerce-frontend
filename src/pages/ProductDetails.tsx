@@ -2,7 +2,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import instance from "../utils/axios";
-import { useCartContext } from "../context/CartContext";
+import { useAppDispatch, useAppSelector } from "../redux/hook"; // Adjust path as needed
+import { 
+  fetchCart,
+  addToCart,
+  updateQuantity,
+  updateQuantityOptimistic
+} from "../redux/slice/cart"; // Adjust path as needed
 import type { Product } from "../types/products.types";
 import {
   ShoppingCart,
@@ -26,14 +32,12 @@ const S3_BASE_URL = import.meta.env.VITE_S3_BASE_URL;
 const ProductDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const {
-    cart,
-    loading: cartLoading,
-    addToCart,
-    updateQuantity,
-    getCartItem,
-    actionLoading,
-  } = useCartContext();
+  
+  // Redux state and dispatch
+  const dispatch = useAppDispatch();
+  const cart = useAppSelector(state => state.cart.cart);
+  const cartLoading = useAppSelector(state => state.cart.status === 'loading');
+  const actionLoading = useAppSelector(state => state.cart.actionLoading);
 
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
@@ -50,11 +54,19 @@ const ProductDetails: React.FC = () => {
   const debounceTimeoutRef = useRef<number | null>(null);
   const DEBOUNCE_DELAY = 1000;
 
+  // Helper function to get cart item - replace getCartItem function
+  const getCartItem = (productId: string, stockName: string) => {
+    if (!cart) return undefined;
+    return cart.items.find(item => 
+      item.productId === productId && item.stockName === stockName
+    );
+  };
+
   // Get cart item for current product and selected size
   const cartItem = React.useMemo(() => {
     if (!product?.id || !selectedSize || cartLoading || !cart) return null;
     return getCartItem(product.id, selectedSize);
-  }, [product, selectedSize, cart, cartLoading, getCartItem]);
+  }, [product, selectedSize, cart, cartLoading]);
 
   const isProductInCart = !!cartItem;
 
@@ -66,6 +78,11 @@ const ProductDetails: React.FC = () => {
       fetchProduct();
     }
   }, [id]);
+
+  // Initialize cart on component mount
+  useEffect(() => {
+    dispatch(fetchCart());
+  }, [dispatch]);
 
   // Sync local quantity when cart item changes
   useEffect(() => {
@@ -132,10 +149,18 @@ const ProductDetails: React.FC = () => {
         navigate("/cart");
       } else {
         // Add to cart with selected quantity
-        await addToCart(product.id, selectedSize, quantity);
+        await dispatch(addToCart({ 
+          productId: product.id, 
+          stockName: selectedSize, 
+          quantity 
+        })).unwrap();
+        
+        // Refresh cart to get updated data
+        dispatch(fetchCart());
       }
     } catch (err) {
       console.error("Error adding to cart:", err);
+      alert("Failed to add item to cart. Please try again.");
     }
   };
 
@@ -155,16 +180,27 @@ const ProductDetails: React.FC = () => {
           clearTimeout(debounceTimeoutRef.current);
         }
 
+        // Optimistic update first
+        dispatch(updateQuantityOptimistic({ 
+          itemId: cartItem.id, 
+          quantity: newQuantity 
+        }));
+
         // Set new timeout for debounced API call
         debounceTimeoutRef.current = setTimeout(async () => {
           try {
-            await updateQuantity(cartItem.id, newQuantity);
+            await dispatch(updateQuantity({ 
+              itemId: cartItem.id, 
+              quantity: newQuantity 
+            })).unwrap();
           } catch (err) {
             console.error("Error updating cart quantity:", err);
             // Reset to cart quantity on error
             if (cartItem) {
               setQuantity(cartItem.quantity);
             }
+            // Refresh cart to get correct state
+            dispatch(fetchCart());
             alert("Failed to update quantity. Please try again.");
           }
         }, DEBOUNCE_DELAY);

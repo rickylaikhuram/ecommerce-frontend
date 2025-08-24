@@ -7,7 +7,7 @@ import SignUp from "../pages/auth/SignUp";
 import SignInOTP from "../pages/auth/SignInOtp";
 import CartPage from "../pages/CartPage";
 import Wishlist from "../pages/Wishlist";
-import Error from "../pages/Error/index";
+import Error from "../pages/Error";
 import ProductDetails from "../pages/ProductDetails";
 import Checkout from "../pages/Checkout";
 import ProductsPage from "../pages/Products";

@@ -1,6 +1,6 @@
 // components/ProductCarousel.tsx
 import React, { useRef, useState, useEffect } from 'react';
-import ProductCard from './ProductGridCard';
+import ProductGridCard from './ProductGridCard';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import type { Product } from "../../types/products.types"
 
@@ -213,7 +213,7 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({
               key={product.id}
               className="flex-shrink-0 w-40 xs:w-48 sm:w-64 md:w-72 lg:w-80"
             >
-              <ProductCard
+              <ProductGridCard
                 product={product}
                 onProductClick={onProductClick}
               />

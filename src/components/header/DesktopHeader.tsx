@@ -2,7 +2,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { User, Heart } from "lucide-react";
-import { SearchAutocomplete } from "./SearchAutoComplete";
+import { SearchAutoComplete } from "./SearchAutoComplete";
 import { CartIcon } from "./CartIcon";
 import { LocationDisplay } from "./LocationDisplay";
 import { Navigation, type NavItem } from "./Navigation";
@@ -85,7 +85,7 @@ export const DesktopHeader: React.FC<DesktopHeaderProps> = ({
 
             {/* Right Section */}
             <div className="flex items-center gap-4">
-              <SearchAutocomplete
+              <SearchAutoComplete
                 placeholder="Search products..."
                 onSearch={onSearch}
                 onSuggestionClick={onSuggestionClick}

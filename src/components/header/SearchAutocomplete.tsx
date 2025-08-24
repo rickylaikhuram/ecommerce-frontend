@@ -14,7 +14,7 @@ interface SearchAutocompleteProps {
   isMobile?: boolean;
 }
 
-export const SearchAutocomplete: React.FC<SearchAutocompleteProps> = ({
+export const SearchAutoComplete: React.FC<SearchAutocompleteProps> = ({
   placeholder = "Search products...",
   onSearch,
   onSuggestionClick,

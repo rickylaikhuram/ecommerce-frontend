@@ -2,7 +2,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Menu } from "lucide-react";
-import { SearchAutocomplete } from "./SearchAutoComplete";
+import { SearchAutoComplete } from "./SearchAutoComplete";
 import { CartIcon } from "./CartIcon";
 import { LocationDisplay } from "./LocationDisplay";
 import type { AutocompleteResult } from "../../types/search.types";
@@ -43,7 +43,7 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
             <Menu size={20} className="text-gray-700" />
           </button>
 
-          <SearchAutocomplete
+          <SearchAutoComplete
             placeholder="Search..."
             onSearch={onSearch}
             onSuggestionClick={onSuggestionClick}

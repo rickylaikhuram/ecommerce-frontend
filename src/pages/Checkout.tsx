@@ -455,7 +455,7 @@ const handlePlaceOrder = async () => {
 
     if (result.success) {
       // Navigate to order success page with real order data
-      navigate(`/order-success/${result.orderId}`, {
+      navigate(`/orders/confirmed/${result.orderId}`, {
         state: {
           paymentMethod: "cod",
           amount: result.amount,

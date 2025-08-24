@@ -1,20 +1,32 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Heart, Trash2, X } from "lucide-react";
+import { useAppSelector } from "../redux/hook";
+import GuestWishlistModal from "../components/common/GuestWishlistModal";
 import type { WishlistItem } from "../types/wishlist.types";
 import { wishlistService } from "../services/wishlist.services";
 
 const S3_BASE_URL = import.meta.env.VITE_S3_BASE_URL;
 
 const Wishlist: React.FC = () => {
+  const navigate = useNavigate();
   const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
   const [removingItem, setRemovingItem] = useState<string | null>(null);
 
+  // Get auth state to check user role
+  const { user } = useAppSelector((state) => state.auth);
+  const isGuest = user?.role === "guest";
+
   useEffect(() => {
+    // If user is guest, don't fetch wishlist
+    if (isGuest) {
+      setLoading(false);
+      return;
+    }
     fetchWishlist();
-  }, []);
+  }, [isGuest]);
 
   const fetchWishlist = async (): Promise<void> => {
     try {
@@ -43,11 +55,39 @@ const Wishlist: React.FC = () => {
     }
   };
 
+  const handleModalClose = () => {
+    // Navigate to home page when guest clicks "Maybe Later"
+    navigate("/");
+  };
+
+  const handleSignIn = () => {
+    // Navigate to sign in page
+    navigate("/signin");
+  };
+
+  const handleSignUp = () => {
+    // Navigate to sign up page
+    navigate("/signup");
+  };
+
+  // Show loading state
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
+    );
+  }
+
+  // Show guest modal if user is guest
+  if (isGuest) {
+    return (
+      <GuestWishlistModal 
+        isOpen={true} 
+        onClose={handleModalClose}
+        onSignIn={handleSignIn}
+        onSignUp={handleSignUp}
+      />
     );
   }
 

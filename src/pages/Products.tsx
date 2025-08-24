@@ -23,7 +23,7 @@ const ProductsPage = () => {
   
   // Get auth state from Redux
   const { user, status } = useAppSelector((state) => state.auth);
-  const isAuthenticated = user && status === "succeeded";
+  const isAuthenticated = user?.role==="user" && status === "succeeded";
 
   // Custom hooks
   const {
@@ -84,9 +84,7 @@ const ProductsPage = () => {
     
     // Load wishlist data if user is authenticated
     if (isAuthenticated) {
-      // You can choose to fetch just IDs for performance or full wishlist
-      dispatch(fetchWishlistedIds()); // Lighter weight
-      // OR dispatch(fetchWishlist()); // If you need full product data elsewhere
+      dispatch(fetchWishlistedIds()); 
     }
   }, [isAuthenticated, dispatch]);
 

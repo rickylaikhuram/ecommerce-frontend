@@ -129,7 +129,7 @@ const Home: React.FC = () => {
 
   // Get auth state from Redux
   const { user, status } = useAppSelector((state) => state.auth);
-  const isAuthenticated = user && status === "succeeded";
+  const isAuthenticated = user?.role === "user" && status === "succeeded";
 
   // Get wishlist state from Redux
   const wishlistError = useAppSelector(selectWishlistError);

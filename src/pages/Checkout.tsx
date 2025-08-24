@@ -214,11 +214,11 @@ const Checkout: React.FC = () => {
 
       setIsInitialLoading(false);
 
-      if (status === "succeeded" && user !== null) {
+      if (status === "succeeded" && user?.role === "user") {
         setCurrentStep(2);
         setIsAuthenticated(true);
         await loadCheckoutUserData();
-      } else if (status === "succeeded" && user === null) {
+      } else if (status === "succeeded" && user?.role === "guest") {
         setIsAuthenticated(false);
         setCurrentStep(1);
       } else if (status === "failed") {

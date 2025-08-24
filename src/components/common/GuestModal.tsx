@@ -1,19 +1,21 @@
-import { Heart, X, Lock, User } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Heart, X, Lock, User, ShoppingCart } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
-interface GuestWishlistModalProps {
+interface GuestModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSignIn?: () => void;
   onSignUp?: () => void;
+  reason?: "wishlist" | "cart";
 }
 
-export default function GuestWishlistModal({ 
-  isOpen, 
+export default function GuestModal({
+  isOpen,
   onClose,
   onSignIn,
-  onSignUp 
-}: GuestWishlistModalProps) {
+  onSignUp,
+  reason = "wishlist",
+}: GuestModalProps) {
   const navigate = useNavigate();
 
   const handleSignIn = () => {
@@ -50,10 +52,14 @@ export default function GuestWishlistModal({
         <div className="flex items-center justify-between p-6 border-b border-gray-100">
           <div className="flex items-center">
             <div className="bg-blue-100 p-2 rounded-full mr-3">
-              <Heart className="w-6 h-6 text-blue-600" />
+              {reason === "wishlist" ? (
+                <Heart className="w-6 h-6 text-blue-600" />
+              ) : (
+                <ShoppingCart className="w-6 h-6 text-blue-600" />
+              )}
             </div>
             <h2 className="text-xl font-semibold text-gray-800">
-              Save to Wishlist
+              {reason === "wishlist" ? "Save to Wishlist" : "Add to Cart"}
             </h2>
           </div>
           <button
@@ -74,8 +80,11 @@ export default function GuestWishlistModal({
               Sign in Required
             </h3>
             <p className="text-gray-600 text-sm leading-relaxed">
-              Please sign in to your account to save items to your wishlist and
-              access them across all your devices.
+              Please sign in to your account to
+              {reason === "wishlist"
+                ? " save items to your wishlist "
+                : " add items to your cart "}
+              and access them across all your devices.
             </p>
           </div>
 

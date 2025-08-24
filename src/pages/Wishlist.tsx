@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Heart, Trash2, X } from "lucide-react";
 import { useAppSelector } from "../redux/hook";
-import GuestWishlistModal from "../components/common/GuestWishlistModal";
+import GuestModal from "../components/common/GuestModal";
 import type { WishlistItem } from "../types/wishlist.types";
 import { wishlistService } from "../services/wishlist.services";
 
@@ -82,7 +82,7 @@ const Wishlist: React.FC = () => {
   // Show guest modal if user is guest
   if (isGuest) {
     return (
-      <GuestWishlistModal 
+      <GuestModal 
         isOpen={true} 
         onClose={handleModalClose}
         onSignIn={handleSignIn}

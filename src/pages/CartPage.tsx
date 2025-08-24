@@ -1,7 +1,7 @@
 // pages/Cart.tsx
 import React, { useEffect } from "react";
 import { ShoppingBag, Package, AlertTriangle, Info } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../redux/hook";
 import { fetchCart, clearCart } from "../redux/slice/cart";
 
@@ -9,8 +9,10 @@ import { CartItemCard } from "../components/cart/CartItemCard";
 import { CartSummary } from "../components/cart/CartSummary.tsx";
 import { EmptyCart } from "../components/cart/EmptyCart";
 import { CartSkeleton } from "../components/cart/CartSkeleton";
+import GuestModal from "../components/common/GuestModal.tsx";
 
 const CartPage: React.FC = () => {
+  const navigate = useNavigate();
   // NEW - Redux
   const dispatch = useAppDispatch();
   const cart = useAppSelector((state) => state.cart.cart);
@@ -18,10 +20,40 @@ const CartPage: React.FC = () => {
     (state) => state.cart.status === "loading"
   );
   const actionLoading = useAppSelector((state) => state.cart.actionLoading);
-
+  const { user } = useAppSelector((state) => state.auth);
+  const isGuest = user?.role === "guest";
   useEffect(() => {
+    if (isGuest) {
+      return;
+    }
     dispatch(fetchCart());
   }, [dispatch]);
+
+  const handleModalClose = () => {
+    // Navigate to home page when guest clicks "Maybe Later"
+    navigate("/");
+  };
+
+  const handleSignIn = () => {
+    // Navigate to sign in page
+    navigate("/signin");
+  };
+
+  const handleSignUp = () => {
+    // Navigate to sign up page
+    navigate("/signup");
+  };
+  if (isGuest) {
+    return (
+      <GuestModal
+        isOpen={true}
+        onClose={handleModalClose}
+        onSignIn={handleSignIn}
+        onSignUp={handleSignUp}
+        reason="cart"
+      />
+    );
+  }
 
   if (cartLoading) {
     return <CartSkeleton />;
@@ -30,7 +62,6 @@ const CartPage: React.FC = () => {
   if (!cart || cart.items.length === 0) {
     return <EmptyCart />;
   }
-
   // Get cart status information
   const { summary } = cart;
   const requiresAction = summary.overallStatus === "requires_action";

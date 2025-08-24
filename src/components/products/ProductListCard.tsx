@@ -6,7 +6,7 @@ import {
   toggleWishlist,
   selectIsProductWishlisted,
 } from "../../redux/slice/wishlist";
-import GuestWishlistModal from "../common/GuestWishlistModal";
+import GuestModal from "../common/GuestModal";
 import type { Product } from "../../types/products.types";
 
 interface ProductListCardProps {
@@ -74,10 +74,7 @@ const ProductListCard: React.FC<ProductListCardProps> = ({
     e.stopPropagation();
 
     if (!isAuthenticated) {
-      // Handle unauthenticated user - could show login modal or redirect
-      console.warn("Please log in to add items to wishlist");
-      // You might want to dispatch a modal action or navigate to login
-      // dispatch(openLoginModal()) or navigate('/login')
+      setShowGuestModal(true);
       return;
     }
 
@@ -210,7 +207,7 @@ const ProductListCard: React.FC<ProductListCardProps> = ({
         </div>
       </div>
       {/* Guest Wishlist Modal */}
-      <GuestWishlistModal
+      <GuestModal
         isOpen={showGuestModal}
         onClose={() => setShowGuestModal(false)}
       />

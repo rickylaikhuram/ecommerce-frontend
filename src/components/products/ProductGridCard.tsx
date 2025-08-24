@@ -6,7 +6,7 @@ import {
   toggleWishlist,
   selectIsProductWishlisted,
 } from "../../redux/slice/wishlist";
-import GuestWishlistModal from "../common/GuestWishlistModal";
+import GuestModal from "../common/GuestModal";
 import type { Product } from "../../types/products.types";
 
 interface ProductCardProps {
@@ -194,7 +194,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       </div>
 
       {/* Guest Wishlist Modal */}
-      <GuestWishlistModal
+      <GuestModal
         isOpen={showGuestModal}
         onClose={() => setShowGuestModal(false)}
       />

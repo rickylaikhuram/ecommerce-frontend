@@ -327,10 +327,10 @@ const Checkout: React.FC = () => {
     return {
       fullName: address.fullName,
       phone: address.phone,
-      alternatePhone: address?.alternatePhone || null,
+      alternatePhone: address?.alternatePhone || undefined,
       line1: address.line1,
       line2: address.line2,
-      landmark: address?.landmark || null,
+      landmark: address?.landmark || undefined,
       city: address.city,
       state: address.state,
       zipCode: address.zipCode,

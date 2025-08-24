@@ -46,10 +46,10 @@ export interface OrderItemPartial {
 export interface ShippingAddress {
   fullName: string;
   phone: string;
-  alternatePhone: string | null;
+  alternatePhone: string | undefined;
   line1: string;
   line2?: string;
-  landmark: string | null;
+  landmark: string | undefined;
   city: string;
   state: string;
   zipCode: string;

@@ -6,7 +6,7 @@ import {
   ShoppingCart,
   Users,
   Settings,
-  Bell,
+  GalleryHorizontalEnd,
   HelpCircle,
   TrendingUp,
   X,
@@ -39,7 +39,7 @@ const Sidebar: React.FC<SidebarProps> = ({
     { id: "customers", label: "Customers", icon: Users },
     { id: "analytics", label: "Analytics", icon: TrendingUp },
     { id: "pricesetting", label: "Price Setting", icon: TruckElectric },
-    { id: "notifications", label: "Notifications", icon: Bell, badge: "3" },
+    { id: "banner", label: "Banner", icon: GalleryHorizontalEnd },
     { id: "support", label: "Support", icon: HelpCircle },
     { id: "settings", label: "Settings", icon: Settings },
   ];
@@ -112,12 +112,6 @@ const Sidebar: React.FC<SidebarProps> = ({
                   <span className="font-medium flex-1 text-left">
                     {item.label}
                   </span>
-
-                  {item.badge && (
-                    <span className="bg-amber-500 text-slate-900 text-xs px-2 py-0.5 rounded-full font-semibold">
-                      {item.badge}
-                    </span>
-                  )}
                 </button>
               );
             })}

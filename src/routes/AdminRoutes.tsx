@@ -12,6 +12,7 @@ import Error from "../pages/error";
 import Categories from "../pages/admin/Category";
 import Customers from "../pages/admin/Customer";
 import PriceSetting from "../pages/admin/PriceSetting";
+import Banners from "../pages/admin/Banner";
 
 const AdminRoutes = (
   <Route path="/" element={<AdminMainLayout />}>
@@ -22,8 +23,8 @@ const AdminRoutes = (
     <Route path="orders" element={<Orders />} />
     <Route path="customers" element={<Customers />} />
     <Route path="pricesetting" element={<PriceSetting />} />
+    <Route path="banner" element={<Banners />} />
     {/*<Route path="analytics" element={<Analytics />} />
-      <Route path="notifications" element={<Notifications />} />
       <Route path="support" element={<Support />} />
       <Route path="settings" element={<Settings />} /> */}
     <Route path="*" element={<Error />} />

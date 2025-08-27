@@ -25,7 +25,8 @@ const AdminMainLayout = () => {
       orders: "Orders",
       customers: "Customers",
       analytics: "Analytics",
-      notifications: "Notifications",
+      pricesetting: "Price Setting",
+      banner: "Banners",
       support: "Support",
       settings: "Settings",
     };

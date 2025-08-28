@@ -1,202 +1,271 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import instance from "../../utils/axios";
+import BannerLoading from "../common/BannerLoading";
 
-type PromoSlide = {
-  id: number;
-  discount: number;
-  subtitle: string;
-  title: string;
-  highlight?: string;
+const S3_BASE_URL = import.meta.env.VITE_S3_BASE_URL;
+
+// Type definitions
+interface Banner {
+  id: string;
   imageUrl: string;
-};
+  altText: string | null;
+  redirectUrl: string;
+}
 
-const HeroBanner = () => {
-  const [currentPromo, setCurrentPromo] = useState(0);
+const HeroBanner: React.FC = () => {
+  const [banners, setBanners] = useState<Banner[]>([]);
+  const [currentIndex, setCurrentIndex] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [touchStart, setTouchStart] = useState<number>(0);
+  const [touchEnd, setTouchEnd] = useState<number>(0);
+  const [isDragging, setIsDragging] = useState<boolean>(false);
 
-  const promoSlides: PromoSlide[] = [
-    {
-      id: 1,
-      discount: 40,
-      subtitle: "Limited Edition Jerseys",
-      title: "Get Authentic {highlight} Kits\nWith Player Printing",
-      highlight: "2024/25",
-      imageUrl:
-        "https://i.pinimg.com/736x/c3/37/a4/c337a4ef3462aae2eb45336ed4c8527b.jpg",
-    },
-    {
-      id: 2,
-      discount: 30,
-      subtitle: "Matchday Special",
-      title: "{highlight} Jersey Sale\nFree Number Printing Included",
-      highlight: "Champions League",
-      imageUrl:
-        "https://i.pinimg.com/1200x/05/05/ed/0505edd50226c92e75ebb74afcd86dfe.jpg",
-    },
-    {
-      id: 3,
-      discount: 25,
-      subtitle: "Derby Day Collection",
-      title: "Classic {highlight} Kits\nNow Available in Retro Styles",
-      highlight: "Rivalry",
-      imageUrl:
-        "https://i.pinimg.com/736x/49/2c/73/492c7364f36f21ef991b367b006932db.jpg",
-    },
-  ];
-
+  // Fetch banners from API
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentPromo((prev) =>
-        prev + 1 >= promoSlides.length ? 0 : prev + 1
-      );
-    }, 4000);
-    return () => clearInterval(interval);
-  }, [promoSlides.length]);
+    const fetchBanners = async (): Promise<void> => {
+      try {
+        setLoading(true);
+        const response = await instance.get("/api/product/banners");
 
-  const formatTitle = (title: string, highlight?: string) => {
-    return title.replace("{highlight}", highlight || "").split("\n");
+        // Handle the specific API response structure
+        let bannersData: Banner[] = [];
+
+        if (
+          response.data &&
+          response.data.success &&
+          Array.isArray(response.data.banner)
+        ) {
+          bannersData = response.data.banner;
+        }
+
+        console.log("Banners loaded:", bannersData.length);
+        setBanners(bannersData);
+      } catch (err) {
+        console.error("Error fetching banners:", err);
+        setBanners([]); // Ensure banners is always an array
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBanners();
+  }, []);
+
+  // Auto-scroll functionality
+  useEffect(() => {
+    if (!Array.isArray(banners) || banners.length <= 1) return;
+
+    const interval = setInterval(() => {
+      setCurrentIndex((prevIndex: number) =>
+        prevIndex === banners.length - 1 ? 0 : prevIndex + 1
+      );
+    }, 4000); // Change every 4 seconds
+
+    return () => clearInterval(interval);
+  }, [banners.length]);
+
+  // Navigation functions
+  const goToPrevious = (): void => {
+    if (!Array.isArray(banners) || banners.length === 0) return;
+    setCurrentIndex(currentIndex === 0 ? banners.length - 1 : currentIndex - 1);
   };
 
+  const goToNext = (): void => {
+    if (!Array.isArray(banners) || banners.length === 0) return;
+    setCurrentIndex(currentIndex === banners.length - 1 ? 0 : currentIndex + 1);
+  };
+
+  // Handle banner click
+  const handleBannerClick = (redirectUrl: string): void => {
+    // Only redirect if not dragging (to prevent accidental clicks during swipe)
+    if (!isDragging && redirectUrl) {
+      window.open(redirectUrl, "_blank", "noopener,noreferrer");
+    }
+  };
+
+  // Touch/Swipe handlers
+  const handleTouchStart = (e: React.TouchEvent): void => {
+    setTouchStart(e.touches[0].clientX);
+    setTouchEnd(0);
+    setIsDragging(false);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent): void => {
+    setTouchEnd(e.touches[0].clientX);
+    setIsDragging(true);
+  };
+
+  const handleTouchEnd = (): void => {
+    if (!touchStart || !touchEnd) return;
+
+    const distance = touchStart - touchEnd;
+    const minSwipeDistance = 50; // Minimum distance for a swipe
+
+    if (Math.abs(distance) < minSwipeDistance) {
+      setIsDragging(false);
+      return;
+    }
+
+    if (distance > 0) {
+      // Swiped left - go to next
+      goToNext();
+    } else {
+      // Swiped right - go to previous
+      goToPrevious();
+    }
+
+    // Reset drag state after a short delay to prevent accidental clicks
+    setTimeout(() => setIsDragging(false), 100);
+  };
+
+  // Mouse handlers for desktop drag support (optional)
+  const handleMouseDown = (e: React.MouseEvent): void => {
+    setTouchStart(e.clientX);
+    setTouchEnd(0);
+    setIsDragging(false);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent): void => {
+    if (touchStart) {
+      setTouchEnd(e.clientX);
+      setIsDragging(true);
+    }
+  };
+
+  const handleMouseUp = (): void => {
+    if (!touchStart || !touchEnd) {
+      setIsDragging(false);
+      return;
+    }
+
+    const distance = touchStart - touchEnd;
+    const minSwipeDistance = 50;
+
+    if (Math.abs(distance) < minSwipeDistance) {
+      setIsDragging(false);
+      return;
+    }
+
+    if (distance > 0) {
+      goToNext();
+    } else {
+      goToPrevious();
+    }
+
+    setTimeout(() => setIsDragging(false), 100);
+    setTouchStart(0);
+    setTouchEnd(0);
+  };
+
+  // Handle image error
+  const handleImageError = (
+    e: React.SyntheticEvent<HTMLImageElement>
+  ): void => {
+    const target = e.target as HTMLImageElement;
+    target.src =
+      "https://via.placeholder.com/1200x400/6b7280/ffffff?text=Image+Not+Found";
+  };
+
+  // Handle button click with event propagation
+  const handleButtonClick = (
+    e: React.MouseEvent<HTMLButtonElement>,
+    action: () => void
+  ): void => {
+    e.stopPropagation();
+    action();
+  };
+
+  // Loading state
+  if (loading) {
+    return <BannerLoading />;
+  }
+
+  // If no banners (empty array) or error with no banners, return null (render nothing)
+  if (!Array.isArray(banners) || banners.length === 0) {
+    return null;
+  }
+
   return (
-    <div className="relative overflow-hidden mb-10 bg-gradient-to-r from-zinc-200 to-green-600">
-      <div className="absolute inset-0 opacity-25">
-        <div className="absolute top-0 left-0 w-full h-full bg-[url('https://i.pinimg.com/1200x/99/a4/bc/99a4bcb0275ab1ff90d461539eaf2ebb.jpg')]"></div>
-      </div>
-
-      <div className="relative z-10 px-8 py-12 md:px-12 md:py-16">
-        <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-12">
-          {/* Discount badge WITHOUT animated ring */}
-          <div className="bg-white/90 backdrop-blur-md p-6 rounded-full shadow-xl transform transition-all duration-500 hover:scale-105 hover:shadow-2xl w-32 h-32 flex items-center justify-center">
-            <div className="text-center">
-              <p className="text-4xl font-bold bg-gradient-to-r from-green-700 to-yellow-400 bg-clip-text text-transparent">
-                {promoSlides[currentPromo].discount}%
-              </p>
-              <p className="text-sm font-semibold uppercase tracking-wider text-gray-600 mt-1">
-                OFF
-              </p>
-            </div>
-          </div>
-
-          {/* Promo text */}
-          <div className="text-center md:text-left max-w-lg">
-            <div className="overflow-hidden h-8 mb-3">
-              {promoSlides.map((slide, index) => (
-                <h3
-                  key={slide.id}
-                  className={`text-lg md:text-xl text-white/90 font-medium transition-all duration-700 ease-out ${
-                    currentPromo === index
-                      ? "opacity-100 translate-y-0"
-                      : "opacity-0 translate-y-4 absolute"
-                  }`}
-                >
-                  {slide.subtitle}
-                </h3>
-              ))}
-            </div>
-
-            <div className="overflow-hidden h-32 mb-4">
-              {promoSlides.map((slide, index) => (
-                <h2
-                  key={slide.id}
-                  className={`text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight transition-all duration-700 ease-out ${
-                    currentPromo === index
-                      ? "opacity-100 translate-y-0"
-                      : "opacity-0 translate-y-4 absolute"
-                  }`}
-                >
-                  {formatTitle(slide.title, slide.highlight).map((line, i) => (
-                    <span key={i} className="block">
-                      {line.includes(slide.highlight || "") ? (
-                        <>
-                          {line.split(slide.highlight || "")[0]}
-                          <span className="text-yellow-300">
-                            {slide.highlight}
-                          </span>
-                          {line.split(slide.highlight || "")[1]}
-                        </>
-                      ) : (
-                        line
-                      )}
-                    </span>
-                  ))}
-                </h2>
-              ))}
-            </div>
-
-            <p className="text-sm md:text-base text-white/80 font-light">
-              Official licensed products with free shipping on orders over $75
-            </p>
-
-            <button className="mt-6 px-6 py-3 bg-yellow-400 text-green-900 font-bold rounded-full shadow-lg hover:shadow-xl transform transition-all duration-300 hover:scale-105 hover:bg-yellow-300 flex items-center">
-              Shop Now
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 ml-2"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </button>
-          </div>
-
-          {/* Jersey image */}
-          <div className="hidden lg:block relative w-64 h-64 transform transition-all duration-500 hover:scale-110">
-            {promoSlides.map((slide, index) => (
+    <div className="relative w-full max-w-8xl mx-auto group">
+      {/* Main banner container with consistent aspect ratio */}
+      <div className="relative overflow-hidden shadow-lg bg-gray-900">
+        {/* Consistent aspect ratio across all devices - same crop on mobile and desktop */}
+        <div className="relative w-full aspect-[3/1] sm:aspect-[4/1]">
+          <div
+            className="absolute inset-0 flex transition-transform duration-500 ease-in-out select-none"
+            style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
+          >
+            {banners.map((banner: Banner) => (
               <div
-                key={slide.id}
-                className={`absolute inset-0 transition-all duration-700 ease-out ${
-                  currentPromo === index ? "opacity-100" : "opacity-0"
-                }`}
+                key={banner.id}
+                className="w-full flex-shrink-0 relative cursor-pointer"
+                onClick={() => handleBannerClick(banner.redirectUrl)}
               >
                 <img
-                  src={slide.imageUrl}
-                  alt="Football Jersey"
-                  className="rounded-lg w-full h-full object-contain drop-shadow-lg"
+                  src={
+                    banner.imageUrl ? `${S3_BASE_URL}${banner.imageUrl}` : ""
+                  }
+                  alt={banner.altText || "Banner"}
+                  className="w-full h-full object-cover object-center hover:scale-105 transition-transform duration-300 pointer-events-none"
+                  onError={handleImageError}
+                  draggable={false}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-green-900/30 to-transparent rounded-lg"></div>
-                <div className="absolute inset-0 border-2 border-yellow-400/30 rounded-lg"></div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Slide indicators */}
-        <div className="flex justify-center mt-8 space-x-3">
-          {promoSlides.map((slide, index) => (
+        {/* Navigation arrows - only show if more than 1 banner */}
+        {Array.isArray(banners) && banners.length > 1 && (
+          <>
             <button
-              key={slide.id}
-              onClick={() => setCurrentPromo(index)}
-              className="group relative"
+              onClick={(e) => handleButtonClick(e, goToPrevious)}
+              className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-75 text-white p-1.5 sm:p-2 rounded-full transition-all duration-300 opacity-0 group-hover:opacity-100 z-10"
+              aria-label="Previous banner"
+              type="button"
             >
-              <span
-                className={`block w-2 h-2 rounded-full transition-all duration-500 ${
-                  index === currentPromo
-                    ? "w-8 bg-yellow-400"
-                    : "bg-white/40 hover:bg-white/60"
-                }`}
-              />
-              {index === currentPromo && (
-                <span className="absolute inset-0 rounded-full bg-yellow-400 animate-ping opacity-25"></span>
-              )}
+              <ChevronLeft className="w-4 h-4 sm:w-6 sm:h-6" />
             </button>
-          ))}
-        </div>
-      </div>
 
-      {/* Progress bar */}
-      <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20">
-        <div
-          className="h-full bg-yellow-400 transition-all duration-700 ease-linear"
-          style={{
-            width: "100%",
-            transform: "scaleX(0)",
-            transformOrigin: "left",
-            animation: "progress 4s linear infinite",
-          }}
-        />
+            <button
+              onClick={(e) => handleButtonClick(e, goToNext)}
+              className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-75 text-white p-1.5 sm:p-2 rounded-full transition-all duration-300 opacity-0 group-hover:opacity-100 z-10"
+              aria-label="Next banner"
+              type="button"
+            >
+              <ChevronRight className="w-4 h-4 sm:w-6 sm:h-6" />
+            </button>
+          </>
+        )}
+
+        {/* Dot indicators for better mobile UX */}
+        {Array.isArray(banners) && banners.length > 1 && (
+          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex items-center space-x-2 z-10">
+            {banners.map((_, index) => (
+              <button
+                key={index}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setCurrentIndex(index);
+                }}
+                className={` rounded-full transition-all duration-300 ${
+                  index === currentIndex
+                    ? "bg-teal-800 scale-125  w-4 h-1 sm:w-4 sm:h-1"
+                    : "bg-white bg-opacity-50 hover:bg-opacity-75 w-2 h-1 sm:w-3 sm:h-1"
+                }`}
+                aria-label={`Go to banner ${index + 1}`}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

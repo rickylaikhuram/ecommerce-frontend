@@ -258,7 +258,7 @@ const ProductsPage = () => {
         onViewModeChange={setViewMode}
       />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex gap-8">
           {/* Desktop Sidebar */}
           <div className="hidden lg:block w-72 flex-shrink-0">

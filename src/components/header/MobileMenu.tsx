@@ -1,9 +1,10 @@
 // components/Header/MobileMenu.tsx
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { X, ChevronDown, Heart, User, Loader2 } from "lucide-react";
-import { useAppSelector } from "../../redux/hook";
+import { useAppSelector, useAppDispatch } from "../../redux/hook";
 import { selectCart } from "../../redux/slice/cart";
+import { fetchCategories, type Categories } from "../../redux/slice/categories";
 import { CartIcon } from "./CartIcon";
 import type { NavItem } from "./Navigation";
 
@@ -13,7 +14,6 @@ interface MobileMenuProps {
   navItems: NavItem[];
   profileHref: string;
   profileLabel: string;
-  onNavClick: (e: React.MouseEvent<HTMLAnchorElement>, path: string) => void;
 }
 
 export const MobileMenu: React.FC<MobileMenuProps> = ({
@@ -22,16 +22,48 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
   navItems,
   profileHref,
   profileLabel,
-  onNavClick,
 }) => {
+  const location = useLocation();
+  const dispatch = useAppDispatch();
   const cartLoading = useAppSelector(
     (state) => state.cart.status === "loading"
   );
   const cart = useAppSelector(selectCart);
-  const [dropdownOpen, setDropdownOpen] = React.useState(false);
+  const { status, categories } = useAppSelector((state) => state.categories);
+
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
+    new Set()
+  );
   const cartCount = cart?.summary.totalItems || 0;
 
-  const isActive = (path: string) => window.location.pathname === path;
+  useEffect(() => {
+    if (status === "idle") {
+      dispatch(fetchCategories());
+    }
+  }, [status, dispatch]);
+
+  const isActive = (path: string) => location.pathname === path;
+
+  const handleNavigation = (path: string) => {
+    window.open(path, "_self");
+    onClose();
+  };
+
+  const handleCategoryClick = (categoryName: string) => {
+    const url = `/products?category=${encodeURIComponent(categoryName)}`;
+    handleNavigation(url);
+  };
+
+  const toggleCategoryExpansion = (categoryId: string) => {
+    const newExpanded = new Set(expandedCategories);
+    if (newExpanded.has(categoryId)) {
+      newExpanded.delete(categoryId);
+    } else {
+      newExpanded.add(categoryId);
+    }
+    setExpandedCategories(newExpanded);
+  };
 
   if (!isOpen) return null;
 
@@ -39,52 +71,112 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
     <>
       {/* Overlay */}
       <div
-        className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
+        className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40"
         onClick={onClose}
       />
 
       {/* Sidebar */}
-      <div className="fixed top-0 left-0 h-full w-64 bg-white z-50 transform transition-transform duration-300 ease-out shadow-2xl translate-x-0">
-        <div className="flex items-center justify-between p-4 border-b">
-          <h2 className="text-lg font-semibold">Menu</h2>
+      <div className="fixed top-0 left-0 h-full w-72 bg-white z-50 transform transition-transform duration-300 ease-out shadow-2xl translate-x-0">
+        <div className="flex items-center justify-between p-4 border-b bg-teal-600">
+          <h2 className="text-lg font-bold text-black">Menu</h2>
           <button
             onClick={onClose}
-            className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-white/50 rounded-lg transition-all duration-200 hover:scale-105"
           >
-            <X size={20} />
+            <X size={20} className="text-black" />
           </button>
         </div>
 
-        <div className="p-4 space-y-1 overflow-y-auto h-[calc(100%-73px)]">
+        <div className="p-4 space-y-2 overflow-y-auto h-[calc(100%-73px)]">
           {navItems.map((item) =>
             item.isDropdown ? (
-              <div key={item.name}>
-                <button
-                  className="flex items-center justify-between w-full px-3 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-100 rounded-md"
-                  onClick={() => setDropdownOpen(!dropdownOpen)}
-                >
-                  {item.name}
-                  <ChevronDown
-                    className={`transform transition-transform duration-200 ${
-                      dropdownOpen ? "rotate-180" : ""
+              <div
+                key={item.name}
+                className="bg-gray-50 rounded-lg overflow-hidden"
+              >
+                {/* Main Category Header */}
+                <div className="flex items-center bg-white rounded-lg shadow-sm">
+                  <button
+                    className={`flex-1 text-left px-4 py-3 text-sm font-semibold text-gray-700 hover:text-blue-600 transition-colors ${
+                      isActive(item.path)
+                        ? "bg-emerald-50 text-emerald-600"
+                        : "text-gray-700 hover:bg-gray-50 hover:text-emerald-600"
                     }`}
-                    size={16}
-                  />
-                </button>
-                {dropdownOpen && (
-                  <div className="ml-4 mt-1 space-y-1">
-                    {item.items?.map((subItem) => (
-                      <Link
-                        key={subItem.label}
-                        to={subItem.path}
-                        className="block px-3 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded"
-                        onClick={(e) => {
-                          onNavClick(e, subItem.path);
-                          onClose();
-                        }}
+                    onClick={() => handleNavigation(item.path)}
+                  >
+                    {item.name}
+                  </button>
+                  <button
+                    className={`px-4 py-3 text-gray-500 hover:text-blue-600 transition-all duration-200 border-l border-gray-100 ${
+                      dropdownOpen ? "text-blue-600" : ""
+                    }`}
+                    onClick={() => setDropdownOpen(!dropdownOpen)}
+                  >
+                    <ChevronDown
+                      className={`transform transition-transform duration-300 ${
+                        dropdownOpen ? "rotate-180" : ""
+                      }`}
+                      size={16}
+                    />
+                  </button>
+                </div>
+
+                {/* Categories Dropdown */}
+                {dropdownOpen && categories && (
+                  <div className="mt-2 space-y-1 animate-in slide-in-from-top-2 duration-200">
+                    {categories.map((parent: Categories) => (
+                      <div
+                        key={parent.id}
+                        className="bg-white rounded-lg shadow-sm overflow-hidden"
                       >
-                        {subItem.label}
-                      </Link>
+                        <div className="flex items-center">
+                          <button
+                            className="flex-1 text-left px-4 py-3 text-sm text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-all duration-150"
+                            onClick={() => handleCategoryClick(parent.name)}
+                          >
+                            {parent.name}
+                          </button>
+
+                          {parent.children && parent.children.length > 0 && (
+                            <button
+                              className={`px-3 py-3 text-gray-400 hover:text-blue-600 transition-all duration-200 ${
+                                expandedCategories.has(parent.id)
+                                  ? "text-blue-600 bg-blue-50"
+                                  : ""
+                              }`}
+                              onClick={() => toggleCategoryExpansion(parent.id)}
+                            >
+                              <ChevronDown
+                                className={`transform transition-transform duration-200 ${
+                                  expandedCategories.has(parent.id)
+                                    ? "rotate-180"
+                                    : ""
+                                }`}
+                                size={14}
+                              />
+                            </button>
+                          )}
+                        </div>
+
+                        {/* Child Categories */}
+                        {expandedCategories.has(parent.id) &&
+                          parent.children &&
+                          parent.children.length > 0 && (
+                            <div className="bg-gray-50 border-t border-gray-100 animate-in slide-in-from-top-1 duration-200">
+                              {parent.children.map((child) => (
+                                <button
+                                  key={child.id}
+                                  className="w-full text-left px-6 py-2.5 text-sm text-gray-600 hover:text-blue-600 hover:bg-white transition-all duration-150 border-l-3 border-transparent hover:border-blue-200"
+                                  onClick={() =>
+                                    handleCategoryClick(child.name)
+                                  }
+                                >
+                                  {child.name}
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                      </div>
                     ))}
                   </div>
                 )}
@@ -93,10 +185,14 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
               <Link
                 key={item.name}
                 to={item.path}
-                className="block px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-100 rounded-md"
+                className={`block px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 ${
+                  isActive(item.path)
+                    ? "bg-emerald-50 text-emerald-600"
+                    : "text-gray-700 hover:bg-gray-50 hover:text-emerald-600"
+                }`}
                 onClick={(e) => {
-                  onNavClick(e, item.path);
-                  onClose();
+                  e.preventDefault();
+                  handleNavigation(item.path);
                 }}
               >
                 {item.name}
@@ -104,40 +200,52 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
             )
           )}
 
-          <div className="pt-4 mt-4 border-t space-y-1">
+          {/* User Actions Section */}
+          <div className="pt-4 mt-6 border-t border-gray-200 space-y-2">
+            <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-2 mb-3">
+              Your Account
+            </h3>
+
             <Link
               to="/wishlist"
-              className={`flex items-center gap-3 py-2.5 px-3 text-sm font-medium rounded-lg transition-all duration-200 ${
+              className={`flex items-center gap-3 py-3 px-4 text-sm font-medium rounded-lg transition-all duration-200 ${
                 isActive("/wishlist")
-                  ? "bg-blue-50 text-blue-600"
-                  : "text-gray-800 hover:bg-gray-50 hover:text-blue-600"
+                  ? "bg-emerald-50 text-emerald-600"
+                  : "text-gray-700 hover:bg-gray-50 hover:text-emerald-600"
               }`}
-              onClick={(e) => onNavClick(e, "/wishlist")}
+              onClick={(e) => {
+                e.preventDefault();
+                handleNavigation("/wishlist");
+              }}
             >
               <Heart
-                size={16}
+                size={18}
                 fill={isActive("/wishlist") ? "currentColor" : "none"}
+                className="transition-all duration-200"
               />
-              Wishlist
+              <span>Wishlist</span>
             </Link>
 
             <Link
               to="/cart"
-              className={`flex items-center gap-3 py-2.5 px-3 text-sm font-medium rounded-lg transition-all duration-200 ${
+              className={`flex items-center gap-3 py-3 px-4 text-sm font-medium rounded-lg transition-all duration-200 ${
                 isActive("/cart")
-                  ? "bg-blue-50 text-blue-600"
-                  : "text-gray-800 hover:bg-gray-50 hover:text-blue-600"
+                  ? "bg-emerald-50 text-emerald-600"
+                  : "text-gray-700 hover:bg-gray-50 hover:text-emerald-600"
               }`}
-              onClick={(e) => onNavClick(e, "/cart")}
+              onClick={(e) => {
+                e.preventDefault();
+                handleNavigation("/cart");
+              }}
             >
-              <CartIcon size={16} showCount={false} />
-              <span className="flex items-center gap-1">
+              <CartIcon size={18} showCount={false} />
+              <span className="flex items-center gap-2">
                 Cart
                 {cartLoading ? (
-                  <Loader2 className="w-3 h-3 animate-spin" />
+                  <Loader2 className="w-4 h-4 animate-spin" />
                 ) : cartCount > 0 ? (
-                  <span className="text-blue-600 font-semibold">
-                    ({cartCount})
+                  <span className="bg-blue-600 text-white text-xs px-2 py-0.5 rounded-full font-medium">
+                    {cartCount}
                   </span>
                 ) : null}
               </span>
@@ -145,37 +253,45 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
 
             <Link
               to={profileHref}
-              className={`flex items-center gap-3 py-2.5 px-3 text-sm font-medium rounded-lg transition-all duration-200 ${
+              className={`flex items-center gap-3 py-3 px-4 text-sm font-medium rounded-lg transition-all duration-200 ${
                 isActive(profileHref)
-                  ? "bg-blue-50 text-blue-600"
-                  : "text-gray-800 hover:bg-gray-50 hover:text-blue-600"
+                  ? "bg-emerald-50 text-emerald-600"
+                  : "text-gray-700 hover:bg-gray-50 hover:text-emerald-600"
               }`}
-              onClick={(e) => onNavClick(e, profileHref)}
+              onClick={(e) => {
+                e.preventDefault();
+                handleNavigation(profileHref);
+              }}
             >
               <User
-                size={16}
+                size={18}
                 fill={isActive(profileHref) ? "currentColor" : "none"}
+                className="transition-all duration-200"
               />
-              {profileLabel}
+              <span>{profileLabel}</span>
             </Link>
           </div>
 
           {/* Cart Summary */}
           {cart && cart.items.length > 0 && (
-            <div className="mt-4 pt-4 border-t">
-              <div className="bg-blue-50 rounded-lg p-3 mb-3">
-                <p className="text-xs text-gray-600 mb-1">Cart Total</p>
-                <p className="text-lg font-bold text-gray-900">
+            <div className="mt-6 pt-4 border-t border-gray-200">
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 mb-4 border border-blue-100">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm text-gray-600">Cart Total</span>
+                  <span className="text-xs text-gray-500">
+                    {cartCount} items
+                  </span>
+                </div>
+                <p className="text-xl font-bold text-gray-900">
                   ₹{cart.summary.totalPrice.toFixed(2)}
                 </p>
               </div>
-              <Link
-                to="/checkout"
-                className="block w-full bg-blue-600 text-white text-center py-2.5 rounded-lg font-medium hover:bg-blue-700 transition-colors"
-                onClick={onClose}
+              <button
+                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-center py-3 rounded-lg font-semibold transition-all duration-200 transform hover:scale-[1.02] shadow-lg hover:shadow-xl"
+                onClick={() => handleNavigation("/checkout")}
               >
-                Checkout
-              </Link>
+                Proceed to Checkout
+              </button>
             </div>
           )}
         </div>

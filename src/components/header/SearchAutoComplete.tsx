@@ -170,7 +170,7 @@ export const SearchAutoComplete: React.FC<SearchAutocompleteProps> = ({
   }> = ({ suggestion, isSelected, onClick }) => (
     <div
       className={`flex items-center gap-3 p-3 cursor-pointer transition-colors ${
-        isSelected ? "bg-blue-50" : "hover:bg-gray-50"
+        isSelected ? "bg-emerald-50" : "hover:bg-gray-50"
       }`}
       onClick={onClick}
     >
@@ -188,8 +188,8 @@ export const SearchAutoComplete: React.FC<SearchAutocompleteProps> = ({
             </div>
           )
         ) : (
-          <div className="w-8 h-8 bg-blue-100 rounded flex items-center justify-center">
-            <Tag size={16} className="text-blue-600" />
+          <div className="w-8 h-8 bg-emerald-100 rounded flex items-center justify-center">
+            <Tag size={16} className="text-emerald-600" />
           </div>
         )}
       </div>
@@ -229,7 +229,7 @@ export const SearchAutoComplete: React.FC<SearchAutocompleteProps> = ({
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
           className={`w-full pl-10 pr-10 py-2.5 bg-gray-50 border border-gray-200 rounded-lg 
-            focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 
+            focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 
             transition-all ${isMobile ? "text-sm" : ""}`}
         />
 
@@ -259,7 +259,7 @@ export const SearchAutoComplete: React.FC<SearchAutocompleteProps> = ({
         >
           {isLoading && (
             <div className="flex items-center justify-center p-4">
-              <Loader2 className="w-5 h-5 animate-spin text-blue-600" />
+              <Loader2 className="w-5 h-5 animate-spin text-emerald-600" />
               <span className="ml-2 text-sm text-gray-600">Searching...</span>
             </div>
           )}
@@ -273,7 +273,7 @@ export const SearchAutoComplete: React.FC<SearchAutocompleteProps> = ({
 
           {!query.trim() && popularSuggestions.length > 0 && (
             <div className="flex items-center gap-2 p-3 pb-2 border-b border-gray-100">
-              <TrendingUp size={16} className="text-blue-600" />
+              <TrendingUp size={16} className="text-emerald-600" />
               <span className="text-sm font-medium text-gray-700">
                 Popular Searches
               </span>
@@ -298,13 +298,13 @@ export const SearchAutoComplete: React.FC<SearchAutocompleteProps> = ({
               <div
                 className={`flex items-center gap-3 p-3 cursor-pointer transition-colors ${
                   selectedIndex === -1 && hasFocus
-                    ? "bg-blue-50"
+                    ? "bg-emerald-50"
                     : "hover:bg-gray-50"
                 }`}
                 onClick={handleSearch}
               >
-                <div className="w-8 h-8 bg-blue-100 rounded flex items-center justify-center flex-shrink-0">
-                  <Search size={16} className="text-blue-600" />
+                <div className="w-8 h-8 bg-emerald-100 rounded flex items-center justify-center flex-shrink-0">
+                  <Search size={16} className="text-emerald-600" />
                 </div>
                 <div className="flex-1">
                   <span className="font-medium text-gray-900">

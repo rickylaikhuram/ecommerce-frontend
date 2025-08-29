@@ -3,7 +3,6 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Menu } from "lucide-react";
 import { SearchAutoComplete } from "./SearchAutoComplete";
-import { CartIcon } from "./CartIcon";
 import { LocationDisplay } from "./LocationDisplay";
 import type { AutocompleteResult } from "../../types/search.types";
 
@@ -31,7 +30,7 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
   return (
     <header
       className={`sm:hidden w-full bg-white transition-transform duration-300 ${
-        isScrolled ? "fixed top-0 left-0 z-40 shadow-md" : "relative"
+        isScrolled ? "fixed top-0 left-0 z-[60] shadow-md" : "relative z-[60]"
       } ${!showHeader && isScrolled ? "-translate-y-full" : "translate-y-0"}`}
     >
       <div className="border-b border-gray-100">
@@ -52,10 +51,15 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
           />
 
           <Link
-            to="/cart"
-            className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors flex-shrink-0"
+            key={"home"}
+            to={"/"}
+            onClick={(e) => onNavClick(e, "/")}
           >
-            <CartIcon size={20} />
+            <img
+              src="/logo.jpeg"
+              alt="Home"
+              className={`h-9 w-9 text-sm font-medium transition-all duration-200 rounded-lg hover:bg-gray-50 `}
+            />
           </Link>
         </div>
 

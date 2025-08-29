@@ -25,7 +25,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
   const navItems = [
     { path: "/", icon: Home, label: "Home" },
     { path: "/wishlist", icon: Heart, label: "Wishlist" },
-    { path: "/cart", label: "Cart" }, // 👈 no icon
+    { path: "/cart", label: "Cart" },
     { path: profileHref, icon: User, label: profileLabel },
   ];
 

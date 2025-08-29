@@ -98,7 +98,7 @@ export const DesktopHeader: React.FC<DesktopHeaderProps> = ({
                   to={profileHref}
                   className={`p-2.5 rounded-lg transition-colors ${
                     isActive(profileHref)
-                      ? "bg-blue-100 text-blue-600"
+                      ? "bg-emerald-50 text-emerald-600"
                       : "hover:bg-gray-100 text-gray-700"
                   }`}
                   onClick={(e) => onNavClick(e, profileHref)}
@@ -113,7 +113,7 @@ export const DesktopHeader: React.FC<DesktopHeaderProps> = ({
                   to="/wishlist"
                   className={`p-2.5 rounded-lg transition-colors relative ${
                     isActive("/wishlist")
-                      ? "bg-blue-100 text-blue-600"
+                      ? "bg-emerald-50 text-emerald-600"
                       : "hover:bg-gray-100 text-gray-700"
                   }`}
                   onClick={(e) => onNavClick(e, "/wishlist")}
@@ -128,7 +128,7 @@ export const DesktopHeader: React.FC<DesktopHeaderProps> = ({
                   to="/cart"
                   className={`p-2.5 rounded-lg transition-colors relative ${
                     isActive("/cart")
-                      ? "bg-blue-100 text-blue-600"
+                      ? "bg-emerald-50 text-emerald-600"
                       : "hover:bg-gray-100 text-gray-700"
                   }`}
                   onClick={(e) => onNavClick(e, "/cart")}

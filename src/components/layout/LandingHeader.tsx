@@ -7,10 +7,19 @@ import { DesktopHeader } from "../header/DesktopHeader";
 import { useHeaderState } from "../../hooks/useHeaderState";
 import type { NavItem } from "../header/Navigation";
 import type { AutocompleteResult } from "../../types/search.types";
+import { useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "../../redux/hook";
+import { fetchCategories } from "../../redux/slice/categories";
 
 const LandingHeader = () => {
   const navigate = useNavigate();
-  
+  const dispatch = useAppDispatch();
+  const { status } = useAppSelector((state) => state.categories);
+  useEffect(() => {
+    if (status === "idle") {
+      dispatch(fetchCategories());
+    }
+  }, [status, dispatch]);
   const {
     isMenuOpen,
     isScrolled,
@@ -31,10 +40,7 @@ const LandingHeader = () => {
     {
       name: "Categories",
       isDropdown: true,
-      items: [
-        { label: "Club", path: "/category/men" },
-        { label: "National", path: "/category/women" },
-      ],
+      path: "/categories",
     },
   ];
 
@@ -44,7 +50,6 @@ const LandingHeader = () => {
   };
 
   const handleSuggestionClick = (suggestion: AutocompleteResult) => {
-
     if (suggestion.type === "product") {
       navigate(`/products/${suggestion.id}`);
     } else if (suggestion.type === "category") {
@@ -61,7 +66,6 @@ const LandingHeader = () => {
         navItems={navItems}
         profileHref={profileHref}
         profileLabel={profileLabel}
-        onNavClick={handleNavClick}
       />
 
       {/* Desktop Header */}

@@ -15,7 +15,7 @@ import ActiveFilters from "../components/products/ActiveFilters";
 import FilterSidebar from "../components/products/FilterSidebar";
 import ProductsGrid from "../components/products/ProductsGrid";
 import Pagination from "../components/products/Pagination";
-import Footer from "../components/layout/Footer";
+import Footer from "../components/section/Footer";
 
 const ProductsPage = () => {
   const navigate = useNavigate();

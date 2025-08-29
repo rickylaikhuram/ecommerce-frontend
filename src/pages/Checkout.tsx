@@ -10,7 +10,11 @@ import {
 } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "../redux/hook";
 import { logoutUser } from "../redux/slice/auth";
-import { fetchCart, removeFromCart, removeItemOptimistic } from "../redux/slice/cart";
+import {
+  fetchCart,
+  removeFromCart,
+  removeItemOptimistic,
+} from "../redux/slice/cart";
 import type {
   CartCheckoutResponse,
   CheckoutState,
@@ -249,7 +253,7 @@ const Checkout: React.FC = () => {
   const handleRefreshCart = async () => {
     try {
       await loadCheckoutUserData();
-      dispatch(fetchCart()).unwrap()
+      dispatch(fetchCart()).unwrap();
     } catch (error) {
       console.error("Error refreshing cart:", error);
       setError("Failed to refresh cart. Please try again.");
@@ -363,6 +367,7 @@ const Checkout: React.FC = () => {
       console.error("Payment failed:", error);
       setError("Payment failed. Please try again.");
     } finally {
+      dispatch(fetchCart()).unwrap();
       setIsProcessing(false);
     }
   };
@@ -416,75 +421,77 @@ const Checkout: React.FC = () => {
         error.message || "Failed to generate QR code. Please try again."
       );
     } finally {
+      dispatch(fetchCart()).unwrap();
       setIsProcessing(false);
     }
   };
 
-const handlePlaceOrder = async () => {
-  if (!state || !state.items || state.items.length === 0) {
-    setError("Session expired. Redirecting to cart...");
-    navigate("/cart", { replace: true });
-    return;
-  }
-  if (!selectedAddress) {
-    setError("Please select a delivery address");
-    return;
-  }
+  const handlePlaceOrder = async () => {
+    if (!state || !state.items || state.items.length === 0) {
+      setError("Session expired. Redirecting to cart...");
+      navigate("/cart", { replace: true });
+      return;
+    }
+    if (!selectedAddress) {
+      setError("Please select a delivery address");
+      return;
+    }
 
-  setIsProcessing(true);
-  setError(null);
+    setIsProcessing(true);
+    setError(null);
 
-  try {
-    // Prepare order data
-    const orderData: CreateOrderRequest = {
-      productDatas: state.items,
-      address: transformAddressToShipping(selectedAddress),
-      paymentMethod: "COD",
-    };
+    try {
+      // Prepare order data
+      const orderData: CreateOrderRequest = {
+        productDatas: state.items,
+        address: transformAddressToShipping(selectedAddress),
+        paymentMethod: "COD",
+      };
 
-    // Create COD order with validation callback
-    const result = await orderService.createCodOrder(
-      orderData,
-      // Callback for validation failure
-      (validationData: CartCheckoutResponse) => {
-        setCartValidation(validationData);
-        setShowValidationModal(true);
-        setCanProceedToPayment(validationData.canProceedToCheckout);
+      // Create COD order with validation callback
+      const result = await orderService.createCodOrder(
+        orderData,
+        // Callback for validation failure
+        (validationData: CartCheckoutResponse) => {
+          setCartValidation(validationData);
+          setShowValidationModal(true);
+          setCanProceedToPayment(validationData.canProceedToCheckout);
+        }
+      );
+
+      if (result.success) {
+        // Navigate to order success page with real order data
+        navigate(`/orders-success/${result.orderId}`, {
+          state: {
+            paymentMethod: "cod",
+            amount: result.amount,
+            orderId: result.orderId,
+          },
+        });
+      } else {
+        setError("Failed to place order");
       }
-    );
+    } catch (error: any) {
+      console.error("COD order placement failed:", error);
 
-    if (result.success) {
-      // Navigate to order success page with real order data
-      navigate(`/orders-success/${result.orderId}`, {
-        state: {
-          paymentMethod: "cod",
-          amount: result.amount,
-          orderId: result.orderId,
-        },
-      });
-    } else {
-      setError("Failed to place order");
+      if (error.message === "CART_VALIDATION_FAILED") {
+        // Validation modal will be shown via the callback
+        return;
+      }
+
+      if (error.message === "INSUFFICIENT_STOCK") {
+        setError(
+          "Some items are out of stock. Please update your cart and try again."
+        );
+        return;
+      }
+
+      setError(error.message || "Failed to place order. Please try again.");
+    } finally {
+      dispatch(fetchCart()).unwrap();
+      setIsProcessing(false);
     }
-  } catch (error: any) {
-    console.error("COD order placement failed:", error);
-
-    if (error.message === "CART_VALIDATION_FAILED") {
-      // Validation modal will be shown via the callback
-      return;
-    }
-
-    if (error.message === "INSUFFICIENT_STOCK") {
-      setError("Some items are out of stock. Please update your cart and try again.");
-      return;
-    }
-
-    setError(
-      error.message || "Failed to place order. Please try again."
-    );
-  } finally {
-    setIsProcessing(false);
-  }
-};
+  };
 
   // Add the modal handler
   const handleModalGoToCart = () => {

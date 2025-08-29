@@ -16,6 +16,7 @@ import Checkout from "../pages/Checkout";
 import ProductsPage from "../pages/Products";
 import OrderDetails from "../pages/client/OrderDetails";
 import OrderConfirmation from "../pages/client/OrderConfirmation";
+import CategoryPage from "../pages/CategoryPage";
 
 const UserRoutes = (
   <Route element={<MainLayout />}>
@@ -36,6 +37,7 @@ const UserRoutes = (
     <Route path="orders-success/:id" element={<OrderConfirmation />} />
     <Route path="/products" element={<ProductsPage />} />
     <Route path="/search" element={<ProductsPage />} />
+    <Route path="/categories" element={<CategoryPage />} />
     <Route path="/products/:id" element={<ProductDetails />} />
     <Route path="/cart" element={<CartPage />} />
     <Route path="/wishlist" element={<Wishlist />} />
@@ -47,7 +49,7 @@ const UserRoutes = (
     <Route path="/signinwithotp" element={<Navigate to="/" replace />} />
     <Route path="/signup" element={<Navigate to="/" replace />} />
     <Route path="/forgot-password" element={<Navigate to="/" replace />} />
-    
+
     <Route path="*" element={<Error />} />
   </Route>
 );

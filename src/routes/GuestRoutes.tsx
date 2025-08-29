@@ -11,16 +11,18 @@ import Error from "../pages/error";
 import ProductDetails from "../pages/ProductDetails";
 import Checkout from "../pages/Checkout";
 import ProductsPage from "../pages/Products";
+import CategoryPage from "../pages/CategoryPage";
 
 const GuestRoutes = (
   <Route element={<MainLayout />}>
     <Route path="/" element={<Home />} />
     <Route path="/products" element={<ProductsPage />} />
+    <Route path="/categories" element={<CategoryPage />} />
     <Route path="/products/:id" element={<ProductDetails />} />
     <Route path="/search/:id" element={<ProductDetails />} />
     <Route path="/wishlist" element={<Wishlist />} />
     <Route path="/cart" element={<CartPage />} />
-    <Route path="/checkout" element={<Checkout/>} />
+    <Route path="/checkout" element={<Checkout />} />
     <Route path="/signin" element={<SignIn />} />
     <Route path="/signinwithotp" element={<SignInOTP />} />
     <Route path="/signup" element={<SignUp />} />

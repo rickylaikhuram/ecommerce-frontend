@@ -57,10 +57,11 @@ const SignInOTP = () => {
 
   const handleOTPVerify = async (otp: string) => {
     // Verify OTP with backend
-    await instance.post("/api/auth/signin/otp/verify", {
+    const response = await instance.post("/api/auth/signin/otp/verify", {
       phone: phoneNumber,
       otp,
     });
+    localStorage.setItem("authToken", response.data.token);
     // On success, navigate to dashboard
     await dispatch(fetchAuth());
   };

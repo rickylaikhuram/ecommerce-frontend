@@ -81,10 +81,11 @@ const SignUp = () => {
 
     try {
       // Simulate OTP verification and account creation
-      await instance.post("/api/auth/signup/confirm", {
+      const response = await instance.post("/api/auth/signup/confirm", {
         phone: formData.phone, // Don't prefix with +91 unless your backend expects it
         otp,
       });
+      localStorage.setItem("authToken", response.data.token);
       await dispatch(fetchAuth());
     } catch (err) {
       console.error("Registration failed:", err);

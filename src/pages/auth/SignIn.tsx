@@ -84,8 +84,11 @@ const SignIn = () => {
         password: data.password,
       };
 
-      await instance.post("/api/auth/signin/password", payload);
-
+      const response = await instance.post(
+        "/api/auth/signin/password",
+        payload
+      );
+      localStorage.setItem("authToken", response.data.token);
       await dispatch(fetchAuth());
     } catch (err) {
       console.error("Sign in failed:", err);

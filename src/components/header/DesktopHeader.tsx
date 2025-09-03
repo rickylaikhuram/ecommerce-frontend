@@ -58,56 +58,29 @@ export const DesktopHeader: React.FC<DesktopHeaderProps> = ({
               />
 
               {/* Location Display - Desktop (lg and above) */}
-              {onLocationClick ? (
-                <button
-                  onClick={onLocationClick}
-                  className="hidden lg:flex hover:bg-gray-50 p-2 rounded-lg transition-colors"
-                >
-                  <LocationDisplay
-                    locationInfo={locationInfo}
-                    addressLoading={addressLoading}
-                  />
-                </button>
-              ) : (
-                <Link
-                  to="/location"
-                  className="hidden lg:flex hover:bg-gray-50 p-2 rounded-lg transition-colors"
-                  onClick={(e) => onNavClick(e, "/location")}
-                >
-                  <LocationDisplay
-                    locationInfo={locationInfo}
-                    addressLoading={addressLoading}
-                  />
-                </Link>
-              )}
+              <button
+                onClick={onLocationClick}
+                className="hidden lg:flex hover:bg-gray-50 p-2 rounded-lg transition-colors"
+              >
+                <LocationDisplay
+                  locationInfo={locationInfo}
+                  addressLoading={addressLoading}
+                />
+              </button>
             </div>
 
             {/* Middle Section - Location for md screens */}
             <div className="hidden md:flex lg:hidden">
-              {onLocationClick ? (
-                <button
-                  onClick={onLocationClick}
-                  className="hover:bg-gray-50 p-2 rounded-lg transition-colors"
-                >
-                  <LocationDisplay
-                    locationInfo={locationInfo}
-                    addressLoading={addressLoading}
-                    isCompact
-                  />
-                </button>
-              ) : (
-                <Link
-                  to="/location"
-                  className="hover:bg-gray-50 p-2 rounded-lg transition-colors"
-                  onClick={(e) => onNavClick(e, "/location")}
-                >
-                  <LocationDisplay
-                    locationInfo={locationInfo}
-                    addressLoading={addressLoading}
-                    isCompact
-                  />
-                </Link>
-              )}
+              <button
+                onClick={onLocationClick}
+                className="hover:bg-gray-50 p-2 rounded-lg transition-colors"
+              >
+                <LocationDisplay
+                  locationInfo={locationInfo}
+                  addressLoading={addressLoading}
+                  isCompact
+                />
+              </button>
             </div>
 
             {/* Right Section */}

@@ -209,7 +209,7 @@ const Home: React.FC = () => {
         />
       )}
 
-      <CategoryShowcase />
+      <CategoryShowcase categoryIndex={0}/>
 
       {/* Best Sellers Section - Lazy load */}
       <LazyProductSection
@@ -221,7 +221,7 @@ const Home: React.FC = () => {
         cardCount={4}
       />
 
-      <CategoryShowcase />
+      <CategoryShowcase categoryIndex={1}/>
 
       {/* Featured Products Section - Lazy load */}
       <LazyProductSection

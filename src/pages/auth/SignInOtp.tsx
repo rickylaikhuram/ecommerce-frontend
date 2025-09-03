@@ -89,17 +89,18 @@ const SignInOTP = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-sky-50 to-cyan-50 px-4 py-8">
+    <>
+    <div className=" flex items-center justify-center bg-white px-4 py-8">
       <div className="w-full max-w-md">
         <div className="flex justify-center mb-8">
           <div className="relative">
             <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-full blur-lg opacity-30 animate-pulse"></div>
-            <LogIn className="relative text-blue-600 w-12 h-12" />
+            <LogIn className="relative text-emerald-600 w-12 h-12" />
           </div>
         </div>
 
-        <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl shadow-blue-100/50 p-8 border border-white/50">
-          <h2 className="text-3xl font-bold text-center bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent mb-2">
+        <div className="bg-emerald backdrop-blur-sm rounded-3xl shadow-2xl shadow-emerald p-8">
+          <h2 className="text-3xl font-bold text-center bg-gradient-to-r from-emerald-600 to-cyan-600 bg-clip-text text-transparent mb-2">
             Sign In with OTP
           </h2>
           <p className="text-center text-gray-600 text-sm mb-8">
@@ -118,7 +119,7 @@ const SignInOTP = () => {
                       ? "text-red-400"
                       : touchedFields.phone && !errors.phone
                       ? "text-emerald-500"
-                      : "text-gray-400 group-focus-within:text-blue-500"
+                      : "text-gray-400 group-focus-within:text-emerald-500"
                   }`}
                 />
 
@@ -175,8 +176,8 @@ const SignInOTP = () => {
               disabled={loading || !isValid}
               className={`w-full py-3.5 rounded-xl text-white font-medium transition-all duration-300 transform ${
                 loading || !isValid
-                  ? "bg-gradient-to-r from-blue-300 to-cyan-300 cursor-not-allowed opacity-60"
-                  : "bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 hover:shadow-lg hover:-translate-y-0.5"
+                  ? "bg-gradient-to-r from-emerald-300 to-cyan-300 cursor-not-allowed opacity-60"
+                  : "bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-emerald-700 hover:to-cyan-700 hover:shadow-lg hover:-translate-y-0.5"
               }`}
             >
               {loading ? "Sending OTP..." : "Send OTP"}
@@ -197,7 +198,7 @@ const SignInOTP = () => {
               to="/signin"
               className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white border border-gray-300 rounded-xl hover:bg-gray-50 hover:shadow-md transition-all duration-200 group"
             >
-              <Lock className="w-5 h-5 text-gray-600 group-hover:text-blue-600 transition-colors" />
+              <Lock className="w-5 h-5 text-gray-600 group-hover:text-emerald-600 transition-colors" />
               <span className="text-gray-700 font-medium">
                 Sign in with Password
               </span>
@@ -208,7 +209,7 @@ const SignInOTP = () => {
             Don't have an account?{" "}
             <Link
               to="/signup"
-              className="text-blue-600 font-medium hover:text-blue-700 hover:underline"
+              className="text-emerald-600 font-medium hover:text-emerald-700 hover:underline"
             >
               Sign up
             </Link>
@@ -216,6 +217,7 @@ const SignInOTP = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

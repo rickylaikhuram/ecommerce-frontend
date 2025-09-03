@@ -121,16 +121,16 @@ const SignUp = () => {
       case "success":
         return "border-emerald-300 focus:ring-emerald-400";
       default:
-        return "border-gray-200 focus:ring-blue-400";
+        return "border-gray-200 focus:ring-emerald-400";
     }
   };
 
   // Show OTP verification screen
   if (showOTPScreen) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-sky-50 to-cyan-50 px-4 py-8">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-50 via-sky-50 to-cyan-50 px-4 py-8">
         <div className="w-full max-w-md">
-          <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl shadow-blue-100/50 p-8 sm:p-10 border border-white/50">
+          <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl shadow-emerald-100/50 p-8 sm:p-10 border border-white/50">
             <OTPVerification
               phoneNumber={userPhone}
               onVerify={handleOTPVerify}
@@ -145,18 +145,18 @@ const SignUp = () => {
     );
   }
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-sky-50 to-cyan-50 px-4 py-8">
+    <div className=" flex items-center justify-center bg-gradient-to-br from-emerald-50 via-sky-50 to-cyan-50 px-4 py-8">
       <div className="w-full max-w-md">
         {/* Decorative element */}
         <div className="flex justify-center mb-8">
           <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-full blur-lg opacity-30 animate-pulse"></div>
-            <Sparkles className="relative text-blue-600 w-12 h-12" />
+            <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-cyan-400 rounded-full blur-lg opacity-30 animate-pulse"></div>
+            <Sparkles className="relative text-emerald-600 w-12 h-12" />
           </div>
         </div>
 
-        <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl shadow-blue-100/50 p-8 sm:p-10 border border-white/50">
-          <h2 className="text-3xl font-bold text-center bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent mb-2">
+        <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl shadow-emerald-100/50 p-8 sm:p-10 border border-white/50">
+          <h2 className="text-3xl font-bold text-center bg-gradient-to-r from-emerald-600 to-cyan-600 bg-clip-text text-transparent mb-2">
             Create Account
           </h2>
           <p className="text-center text-gray-600 text-sm mb-8">
@@ -179,7 +179,7 @@ const SignUp = () => {
                       ? "text-red-400"
                       : getFieldState("fullName") === "success"
                       ? "text-emerald-500"
-                      : "text-gray-400 group-focus-within:text-blue-500"
+                      : "text-gray-400 group-focus-within:text-emerald-500"
                   }`}
                 />
                 <input
@@ -235,7 +235,7 @@ const SignUp = () => {
                       ? "text-red-400"
                       : getFieldState("email") === "success"
                       ? "text-emerald-500"
-                      : "text-gray-400 group-focus-within:text-blue-500"
+                      : "text-gray-400 group-focus-within:text-emerald-500"
                   }`}
                 />
                 <input
@@ -287,7 +287,7 @@ const SignUp = () => {
                       ? "text-red-400"
                       : getFieldState("phone") === "success"
                       ? "text-emerald-500"
-                      : "text-gray-400 group-focus-within:text-blue-500"
+                      : "text-gray-400 group-focus-within:text-emerald-500"
                   }`}
                 />
                 {/* Fixed +91 prefix with better positioning */}
@@ -391,7 +391,7 @@ const SignUp = () => {
                       ? "text-red-400"
                       : getFieldState("password") === "success"
                       ? "text-emerald-500"
-                      : "text-gray-400 group-focus-within:text-blue-500"
+                      : "text-gray-400 group-focus-within:text-emerald-500"
                   }`}
                 />
                 <input
@@ -480,8 +480,8 @@ const SignUp = () => {
               disabled={loading || !isValid}
               className={`w-full py-3.5 rounded-xl text-white font-medium transition-all duration-300 transform ${
                 loading || !isValid
-                  ? "bg-gradient-to-r from-blue-300 to-cyan-300 cursor-not-allowed opacity-60"
-                  : "bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 hover:shadow-lg hover:shadow-blue-200 hover:-translate-y-0.5 active:translate-y-0"
+                  ? "bg-gradient-to-r from-emerald-300 to-cyan-300 cursor-not-allowed opacity-60"
+                  : "bg-gradient-to-r from-emerald-600 to-cyan-600 hover:from-emerald-700 hover:to-cyan-700 hover:shadow-lg hover:shadow-emerald-200 hover:-translate-y-0.5 active:translate-y-0"
               }`}
             >
               {loading ? (
@@ -518,7 +518,7 @@ const SignUp = () => {
             Already have an account?{" "}
             <Link
               to="/signin"
-              className="text-blue-600 font-medium hover:text-blue-700 hover:underline transition-colors"
+              className="text-emerald-600 font-medium hover:text-emerald-700 hover:underline transition-colors"
             >
               Sign in
             </Link>
@@ -528,11 +528,11 @@ const SignUp = () => {
         {/* Terms and Privacy */}
         <p className="text-xs text-center text-gray-500 mt-6 px-4">
           By signing up, you agree to our{" "}
-          <a href="#" className="text-blue-600 hover:underline">
+          <a href="#" className="text-emerald-600 hover:underline">
             Terms of Service
           </a>{" "}
           and{" "}
-          <a href="#" className="text-blue-600 hover:underline">
+          <a href="#" className="text-emerald-600 hover:underline">
             Privacy Policy
           </a>
         </p>

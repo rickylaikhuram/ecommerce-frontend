@@ -4,7 +4,8 @@ import { Link, useLocation } from "react-router-dom";
 import { X, ChevronDown, Heart, User, Loader2 } from "lucide-react";
 import { useAppSelector, useAppDispatch } from "../../redux/hook";
 import { selectCart } from "../../redux/slice/cart";
-import { fetchCategories, type Categories } from "../../redux/slice/categories";
+import { fetchCategories } from "../../redux/slice/categories";
+import type { Category as Categories } from "../../types/products.types";
 import { CartIcon } from "./CartIcon";
 import type { NavItem } from "./Navigation";
 
@@ -71,19 +72,19 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
     <>
       {/* Overlay */}
       <div
-        className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40"
+        className="fixed inset-0 bg-black/30 backdrop-blur-sm z-80"
         onClick={onClose}
       />
 
       {/* Sidebar */}
-      <div className="fixed top-0 left-0 h-full w-72 bg-white z-50 transform transition-transform duration-300 ease-out shadow-2xl translate-x-0">
-        <div className="flex items-center justify-between p-4 border-b bg-teal-600">
-          <h2 className="text-lg font-bold text-black">Menu</h2>
+      <div className="fixed top-0 left-0 h-full w-72 bg-white z-90 transform transition-transform duration-300 ease-out shadow-2xl translate-x-0">
+        <div className="flex items-center justify-between p-4 border-b bg-emerald-900">
+          <h2 className="text-lg font-bold text-white">Clover Arena</h2>
           <button
             onClick={onClose}
             className="p-2 hover:bg-white/50 rounded-lg transition-all duration-200 hover:scale-105"
           >
-            <X size={20} className="text-black" />
+            <X size={20} className="text-white" />
           </button>
         </div>
 

@@ -3,8 +3,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { ChevronDown } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "../../redux/hook";
-import { fetchCategories, type Categories } from "../../redux/slice/categories";
-
+import { fetchCategories } from "../../redux/slice/categories";
+import type { Category as Categories } from "../../types/products.types";
 export type NavItem =
   | { name: string; path: string; isDropdown?: false }
   | {
@@ -176,9 +176,9 @@ export const Navigation: React.FC<NavigationProps> = ({
           >
             {item.name === "Home" ? (
               <img
-                src="/logo.jpeg"
+                src="/logo_details.jpeg"
                 alt="Home"
-                className={`h-9 w-9 text-sm font-medium transition-all duration-200 rounded-lg hover:bg-gray-50 `}
+                className={`h-19 text-sm font-medium transition-all duration-200 rounded-lg hover:bg-gray-50 `}
               />
             ) : (
               <span

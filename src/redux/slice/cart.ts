@@ -27,7 +27,7 @@ const getEmptySummary = (): CartSummary => ({
   totalOriginalPrice: 0,
   totalDiscount: 0,
   overallStatus: "ready",
-  canProceedToCheckout: true,
+  canProceedToCheckout: false,
   checkoutMessage: "Your cart is empty",
   hasOutOfStockItems: false,
   hasLowStockWarnings: false,

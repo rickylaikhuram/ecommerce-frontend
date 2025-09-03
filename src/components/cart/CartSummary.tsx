@@ -1,28 +1,67 @@
 // components/cart/CartSummary.tsx
-import React from "react";
-import { ShoppingBag, Tag, Truck, CreditCard, AlertTriangle, Lock } from "lucide-react";
+import React, { useEffect } from "react";
+import {
+  ShoppingBag,
+  Tag,
+  Truck,
+  CreditCard,
+  AlertTriangle,
+  Lock,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useAppSelector } from "../../redux/hook";
+import { useAppDispatch, useAppSelector } from "../../redux/hook";
 import { selectCart } from "../../redux/slice/cart";
-import type { CartSummary as CartSummaryType, CartItem } from "../../types/cart.types";
+import type {
+  CartSummary as CartSummaryType,
+  CartItem,
+} from "../../types/cart.types";
 import type { CheckoutState } from "../../types/checkout.types";
+import { fetchDeliverySetting } from "../../redux/slice/delivery";
 
 interface CartSummaryProps {
   summary: CartSummaryType;
 }
 
 export const CartSummary: React.FC<CartSummaryProps> = ({ summary }) => {
+  const dispatch = useAppDispatch();
+  const { status, deliverySetting } = useAppSelector((state) => state.delivery);
+
+  useEffect(() => {
+    if (status === "idle") {
+      dispatch(fetchDeliverySetting());
+    }
+  }, [status, dispatch]);
+
   const navigate = useNavigate();
-  
+
   // Use Redux selector instead of context
   const cart = useAppSelector(selectCart);
 
-  const shippingCost = summary.totalPrice > 50 ? 0 : 10;
+  // Calculate shipping cost based on delivery settings
+  const calculateShippingCost = () => {
+    if (!deliverySetting || !deliverySetting.takeDeliveryFee) {
+      return 0;
+    }
+
+    if (
+      deliverySetting.checkThreshold &&
+      deliverySetting.freeDeliveryThreshold
+    ) {
+      return summary.totalPrice >= Number(deliverySetting.freeDeliveryThreshold)
+        ? 0
+        : Number(deliverySetting.deliveryFee) || 0;
+    }
+
+    return Number(deliverySetting.deliveryFee) || 0;
+  };
+
+  const shippingCost = calculateShippingCost();
   const finalTotal = summary.totalPrice + shippingCost;
-  
+
   // Check if checkout is allowed
-  const canCheckout = summary.canProceedToCheckout && cart && cart.items.length > 0;
-  const hasIssues = summary.overallStatus === 'requires_action';
+  const canCheckout =
+    summary.canProceedToCheckout && cart && cart.items.length > 0;
+  const hasIssues = summary.overallStatus === "requires_action";
 
   const handleCheckout = () => {
     if (!canCheckout || !cart) return;
@@ -46,7 +85,7 @@ export const CartSummary: React.FC<CartSummaryProps> = ({ summary }) => {
         disabled: true,
         text: "Cart is Empty",
         icon: ShoppingBag,
-        className: "bg-gray-300 text-gray-500 cursor-not-allowed"
+        className: "bg-gray-300 text-gray-500 cursor-not-allowed",
       };
     }
 
@@ -55,7 +94,8 @@ export const CartSummary: React.FC<CartSummaryProps> = ({ summary }) => {
         disabled: true,
         text: "Resolve Cart Issues",
         icon: AlertTriangle,
-        className: "bg-red-100 text-red-600 cursor-not-allowed border-2 border-red-200"
+        className:
+          "bg-red-100 text-red-600 cursor-not-allowed border-2 border-red-200",
       };
     }
 
@@ -64,7 +104,7 @@ export const CartSummary: React.FC<CartSummaryProps> = ({ summary }) => {
         disabled: false,
         text: "Checkout Now (Limited Stock)",
         icon: CreditCard,
-        className: "bg-orange-500 text-white hover:bg-orange-600 animate-pulse"
+        className: "bg-orange-500 text-white hover:bg-orange-600 animate-pulse",
       };
     }
 
@@ -72,11 +112,27 @@ export const CartSummary: React.FC<CartSummaryProps> = ({ summary }) => {
       disabled: false,
       text: "Proceed to Checkout",
       icon: CreditCard,
-      className: "bg-blue-600 text-white hover:bg-blue-700"
+      className: "bg-blue-600 text-white hover:bg-blue-700",
     };
   };
 
   const buttonConfig = getCheckoutButtonConfig();
+
+  // Show loading state while fetching delivery settings
+  if (status === "loading") {
+    return (
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sticky top-4">
+        <div className="animate-pulse">
+          <div className="h-6 bg-gray-200 rounded w-32 mb-6"></div>
+          <div className="space-y-3">
+            <div className="h-4 bg-gray-200 rounded"></div>
+            <div className="h-4 bg-gray-200 rounded"></div>
+            <div className="h-4 bg-gray-200 rounded"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sticky top-4">
@@ -123,19 +179,34 @@ export const CartSummary: React.FC<CartSummaryProps> = ({ summary }) => {
         </div>
 
         {/* Shipping */}
-        <div className="flex justify-between text-gray-600">
-          <span className="flex items-center gap-2">
-            <Truck className="w-4 h-4" />
-            Shipping
-          </span>
-          <span>
-            {shippingCost === 0 ? (
-              <span className="text-green-600 font-medium">FREE</span>
-            ) : (
-              `₹${shippingCost}`
-            )}
-          </span>
-        </div>
+        {deliverySetting?.takeDeliveryFee && (
+          <div className="flex justify-between text-gray-600">
+            <span className="flex items-center gap-2">
+              <Truck className="w-4 h-4" />
+              Shipping
+            </span>
+            <span>
+              {shippingCost === 0 ? (
+                <span className="text-green-600 font-medium">FREE</span>
+              ) : (
+                `₹${shippingCost}`
+              )}
+            </span>
+          </div>
+        )}
+
+        {/* Free shipping threshold message */}
+        {deliverySetting?.takeDeliveryFee &&
+          deliverySetting?.checkThreshold &&
+          shippingCost > 0 &&
+          deliverySetting?.freeDeliveryThreshold && (
+            <div className="text-xs text-gray-500">
+              Add ₹
+              {Number(deliverySetting.freeDeliveryThreshold) -
+                summary.totalPrice}{" "}
+              more for free shipping
+            </div>
+          )}
 
         {/* Total */}
         <div className="flex justify-between text-xl font-bold text-gray-900 pt-4 border-t">

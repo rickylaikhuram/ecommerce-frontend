@@ -1,13 +1,10 @@
 // routes/AdminRoutes.tsx
 import { Route } from "react-router-dom";
 import AdminMainLayout from "../layout/AdminMainLayout";
-// import Dashboard from "../pages/admin/Dashboard";
 import Products from "../pages/admin/Products";
 import Orders from "../pages/admin/Orders";
 // import Analytics from "../pages/admin/Analytic";
-// import Notifications from "../pages/admin/Notification";
-// import Support from "../pages/admin/Support";
-// import Settings from "../pages/admin/Setting";
+// import Dashboard from "../pages/admin/Dashboard";
 import Error from "../pages/error";
 import Categories from "../pages/admin/Category";
 import Customers from "../pages/admin/Customer";

@@ -4,6 +4,7 @@ import UserProfile from "./slice/userProfile";
 import Cart from "./slice/cart";
 import Wishlist from "./slice/wishlist";
 import Categories from "./slice/categories";
+import Delivery from "./slice/delivery";
 
 export const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ export const store = configureStore({
     cart: Cart,
     wishlist: Wishlist,
     categories: Categories,
+    delivery: Delivery,
   },
 });
 

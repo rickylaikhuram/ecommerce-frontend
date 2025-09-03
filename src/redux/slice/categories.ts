@@ -1,28 +1,13 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import instance from "../../utils/axios";
+import type { Category } from "../../types/products.types"; // Import the existing Category type
 
 interface CategoriesItems {
-  categories: Categories[] | null;
+  categories: Category[] | null; // Use the existing Category type
   status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
 }
 
-export interface Categories {
-  id: string;
-  name: string;
-  parentId: null;
-  imageUrl: null;
-  altText: null;
-  children: Children[] | null;
-}
-export interface Children {
-  id: string;
-  name: string;
-  parentId: string;
-  imageUrl: string;
-  altText: string;
-  children: [];
-}
 const initialState: CategoriesItems = {
   categories: null,
   status: "idle",

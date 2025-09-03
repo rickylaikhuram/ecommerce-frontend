@@ -1,57 +1,35 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { MoveRight } from "lucide-react";
-import instance from "../utils/axios";
+import { fetchCategories } from "../redux/slice/categories"; // Adjust path as needed
+import type { Category as Categories } from "../types/products.types";
 import HeroBanner from "../components/section/HeroBanner";
 import Footer from "../components/section/Footer";
 import FeatureSection from "../components/section/FeatureSection";
+import { useAppDispatch, useAppSelector } from "../redux/hook";
 
 const S3_BASE_URL = import.meta.env.VITE_S3_BASE_URL;
 
-// Type definitions
-interface Category {
-  id: string;
-  name: string;
-  parentId: string | null;
-  parent: Category | null;
-  children: Category[];
-  imageUrl: string | null;
-  altText: string | null;
+// Redux state type (adjust according to your store structure)
+interface RootState {
+  categories: {
+    categories: Categories[] | null;
+    status: "idle" | "loading" | "succeeded" | "failed";
+    error: string | null;
+  };
 }
 
 const CategoryPage: React.FC = () => {
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const dispatch = useAppDispatch();
+  const { categories, status, error } = useAppSelector(
+    (state: RootState) => state.categories
+  );
 
-  // Fetch categories from API
+  // Fetch categories when component mounts
   useEffect(() => {
-    const fetchCategories = async (): Promise<void> => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        const response = await instance.get("/api/product/categories"); // Adjust endpoint as needed
-
-        // Handle the API response structure based on your format
-        let categoriesData: Category[] = [];
-
-        if (response.data && Array.isArray(response.data.categories)) {
-          categoriesData = response.data.categories;
-        }
-
-        console.log("Categories loaded:", categoriesData.length);
-        setCategories(categoriesData);
-      } catch (err) {
-        console.error("Error fetching categories:", err);
-        setError("Failed to load categories");
-        setCategories([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCategories();
-  }, []);
+    if (status === "idle") {
+      dispatch(fetchCategories());
+    }
+  }, [status, dispatch]);
 
   // Handle category click
   const handleCategoryClick = (categoryName: string): void => {
@@ -71,12 +49,12 @@ const CategoryPage: React.FC = () => {
   };
 
   // Get parent categories (they already have children populated)
-  const getParentCategories = (): Category[] => {
-    return categories.filter((category) => category.parentId === null);
+  const getParentCategories = (): Categories[] => {
+    return categories?.filter((category) => category.parentId === null) || [];
   };
 
   // Loading state
-  if (loading) {
+  if (status === "loading") {
     return (
       <div className="min-h-screen bg-gray-50 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -97,14 +75,14 @@ const CategoryPage: React.FC = () => {
   }
 
   // Error state
-  if (error) {
+  if (status === "failed") {
     return (
       <div className="min-h-screen bg-gray-50 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <p className="text-red-600 text-lg">{error}</p>
             <button
-              onClick={() => window.location.reload()}
+              onClick={() => dispatch(fetchCategories() as any)}
               className="mt-4 px-4 py-2 bg-teal-600 text-white rounded hover:bg-teal-700 transition-colors"
             >
               Try Again
@@ -116,7 +94,7 @@ const CategoryPage: React.FC = () => {
   }
 
   // If no categories, return empty state
-  if (!Array.isArray(categories) || categories.length === 0) {
+  if (!categories || categories.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -136,7 +114,7 @@ const CategoryPage: React.FC = () => {
       <div className="min-h-screen bg-gray-50 py-8 ">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ">
           {parentCategories.map((parentCategory) => {
-            const childCategories = parentCategory.children || []; // Use nested children
+            const childCategories = parentCategory.children || [];
 
             return (
               <div key={parentCategory.id} className="mb-12">
@@ -146,12 +124,10 @@ const CategoryPage: React.FC = () => {
                     Shop by {parentCategory.name}
                   </h2>
                   <button
-                    onClick={() =>
-                      handleCategoryClick(parentCategory.name)
-                    }
+                    onClick={() => handleCategoryClick(parentCategory.name)}
                     className="flex items-center bg-teal-600 px-3 py-1 hover:text-teal-700 font-medium transition-colors group shadow-lg rounded-lg"
                   >
-                      <MoveRight className="w-5 h-5 text-white group-hover:translate-x-1 transition-transform" />
+                    <MoveRight className="w-5 h-5 text-white group-hover:translate-x-1 transition-transform" />
                   </button>
                 </div>
 
@@ -214,8 +190,8 @@ const CategoryPage: React.FC = () => {
           )}
         </div>
       </div>
-      <FeatureSection/>
-      <Footer/>
+      <FeatureSection />
+      <Footer />
     </>
   );
 };

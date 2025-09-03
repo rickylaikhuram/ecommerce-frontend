@@ -10,7 +10,7 @@ import { Shield, Truck, HeartHandshake, Star } from "lucide-react";
     {
       icon: Truck,
       title: "Fast Delivery",
-      description: "Free shipping on orders over $50",
+      description: "Free shipping on orders over ₹50",
     },
     {
       icon: HeartHandshake,

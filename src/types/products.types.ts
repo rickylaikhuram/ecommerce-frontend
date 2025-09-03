@@ -21,7 +21,16 @@ export interface Category {
   id: string;
   name: string;
   parentId?: string;
-  children: Category[];
+  children: Children[];
+}
+
+export interface Children {
+  id: string;
+  name: string;
+  parentId: string;
+  imageUrl: string;
+  altText: string;
+  children: [];
 }
 
 export interface CategoryResponse {
@@ -70,7 +79,7 @@ export interface ProductResponse {
   products: Product[];
   pagination: {
     total: number;
-    limit: number ;
+    limit: number;
     offset: number;
     hasMore: boolean;
   };

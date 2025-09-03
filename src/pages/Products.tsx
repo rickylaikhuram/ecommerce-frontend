@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import type { ProductFilters } from "../types/products.types";
 import { useAppSelector, useAppDispatch } from "../redux/hook";
 import { fetchWishlistedIds } from "../redux/slice/wishlist";
+// Import categories action
+import { fetchCategories } from "../redux/slice/categories";
 
 // Custom hooks
 import { useProductFilters } from "../hooks/useProductFilters";
@@ -20,10 +22,15 @@ import Footer from "../components/section/Footer";
 const ProductsPage = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  
+
   // Get auth state from Redux
   const { user, status } = useAppSelector((state) => state.auth);
-  const isAuthenticated = user?.role==="user" && status === "succeeded";
+  const isAuthenticated = user?.role === "user" && status === "succeeded";
+
+  // Get categories status from Redux to avoid duplicate calls
+  const { status: categoriesStatus } = useAppSelector(
+    (state) => state.categories
+  );
 
   // Custom hooks
   const {
@@ -51,8 +58,8 @@ const ProductsPage = () => {
     sizes,
     loading,
     error,
+    categoriesLoading,
     fetchProducts,
-    fetchCategories,
     clearError,
     totalPages,
   } = useProductData();
@@ -76,17 +83,33 @@ const ProductsPage = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Initialize data on mount
+  // Initialize data on mount - consolidated to single useEffect
   useEffect(() => {
-    const initialFilters = initializeFromURL();
-    fetchCategories();
-    fetchProducts(initialFilters);
-    
-    // Load wishlist data if user is authenticated
-    if (isAuthenticated) {
-      dispatch(fetchWishlistedIds()); 
-    }
-  }, [isAuthenticated, dispatch]);
+    const initializeData = async () => {
+      const initialFilters = initializeFromURL();
+
+      // Load categories only if not already loaded/loading
+      if (categoriesStatus === "idle") {
+        dispatch(fetchCategories());
+      }
+
+      // Load products
+      fetchProducts(initialFilters);
+
+      // Load wishlist data if user is authenticated
+      if (isAuthenticated) {
+        dispatch(fetchWishlistedIds());
+      }
+    };
+
+    initializeData();
+  }, [
+    isAuthenticated,
+    dispatch,
+    categoriesStatus,
+    initializeFromURL,
+    fetchProducts,
+  ]);
 
   // Product click handler
   const handleProductClick = useCallback(
@@ -111,7 +134,13 @@ const ProductsPage = () => {
       updateURL(filters);
       fetchProducts(filters);
     },
-    [setSearchTerm, setCurrentPage, buildFiltersFromState, updateURL, fetchProducts]
+    [
+      setSearchTerm,
+      setCurrentPage,
+      buildFiltersFromState,
+      updateURL,
+      fetchProducts,
+    ]
   );
 
   const handleCategoryChange = useCallback(
@@ -263,15 +292,26 @@ const ProductsPage = () => {
           {/* Desktop Sidebar */}
           <div className="hidden lg:block w-72 flex-shrink-0">
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-24">
-              <FilterSidebar
-                categories={categories}
-                availableSizes={sizes}
-                selectedCategory={selectedCategory}
-                selectedSizes={selectedSizes}
-                onCategoryChange={handleCategoryChange}
-                onSizeToggle={handleSizeToggle}
-                onClearFilters={handleClearAllFilters}
-              />
+              {categoriesLoading ? (
+                <div className="animate-pulse">
+                  <div className="h-4 bg-gray-200 rounded w-24 mb-4"></div>
+                  <div className="space-y-2">
+                    <div className="h-8 bg-gray-200 rounded"></div>
+                    <div className="h-8 bg-gray-200 rounded"></div>
+                    <div className="h-8 bg-gray-200 rounded"></div>
+                  </div>
+                </div>
+              ) : (
+                <FilterSidebar
+                  categories={categories}
+                  availableSizes={sizes}
+                  selectedCategory={selectedCategory}
+                  selectedSizes={selectedSizes}
+                  onCategoryChange={handleCategoryChange}
+                  onSizeToggle={handleSizeToggle}
+                  onClearFilters={handleClearAllFilters}
+                />
+              )}
             </div>
           </div>
 
@@ -364,18 +404,31 @@ const ProductsPage = () => {
             onClick={() => setShowMobileFilters(false)}
           />
           <div className="fixed right-0 top-0 h-full w-full max-w-sm bg-white shadow-xl">
-            <FilterSidebar
-              categories={categories}
-              selectedCategory={selectedCategory}
-              selectedSizes={selectedSizes}
-              availableSizes={sizes}
-              onCategoryChange={handleCategoryChange}
-              onSizeToggle={handleSizeToggle}
-              onClearFilters={handleClearAllFilters}
-              onApplyFilters={handleApplyMobileFilters}
-              isMobile={true}
-              onClose={() => setShowMobileFilters(false)}
-            />
+            {categoriesLoading ? (
+              <div className="p-6">
+                <div className="animate-pulse">
+                  <div className="h-4 bg-gray-200 rounded w-24 mb-4"></div>
+                  <div className="space-y-2">
+                    <div className="h-8 bg-gray-200 rounded"></div>
+                    <div className="h-8 bg-gray-200 rounded"></div>
+                    <div className="h-8 bg-gray-200 rounded"></div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <FilterSidebar
+                categories={categories}
+                selectedCategory={selectedCategory}
+                selectedSizes={selectedSizes}
+                availableSizes={sizes}
+                onCategoryChange={handleCategoryChange}
+                onSizeToggle={handleSizeToggle}
+                onClearFilters={handleClearAllFilters}
+                onApplyFilters={handleApplyMobileFilters}
+                isMobile={true}
+                onClose={() => setShowMobileFilters(false)}
+              />
+            )}
           </div>
         </div>
       )}

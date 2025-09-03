@@ -1,39 +1,60 @@
 import { useEffect, useMemo } from "react";
-import { RouterProvider, createBrowserRouter, createRoutesFromElements } from "react-router-dom";
+import {
+  RouterProvider,
+  createBrowserRouter,
+  createRoutesFromElements,
+} from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "./redux/hook";
 import { fetchAuth } from "./redux/slice/auth";
 import { getRoutesByRole } from "./routes/AppRoutes";
 import Loading from "./components/common/Loading";
+import { fetchCategories } from "./redux/slice/categories";
+import { fetchCart } from "./redux/slice/cart";
 
 function App() {
   const dispatch = useAppDispatch();
-  const { status, user } = useAppSelector((state) => state.auth);
 
-  const userRole = user?.role || 'guest'; // Default to guest if no role
-
+  // Auth
+  const { status: authStatus, user } = useAppSelector((state) => state.auth);
   useEffect(() => {
-    if (status === "idle") {
+    if (authStatus === "idle") {
       dispatch(fetchAuth());
     }
-  }, [status, dispatch]);
+  }, [authStatus, dispatch]);
+
+  // Categories
+  const categoriesStatus = useAppSelector((state) => state.categories.status);
+  useEffect(() => {
+    if (categoriesStatus === "idle") {
+      dispatch(fetchCategories());
+    }
+  }, [categoriesStatus, dispatch]);
+
+  // Cart
+  const cartStatus = useAppSelector((state) => state.cart.status);
+  useEffect(() => {
+    if (cartStatus === "idle") {
+      dispatch(fetchCart());
+    }
+  }, [cartStatus, dispatch]);
+
+  const userRole = user?.role || "guest";
 
   const router = useMemo(() => {
-    console.log('Creating router for role:', userRole);
-    
+
     return createBrowserRouter(
       createRoutesFromElements(getRoutesByRole(userRole))
     );
   }, [userRole]);
 
-  if (status === "loading" || status === "idle") {
+  if (authStatus === "loading" || authStatus === "idle") {
     return <Loading />;
   }
 
-  if (status === "failed") {
+  if (authStatus === "failed") {
     return <div>Authentication failed. Please try again.</div>;
   }
 
-  // Use key prop to force RouterProvider to completely remount when role changes
   return <RouterProvider key={userRole} router={router} />;
 }
 

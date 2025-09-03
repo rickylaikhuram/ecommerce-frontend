@@ -18,15 +18,15 @@ export const CartIcon: React.FC<CartIconProps> = ({
 }) => {
   const location = useLocation();
   const dispatch = useAppDispatch();
-  const cart = useAppSelector((state) => state.cart.cart);
-  const cartLoading = useAppSelector(
-    (state) => state.cart.status === "loading"
-  );
+  const { status, cart } = useAppSelector((state) => state.cart);
+  const cartLoading = status === "loading";
   const cartCount = cart?.summary.totalItems || 0;
   const isActive = location.pathname === "/cart";
   useEffect(() => {
-    dispatch(fetchCart());
-  }, [dispatch]);
+    if (status === "idle") {
+      dispatch(fetchCart());
+    }
+  }, [dispatch, status]);
 
   return (
     <div className={`relative ${className}`}>

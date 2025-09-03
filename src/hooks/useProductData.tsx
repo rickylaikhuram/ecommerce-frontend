@@ -4,7 +4,6 @@ import type {
   Category,
   ProductFilters,
   ProductResponse,
-  CategoryResponse,
 } from "../types/products.types";
 import { productService } from "../services/product.services";
 import extractUniqueSizes from "../utils/extractSizes";
@@ -14,6 +13,8 @@ import {
   fetchWishlistedIds,
   selectWishlistedIds,
 } from "../redux/slice/wishlist";
+// Import categories from Redux
+import { fetchCategories } from "../redux/slice/categories";
 
 interface UseProductDataReturn {
   // Data states
@@ -30,10 +31,11 @@ interface UseProductDataReturn {
   // Loading and error states
   loading: boolean;
   error: string | null;
+  categoriesLoading: boolean;
 
   // Actions
   fetchProducts: (filters: ProductFilters) => Promise<void>;
-  fetchCategories: () => Promise<void>;
+  loadCategories: () => Promise<void>;
   loadWishlist: () => Promise<void>;
   toggleWishlist: (productId: string) => Promise<void>;
   clearError: () => void;
@@ -44,17 +46,21 @@ interface UseProductDataReturn {
 
 export const useProductData = (): UseProductDataReturn => {
   const dispatch = useAppDispatch();
+  
   // Get auth state from Redux
   const { user, status } = useAppSelector((state) => state.auth);
   const isAuthenticated = user?.role === "user" && status === "succeeded";
+  
   // Get wishlist state from Redux
   const wishlistedIds = useAppSelector(selectWishlistedIds);
+  
+  // Get categories from Redux instead of local state
+  const { categories: reduxCategories, status: categoriesStatus } = useAppSelector((state) => state.categories);
+  const categoriesLoading = categoriesStatus === "loading";
 
-  // Data states
+  // Data states (removed categories from local state)
   const [products, setProducts] = useState<Product[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [wishlistedItems, setWishlistedItems] =
-    useState<string[]>(wishlistedIds);
+  const [wishlistedItems, setWishlistedItems] = useState<string[]>(wishlistedIds);
   const [sizes, setSizes] = useState<string[]>([]);
   const [pagination, setPagination] = useState({
     total: 0,
@@ -101,19 +107,18 @@ export const useProductData = (): UseProductDataReturn => {
     }
   }, []);
 
-  // Fetch categories with error handling
-  const fetchCategories = useCallback(async () => {
-    try {
-      const categoriesResponse: CategoryResponse =
-        await productService.getCategories();
-
-      setCategories(categoriesResponse.categories || []);
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-      // Don't set main error state for categories, just log it
-      setCategories([]);
+  // Load categories using Redux - replaces fetchCategories
+  const loadCategories = useCallback(async () => {
+    // Only fetch if not already loaded or loading
+    if (categoriesStatus === "idle") {
+      try {
+        await dispatch(fetchCategories()).unwrap();
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+        // Error is handled by Redux, no need to set local error
+      }
     }
-  }, []);
+  }, [dispatch, categoriesStatus]);
 
   // Load user's wishlist - only for authenticated users
   const loadWishlist = useCallback(async () => {
@@ -130,7 +135,7 @@ export const useProductData = (): UseProductDataReturn => {
       // Don't show error to user for wishlist, just log it
       setWishlistedItems([]);
     }
-  }, [isAuthenticated]);
+  }, [dispatch, isAuthenticated]);
 
   // Toggle wishlist item - only for authenticated users
   const toggleWishlist = useCallback(
@@ -149,7 +154,7 @@ export const useProductData = (): UseProductDataReturn => {
         // Could show a toast notification here instead of setting main error
       }
     },
-    [isAuthenticated]
+    [dispatch, isAuthenticated]
   );
 
   // Clear error state
@@ -163,17 +168,18 @@ export const useProductData = (): UseProductDataReturn => {
   return {
     // Data
     products,
-    categories,
+    categories: reduxCategories || [], // Use Redux categories
     wishlistedItems,
     pagination,
     sizes,
     // States
     loading,
     error,
+    categoriesLoading,
 
     // Actions
     fetchProducts,
-    fetchCategories,
+    loadCategories, // Renamed from fetchCategories
     loadWishlist,
     toggleWishlist,
     clearError,

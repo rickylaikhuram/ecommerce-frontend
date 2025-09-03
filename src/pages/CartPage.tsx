@@ -15,10 +15,7 @@ const CartPage: React.FC = () => {
   const navigate = useNavigate();
   // NEW - Redux
   const dispatch = useAppDispatch();
-  const cart = useAppSelector((state) => state.cart.cart);
-  const cartLoading = useAppSelector(
-    (state) => state.cart.status === "loading"
-  );
+  const { status, cart } = useAppSelector((state) => state.cart);
   const actionLoading = useAppSelector((state) => state.cart.actionLoading);
   const { user } = useAppSelector((state) => state.auth);
   const isGuest = user?.role === "guest";
@@ -26,8 +23,10 @@ const CartPage: React.FC = () => {
     if (isGuest) {
       return;
     }
-    dispatch(fetchCart());
-  }, [dispatch]);
+    if (status === "idle") {
+      dispatch(fetchCart());
+    }
+  }, [dispatch, status]);
 
   const handleModalClose = () => {
     // Navigate to home page when guest clicks "Maybe Later"
@@ -55,7 +54,7 @@ const CartPage: React.FC = () => {
     );
   }
 
-  if (cartLoading) {
+  if (status === "loading") {
     return <CartSkeleton />;
   }
 

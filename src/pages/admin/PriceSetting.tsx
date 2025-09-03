@@ -317,7 +317,7 @@ const PriceSetting: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Delivery Fee ($)
+                    Delivery Fee (₹)
                   </label>
                   <input
                     type="number"
@@ -341,7 +341,7 @@ const PriceSetting: React.FC = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Free Delivery Threshold ($)
+                    Free Delivery Threshold (₹)
                   </label>
                   <input
                     type="number"

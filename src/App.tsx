@@ -33,15 +33,14 @@ function App() {
   // Cart
   const cartStatus = useAppSelector((state) => state.cart.status);
   useEffect(() => {
-    if (cartStatus === "idle") {
+    if (cartStatus === "idle" && user?.role === "user") {
       dispatch(fetchCart());
     }
-  }, [cartStatus, dispatch]);
+  }, [cartStatus, user?.role, dispatch]);
 
   const userRole = user?.role || "guest";
 
   const router = useMemo(() => {
-
     return createBrowserRouter(
       createRoutesFromElements(getRoutesByRole(userRole))
     );

@@ -1,9 +1,9 @@
 // pages/Cart.tsx
-import React, { useEffect } from "react";
+import React from "react";
 import { ShoppingBag, Package, AlertTriangle, Info } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../redux/hook";
-import { fetchCart, clearCart } from "../redux/slice/cart";
+import {  clearCart } from "../redux/slice/cart";
 
 import { CartItemCard } from "../components/cart/CartItemCard";
 import { CartSummary } from "../components/cart/CartSummary.tsx";
@@ -19,15 +19,6 @@ const CartPage: React.FC = () => {
   const actionLoading = useAppSelector((state) => state.cart.actionLoading);
   const { user } = useAppSelector((state) => state.auth);
   const isGuest = user?.role === "guest";
-  useEffect(() => {
-    if (isGuest) {
-      return;
-    }
-    if (status === "idle") {
-      dispatch(fetchCart());
-    }
-  }, [dispatch, status]);
-
   const handleModalClose = () => {
     // Navigate to home page when guest clicks "Maybe Later"
     navigate("/");

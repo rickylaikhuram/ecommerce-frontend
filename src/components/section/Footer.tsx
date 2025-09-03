@@ -27,7 +27,7 @@ const Footer = () => {
                 </div>
               </div>
               <span className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-blue-600 via-emerald-600 to-cyan-600 bg-clip-text text-transparent">
-                Clover Store
+                Clover Arena
               </span>
             </div>
             <p className="text-gray-600 text-sm leading-relaxed">

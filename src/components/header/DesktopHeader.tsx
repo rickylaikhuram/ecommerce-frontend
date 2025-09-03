@@ -19,6 +19,7 @@ interface DesktopHeaderProps {
   onNavClick: (e: React.MouseEvent<HTMLAnchorElement>, path: string) => void;
   onSearch: (query: string) => void;
   onSuggestionClick: (suggestion: AutocompleteResult) => void;
+  onLocationClick?: () => void; // Add this prop for delivery check
 }
 
 export const DesktopHeader: React.FC<DesktopHeaderProps> = ({
@@ -31,13 +32,14 @@ export const DesktopHeader: React.FC<DesktopHeaderProps> = ({
   onNavClick,
   onSearch,
   onSuggestionClick,
+  onLocationClick, // Add this prop
 }) => {
   const isActive = (path: string) => window.location.pathname === path;
 
   return (
     <>
       {shouldFixHeader && <div className="hidden sm:block h-[73px]" />}
-      
+
       <header
         className={`hidden sm:block w-full bg-white transition-all duration-300 ${
           shouldFixHeader
@@ -56,31 +58,56 @@ export const DesktopHeader: React.FC<DesktopHeaderProps> = ({
               />
 
               {/* Location Display - Desktop (lg and above) */}
-              <Link
-                to="/location"
-                className="hidden lg:flex hover:bg-gray-50 p-2 rounded-lg transition-colors"
-                onClick={(e) => onNavClick(e, "/location")}
-              >
-                <LocationDisplay
-                  locationInfo={locationInfo}
-                  addressLoading={addressLoading}
-                />
-              </Link>
+              {onLocationClick ? (
+                <button
+                  onClick={onLocationClick}
+                  className="hidden lg:flex hover:bg-gray-50 p-2 rounded-lg transition-colors"
+                >
+                  <LocationDisplay
+                    locationInfo={locationInfo}
+                    addressLoading={addressLoading}
+                  />
+                </button>
+              ) : (
+                <Link
+                  to="/location"
+                  className="hidden lg:flex hover:bg-gray-50 p-2 rounded-lg transition-colors"
+                  onClick={(e) => onNavClick(e, "/location")}
+                >
+                  <LocationDisplay
+                    locationInfo={locationInfo}
+                    addressLoading={addressLoading}
+                  />
+                </Link>
+              )}
             </div>
 
             {/* Middle Section - Location for md screens */}
             <div className="hidden md:flex lg:hidden">
-              <Link
-                to="/location"
-                className="hover:bg-gray-50 p-2 rounded-lg transition-colors"
-                onClick={(e) => onNavClick(e, "/location")}
-              >
-                <LocationDisplay
-                  locationInfo={locationInfo}
-                  addressLoading={addressLoading}
-                  isCompact
-                />
-              </Link>
+              {onLocationClick ? (
+                <button
+                  onClick={onLocationClick}
+                  className="hover:bg-gray-50 p-2 rounded-lg transition-colors"
+                >
+                  <LocationDisplay
+                    locationInfo={locationInfo}
+                    addressLoading={addressLoading}
+                    isCompact
+                  />
+                </button>
+              ) : (
+                <Link
+                  to="/location"
+                  className="hover:bg-gray-50 p-2 rounded-lg transition-colors"
+                  onClick={(e) => onNavClick(e, "/location")}
+                >
+                  <LocationDisplay
+                    locationInfo={locationInfo}
+                    addressLoading={addressLoading}
+                    isCompact
+                  />
+                </Link>
+              )}
             </div>
 
             {/* Right Section */}

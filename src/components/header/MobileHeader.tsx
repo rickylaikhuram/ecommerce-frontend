@@ -15,6 +15,7 @@ interface MobileHeaderProps {
   onNavClick: (e: React.MouseEvent<HTMLAnchorElement>, path: string) => void;
   locationInfo: any;
   addressLoading: boolean;
+  onLocationClick?: () => void; // Add this prop for delivery check
 }
 
 export const MobileHeader: React.FC<MobileHeaderProps> = ({
@@ -26,6 +27,7 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
   onNavClick,
   locationInfo,
   addressLoading,
+  onLocationClick, // Add this prop
 }) => {
   return (
     <header
@@ -64,17 +66,30 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
         </div>
 
         <div className="px-3 pb-2">
-          <Link
-            to="/location"
-            className="flex items-center p-2 hover:bg-gray-50 rounded-lg transition-colors"
-            onClick={(e) => onNavClick(e, "/location")}
-          >
-            <LocationDisplay
-              locationInfo={locationInfo}
-              addressLoading={addressLoading}
-              isMobile={true}
-            />
-          </Link>
+          {onLocationClick ? (
+            <button
+              onClick={onLocationClick}
+              className="flex items-center p-2 hover:bg-gray-50 rounded-lg transition-colors w-full text-left"
+            >
+              <LocationDisplay
+                locationInfo={locationInfo}
+                addressLoading={addressLoading}
+                isMobile={true}
+              />
+            </button>
+          ) : (
+            <Link
+              to="/location"
+              className="flex items-center p-2 hover:bg-gray-50 rounded-lg transition-colors"
+              onClick={(e) => onNavClick(e, "/location")}
+            >
+              <LocationDisplay
+                locationInfo={locationInfo}
+                addressLoading={addressLoading}
+                isMobile={true}
+              />
+            </Link>
+          )}
         </div>
       </div>
     </header>

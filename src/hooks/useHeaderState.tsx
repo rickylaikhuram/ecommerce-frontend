@@ -1,11 +1,15 @@
 // hooks/useHeaderState.ts
 import { useState, useEffect, useRef } from "react";
-import { useAppSelector } from "../redux/hook";
+import { useAppSelector, useAppDispatch } from "../redux/hook";
+import { fetchDeliverySetting } from "../redux/slice/delivery";
 import addressService from "../services/address.services";
 import type { Address } from "../types/user.types";
 
 export const useHeaderState = () => {
+  const dispatch = useAppDispatch();
   const { user, status } = useAppSelector((state) => state.auth);
+  const { deliverySetting, status: deliveryStatus } = useAppSelector((state) => state.delivery);
+  
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [shouldFixHeader, setShouldFixHeader] = useState(false);
@@ -13,6 +17,7 @@ export const useHeaderState = () => {
   const [showHeader, setShowHeader] = useState(true);
   const [userAddresses, setUserAddresses] = useState<Address[]>([]);
   const [addressLoading, setAddressLoading] = useState(false);
+  const [isDeliveryModalOpen, setIsDeliveryModalOpen] = useState(false);
 
   const lastClickRef = useRef({ path: "", timestamp: 0 });
 
@@ -20,6 +25,13 @@ export const useHeaderState = () => {
   const isGuest = user?.role === "guest";
   const profileHref = isGuest ? "/signin" : "/account/profile";
   const profileLabel = isGuest ? "Sign in" : "Profile";
+
+  // Fetch delivery settings on component mount
+  useEffect(() => {
+    if (deliveryStatus === "idle") {
+      dispatch(fetchDeliverySetting());
+    }
+  }, [deliveryStatus, dispatch]);
 
   // Fetch user addresses when authenticated
   useEffect(() => {
@@ -42,6 +54,25 @@ export const useHeaderState = () => {
 
     fetchAddresses();
   }, [isAuthenticated, user?.role]);
+
+  // Filter addresses based on delivery settings
+  const getDeliverableAddresses = () => {
+    if (!deliverySetting || !userAddresses.length) {
+      return [];
+    }
+
+    const { allowedZipCodes } = deliverySetting;
+
+    // If allowedZipCodes is empty, all addresses are deliverable
+    if (allowedZipCodes.length === 0) {
+      return userAddresses;
+    }
+
+    // Filter addresses that have zip codes in the allowed list
+    return userAddresses.filter(address => 
+      address.zipCode && allowedZipCodes.includes(address.zipCode)
+    );
+  };
 
   // Prevent body scroll when menu is open
   useEffect(() => {
@@ -76,26 +107,53 @@ export const useHeaderState = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
-  // Get location display info
+  // Get location display info with delivery logic
   const getLocationInfo = () => {
     if (isGuest || !isAuthenticated) {
-      return { text: "Manipur", isDefault: true };
+      return { 
+        text: "Manipur", 
+        isDefault: true,
+        showDeliveryCheck: true 
+      };
     }
 
-    if (addressLoading) {
-      return { text: "Loading location...", isDefault: true };
+    if (addressLoading || deliveryStatus === "loading") {
+      return { 
+        text: "Loading location...", 
+        isDefault: true,
+        showDeliveryCheck: false 
+      };
     }
 
     if (userAddresses.length === 0) {
-      return { text: "Manipur", isDefault: true };
+      return { 
+        text: "Manipur", 
+        isDefault: true,
+        showDeliveryCheck: true 
+      };
     }
 
-    const defaultAddress =
-      userAddresses.find((addr) => addr.isDefault) || userAddresses[0];
+    const deliverableAddresses = getDeliverableAddresses();
+
+    // If no deliverable addresses, show default with delivery check option
+    if (deliverableAddresses.length === 0) {
+      return {
+        text: "Manipur",
+        isDefault: true,
+        showDeliveryCheck: true,
+        hasUndeliverableAddresses: true
+      };
+    }
+
+    // Find the default deliverable address or use the first deliverable one
+    const defaultDeliverableAddress = deliverableAddresses.find((addr) => addr.isDefault) || deliverableAddresses[0];
+    
     return {
-      text: `${defaultAddress.city}, ${defaultAddress.state}`,
+      text: `${defaultDeliverableAddress.city}, ${defaultDeliverableAddress.state}`,
       isDefault: false,
-      address: defaultAddress,
+      address: defaultDeliverableAddress,
+      showDeliveryCheck: true,
+      deliverableAddressesCount: deliverableAddresses.length
     };
   };
 
@@ -125,6 +183,19 @@ export const useHeaderState = () => {
     }
   };
 
+  const handleLocationClick = () => {
+    setIsDeliveryModalOpen(true);
+  };
+
+  const handleDeliveryConfirmed = (pincode: string, deliveryFee: number) => {
+    // Handle successful delivery confirmation
+    // You might want to save this to local storage or Redux
+    console.log(`Delivery confirmed for ${pincode} with fee ₹${deliveryFee}`);
+    
+    // Optionally, you can update the location display or save the selected pincode
+    // This would depend on your specific requirements
+  };
+
   return {
     isMenuOpen,
     isScrolled,
@@ -136,7 +207,14 @@ export const useHeaderState = () => {
     profileHref,
     profileLabel,
     locationInfo: getLocationInfo(),
+    isDeliveryModalOpen,
+    deliverySetting,
+    deliveryStatus,
     toggleMenu,
     handleNavClick,
+    handleLocationClick,
+    handleDeliveryConfirmed,
+    setIsDeliveryModalOpen,
+    deliverableAddresses: getDeliverableAddresses(),
   };
 };

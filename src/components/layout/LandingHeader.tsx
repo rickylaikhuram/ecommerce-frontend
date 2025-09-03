@@ -5,6 +5,7 @@ import { MobileHeader } from "../header/MobileHeader";
 import { MobileBottomNav } from "../header/MobileBottomNav";
 import { DesktopHeader } from "../header/DesktopHeader";
 import { useHeaderState } from "../../hooks/useHeaderState";
+import DeliveryCheckModal from "../common/DeliveryCheckModal";
 import type { NavItem } from "../header/Navigation";
 import type { AutocompleteResult } from "../../types/search.types";
 import { useEffect } from "react";
@@ -15,11 +16,13 @@ const LandingHeader = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { status } = useAppSelector((state) => state.categories);
+  
   useEffect(() => {
     if (status === "idle") {
       dispatch(fetchCategories());
     }
   }, [status, dispatch]);
+
   const {
     isMenuOpen,
     isScrolled,
@@ -29,8 +32,12 @@ const LandingHeader = () => {
     profileHref,
     profileLabel,
     locationInfo,
+    isDeliveryModalOpen,
     toggleMenu,
     handleNavClick,
+    handleLocationClick,
+    handleDeliveryConfirmed,
+    setIsDeliveryModalOpen,
   } = useHeaderState();
 
   // Navigation items configuration
@@ -80,6 +87,7 @@ const LandingHeader = () => {
         onNavClick={handleNavClick}
         onSearch={handleSearch}
         onSuggestionClick={handleSuggestionClick}
+        onLocationClick={handleLocationClick} // Pass the location click handler
       />
 
       {/* Mobile Header */}
@@ -92,6 +100,7 @@ const LandingHeader = () => {
         onNavClick={handleNavClick}
         locationInfo={locationInfo}
         addressLoading={addressLoading}
+        onLocationClick={handleLocationClick} // Pass the location click handler
       />
 
       {/* Mobile Bottom Navigation */}
@@ -102,6 +111,14 @@ const LandingHeader = () => {
         profileLabel={profileLabel}
         onNavClick={handleNavClick}
       />
+
+      {/* Delivery Check Modal */}
+      <DeliveryCheckModal
+        isOpen={isDeliveryModalOpen}
+        onClose={() => setIsDeliveryModalOpen(false)}
+        onDeliveryConfirmed={handleDeliveryConfirmed}
+      />
+
     </>
   );
 };

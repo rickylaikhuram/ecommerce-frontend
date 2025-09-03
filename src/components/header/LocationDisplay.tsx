@@ -1,75 +1,75 @@
-// components/Header/LocationDisplay.tsx
+// components/Header/LocationDisplay.tsx - Enhanced version
 import React from "react";
-import { MapPin, Loader2 } from "lucide-react";
-import { useLocation } from "react-router-dom";
-
-interface LocationInfo {
-  text: string;
-  isDefault: boolean;
-  address?: any;
-}
+import { MapPin, ChevronDown, AlertTriangle } from "lucide-react";
 
 interface LocationDisplayProps {
-  locationInfo: LocationInfo;
+  locationInfo: {
+    text: string;
+    isDefault: boolean;
+    showDeliveryCheck?: boolean;
+    hasUndeliverableAddresses?: boolean;
+    deliverableAddressesCount?: number;
+  };
   addressLoading: boolean;
-  className?: string;
-  size?: number;
-  isCompact?: boolean;
   isMobile?: boolean;
+  isCompact?: boolean;
 }
 
 export const LocationDisplay: React.FC<LocationDisplayProps> = ({
   locationInfo,
   addressLoading,
-  className = "",
-  size = 20,
-  isCompact = false,
   isMobile = false,
+  isCompact = false,
 }) => {
-  const location = useLocation();
-  const isActive = location.pathname === "/location";
+  // Size configurations based on device type
+  const iconSize = isMobile ? 14 : isCompact ? 16 : 18;
+  const chevronSize = isMobile ? 12 : 14;
+  const textSize = isMobile ? "text-xs" : isCompact ? "text-sm" : "text-sm";
+  const maxWidth = isMobile ? "max-w-24" : isCompact ? "max-w-28" : "max-w-32";
 
-  if (isMobile) {
+  if (addressLoading) {
     return (
-      <div className={`flex items-center gap-1.5 ${className}`}>
-        <div className="relative">
-          <MapPin
-            size={14}
-            fill={isActive ? "currentColor" : "none"}
-          />
-          {addressLoading && (
-            <Loader2 className="absolute -top-1 -right-1 w-2.5 h-2.5 animate-spin text-blue-600" />
-          )}
-        </div>
-        <span className="text-xs text-gray-600">
-          Delivery to{" "}
-          <span className="font-medium text-gray-800">{locationInfo.text}</span>
-        </span>
+      <div className="flex items-center space-x-1 text-gray-500">
+        <MapPin size={iconSize} />
+        <span className={`${textSize} ${maxWidth} truncate`}>Loading...</span>
       </div>
     );
   }
 
   return (
-    <div className={`flex items-center gap-2 ${className}`}>
-      <div className="relative">
-        <MapPin
-          size={size}
-          fill={isActive ? "currentColor" : "none"}
-        />
-        {addressLoading && (
-          <Loader2 className="absolute -top-1 -right-1 w-3 h-3 animate-spin text-blue-600" />
-        )}
-      </div>
-      <div className="flex flex-col">
-        <span className="text-xs text-gray-500">Delivery to</span>
-        <span
-          className={`text-sm font-medium text-gray-800 truncate ${
-            isCompact ? "max-w-[120px]" : "max-w-[200px]"
-          }`}
-        >
-          {locationInfo.text}
+    <div
+      className="flex items-center space-x-1 text-gray-600 hover:text-gray-900 transition-colors cursor-pointer"
+      title={
+        locationInfo.hasUndeliverableAddresses
+          ? "Some addresses may not be deliverable. Click to check delivery."
+          : "Click to check delivery availability"
+      }
+    >
+      <MapPin size={iconSize} />
+      <span className={`${textSize} ${maxWidth} truncate font-medium`}>
+        {locationInfo.text}
+      </span>
+
+      {/* Show chevron if delivery check is available */}
+      {locationInfo.showDeliveryCheck && (
+        <ChevronDown size={chevronSize} className="text-gray-400" />
+      )}
+
+      {/* Show warning icon if user has addresses that can't be delivered to */}
+      {locationInfo.hasUndeliverableAddresses && (
+        <span title="Some of your addresses may not be deliverable">
+          <AlertTriangle size={chevronSize} className="text-orange-500" />
         </span>
-      </div>
+      )}
+
+      {/* Show count for deliverable addresses in compact mode */}
+      {isCompact &&
+        locationInfo.deliverableAddressesCount &&
+        locationInfo.deliverableAddressesCount > 1 && (
+          <span className="text-xs bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded-full font-medium">
+            {locationInfo.deliverableAddressesCount}
+          </span>
+        )}
     </div>
   );
 };

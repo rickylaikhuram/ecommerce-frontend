@@ -11,12 +11,14 @@ interface AuthState {
   status: "idle" | "loading" | "succeeded" | "failed";
   user: DecodedToken | null;
   error: string | null;
+  isLoggingOut: boolean;
 }
 
 const initialState: AuthState = {
   status: "idle",
   user: null,
   error: null,
+  isLoggingOut: false,
 };
 
 // Fetch auth details
@@ -53,15 +55,18 @@ const authSlice = createSlice({
     // Logout handlers
     builder.addCase(logoutUser.pending, (state) => {
       state.status = "loading";
+      state.isLoggingOut = true;
     });
     builder.addCase(logoutUser.fulfilled, (state) => {
       state.status = "idle";
       state.user = null;
       state.error = null;
+      state.isLoggingOut = false;
     });
     builder.addCase(logoutUser.rejected, (state, action) => {
       state.status = "failed";
       state.error = action.error.message || "Logout failed";
+      state.isLoggingOut = false;
     });
   },
 });

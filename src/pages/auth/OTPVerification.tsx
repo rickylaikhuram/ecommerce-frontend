@@ -44,7 +44,7 @@ export const OTPVerification = ({
   }, []);
 
   const startResendTimer = () => {
-    setResendTimer(30);
+    setResendTimer(60);
     const interval = setInterval(() => {
       setResendTimer((prev) => {
         if (prev <= 1) {
@@ -95,12 +95,12 @@ export const OTPVerification = ({
 
       <div className="flex justify-center mb-6">
         <div className="relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-full blur-lg opacity-30 animate-pulse"></div>
-          <Shield className="relative text-blue-600 w-12 h-12" />
+          <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-cyan-400 rounded-full blur-lg opacity-30 animate-pulse"></div>
+          <Shield className="relative text-emerald-600 w-12 h-12" />
         </div>
       </div>
 
-      <h2 className="text-2xl sm:text-3xl font-bold text-center bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent mb-2">
+      <h2 className="text-2xl sm:text-3xl font-bold text-center bg-gradient-to-r from-emerald-600 to-cyan-600 bg-clip-text text-transparent mb-2">
         {title}
       </h2>
       <p className="text-center text-gray-600 text-sm mb-2">
@@ -121,7 +121,7 @@ export const OTPVerification = ({
             placeholder="Enter 6-digit OTP"
             maxLength={6}
             className={`w-full px-4 py-3 text-center text-lg font-medium tracking-widest bg-gray-50 border rounded-xl focus:border-transparent focus:bg-white transition-all duration-200 outline-none focus:ring-2 ${
-              errors.otp ? 'border-red-300 focus:ring-red-400' : 'border-gray-200 focus:ring-blue-400'
+              errors.otp ? 'border-red-300 focus:ring-red-400' : 'border-gray-200 focus:ring-emerald-400'
             }`}
             {...register("otp", {
               required: "OTP is required",
@@ -148,7 +148,7 @@ export const OTPVerification = ({
               type="button"
               onClick={handleResend}
               disabled={loading}
-              className="text-sm text-blue-600 hover:text-blue-700 hover:underline transition-colors"
+              className="text-sm text-emerald-600 hover:text-emerald-700 hover:underline transition-colors"
             >
               Resend OTP
             </button>
@@ -160,8 +160,8 @@ export const OTPVerification = ({
           disabled={loading || !isValid}
           className={`w-full py-3.5 rounded-xl text-white font-medium transition-all duration-300 transform ${
             loading || !isValid
-              ? "bg-gradient-to-r from-blue-300 to-cyan-300 cursor-not-allowed opacity-60"
-              : "bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 hover:shadow-lg hover:shadow-blue-200 hover:-translate-y-0.5"
+              ? "bg-gradient-to-r from-emerald-300 to-cyan-300 cursor-not-allowed opacity-60"
+              : "bg-gradient-to-r from-emerald-600 to-cyan-600 hover:from-emerald-700 hover:to-cyan-700 hover:shadow-lg hover:shadow-emerald-200 hover:-translate-y-0.5"
           }`}
         >
           {loading ? "Verifying..." : "Verify OTP"}

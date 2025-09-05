@@ -22,16 +22,13 @@ const UserSidebar: React.FC = () => {
   const dispatch = useAppDispatch();
   const location = useLocation();
   const handleLogout = async () => {
-  try {
-    await dispatch(logoutUser()).unwrap();
-    // Check if Redux state actually updated
-    setTimeout(() => {
+    try {
+      await dispatch(logoutUser()).unwrap();
       window.location.href = "/signin";
-    }, 50);
-  } catch (error) {
-    console.error("Logout failed:", error);
-  }
-};
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
   const sidebarItems: SidebarItem[] = [
     {
       icon: <FaUser className="w-5 h-5" />,

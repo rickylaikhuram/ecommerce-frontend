@@ -17,6 +17,7 @@ import instance from "../../utils/axios";
 
 import { useAppDispatch } from "../../redux/hook";
 import { fetchAuth } from "../../redux/slice/auth";
+import toast from "react-hot-toast";
 
 type FormData = {
   fullName: string;
@@ -60,17 +61,24 @@ const SignUp = () => {
       setUserPhone(data.phone);
 
       // Send OTP to phone number
-      await instance.post("/api/auth/signup/initiate", {
+      const response = await instance.post("/api/auth/signup/initiate", {
         email: data.email,
         phone: data.phone,
         name: data.fullName,
         password: data.password,
       });
 
-      // Show OTP verification screen
-      setShowOTPScreen(true);
-    } catch (err) {
+      if (response.data.success) {
+        setShowOTPScreen(true);
+        toast.success("OTP sent to phone 📩");
+      } else {
+        toast.error(response.data.message || "Failed to send OTP");
+      }
+    } catch (err: any) {
       console.error("Failed to send OTP:", err);
+      const message =
+        err.response?.data?.message || err.message || "Something went wrong";
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -80,16 +88,24 @@ const SignUp = () => {
     if (!formData) return;
 
     try {
-      // Simulate OTP verification and account creation
       const response = await instance.post("/api/auth/signup/confirm", {
-        phone: formData.phone, // Don't prefix with +91 unless your backend expects it
+        phone: formData.phone,
         otp,
       });
-      localStorage.setItem("authToken", response.data.token);
-      await dispatch(fetchAuth());
-    } catch (err) {
+
+      if (response.data.success) {
+        localStorage.setItem("authToken", response.data.token);
+        await dispatch(fetchAuth());
+        toast.success("Account created successfully 🎉");
+        // navigate("/dashboard") if needed
+      } else {
+        toast.error(response.data.message || "OTP verification failed");
+      }
+    } catch (err: any) {
       console.error("Registration failed:", err);
-      throw err; // Re-throw to handle in OTP component
+      const message =
+        err.response?.data?.message || err.message || "Something went wrong";
+      toast.error(message);
     }
   };
 
@@ -97,12 +113,21 @@ const SignUp = () => {
     if (!userPhone) return;
 
     try {
-      await instance.post("/api/auth/signup/resend", {
+      const response = await instance.post("/api/auth/signup/resend", {
         phone: userPhone,
       });
-    } catch (error) {
-      console.error("❌ Failed to resend OTP:", error);
-      // Optionally show error to user (e.g. toast or alert)
+
+      if (response.data.success) {
+        toast.success("OTP resent successfully 🚀");
+        console.log("Resent OTP to:", `+91${userPhone}`);
+      } else {
+        toast.error(response.data.message || "Failed to resend OTP");
+      }
+    } catch (err: any) {
+      console.error("❌ Failed to resend OTP:", err);
+      const message =
+        err.response?.data?.message || err.message || "Something went wrong";
+      toast.error(message);
     }
   };
 

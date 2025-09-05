@@ -12,6 +12,7 @@ import ProductDetails from "../pages/ProductDetails";
 import Checkout from "../pages/Checkout";
 import ProductsPage from "../pages/Products";
 import CategoryPage from "../pages/CategoryPage";
+import ForgotPassword from "../pages/auth/ForgotPassword";
 
 const GuestRoutes = (
   <Route element={<MainLayout />}>
@@ -25,6 +26,7 @@ const GuestRoutes = (
     <Route path="/checkout" element={<Checkout />} />
     <Route path="/signin" element={<SignIn />} />
     <Route path="/signinwithotp" element={<SignInOTP />} />
+    <Route path="/forgot-password" element={<ForgotPassword />} />
     <Route path="/signup" element={<SignUp />} />
     <Route path="*" element={<Error />} />
   </Route>

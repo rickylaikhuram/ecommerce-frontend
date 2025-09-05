@@ -10,12 +10,17 @@ import { getRoutesByRole } from "./routes/AppRoutes";
 import Loading from "./components/common/Loading";
 import { fetchCategories } from "./redux/slice/categories";
 import { fetchCart } from "./redux/slice/cart";
+import { Toaster } from "react-hot-toast";
 
 function App() {
   const dispatch = useAppDispatch();
 
   // Auth
-  const { status: authStatus, user } = useAppSelector((state) => state.auth);
+  const {
+    status: authStatus,
+    user,
+    isLoggingOut,
+  } = useAppSelector((state) => state.auth);
   useEffect(() => {
     if (authStatus === "idle") {
       dispatch(fetchAuth());
@@ -49,12 +54,21 @@ function App() {
   if (authStatus === "loading" || authStatus === "idle") {
     return <Loading />;
   }
+  
+  if (isLoggingOut) {
+    return <Loading />;
+  }
 
   if (authStatus === "failed") {
     return <div>Authentication failed. Please try again.</div>;
   }
 
-  return <RouterProvider key={userRole} router={router} />;
+  return (
+    <>
+      <RouterProvider router={router} />
+      <Toaster position="top-right" />
+    </>
+  );
 }
 
 export default App;

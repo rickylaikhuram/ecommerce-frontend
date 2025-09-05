@@ -30,7 +30,7 @@ export const CartIcon: React.FC<CartIconProps> = ({
       />
       {showCount && cartCount > 0 && !cartLoading && (
         <span
-          className={`absolute -top-2 -right-2 bg-blue-600 text-white rounded-full flex items-center justify-center font-semibold ${
+          className={`absolute -top-2 -right-2 bg-emerald-600 text-white rounded-full flex items-center justify-center font-semibold ${
             size > 20 ? "text-xs h-5 w-5" : "text-[10px] h-4 w-4"
           }`}
         >

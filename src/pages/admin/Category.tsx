@@ -3,7 +3,6 @@ import {
   Plus,
   Search,
   Edit,
-  Trash2,
   Folder,
   FolderOpen,
   AlertCircle,
@@ -21,8 +20,8 @@ interface Category {
   name: string;
   parentId: string | null;
   children?: Category[];
-  imageUrl?: string; // ✅ added
-  altText?: string;  // ✅ added
+  imageUrl?: string;
+  altText?: string;
 }
 
 const Categories: React.FC = () => {
@@ -144,26 +143,6 @@ const Categories: React.FC = () => {
     setCurrentView(category.parentId ? "edit-subcategory" : "edit-category");
   };
 
-  const handleDeleteCategory = async (categoryId: string) => {
-    if (
-      !window.confirm(
-        "Are you sure you want to delete this category? All subcategories will also be deleted."
-      )
-    )
-      return;
-
-    try {
-      await instance.delete(`/api/admin/delete/category/${categoryId}`);
-      showNotification("success", "Category deleted successfully");
-      fetchCategories();
-    } catch (error: any) {
-      showNotification(
-        "error",
-        error.response?.data?.message || "Failed to delete category"
-      );
-    }
-  };
-
   const showNotification = (type: "success" | "error", message: string) => {
     setSubmitStatus({ type, message });
     setTimeout(() => {
@@ -174,7 +153,9 @@ const Categories: React.FC = () => {
   const handleFormSubmitSuccess = () => {
     showNotification(
       "success",
-      currentView.includes("add") ? "Created successfully" : "Updated successfully"
+      currentView.includes("add")
+        ? "Created successfully"
+        : "Updated successfully"
     );
     setCurrentView("list");
     setSelectedCategory(null);
@@ -215,7 +196,9 @@ const Categories: React.FC = () => {
 
   // Calculate stats
   const allCategories = getAllCategoriesFlat(categories);
-  const totalCategories = allCategories.filter((c) => c.parentId === null).length;
+  const totalCategories = allCategories.filter(
+    (c) => c.parentId === null
+  ).length;
   const totalSubCategories = allCategories.filter(
     (c) => c.parentId !== null
   ).length;
@@ -333,13 +316,6 @@ const Categories: React.FC = () => {
                   title="Edit category"
                 >
                   <Edit className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => handleDeleteCategory(category.id)}
-                  className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
-                  title="Delete category"
-                >
-                  <Trash2 className="w-4 h-4" />
                 </button>
               </div>
             </div>

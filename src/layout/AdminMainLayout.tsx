@@ -24,11 +24,8 @@ const AdminMainLayout = () => {
       categories: "Categories",
       orders: "Orders",
       customers: "Customers",
-      analytics: "Analytics",
-      pricesetting: "Price Setting",
       banner: "Banners",
-      support: "Support",
-      settings: "Settings",
+      pricesetting: "Price Setting",
     };
     return titles[path] || "Dashboard";
   };
@@ -42,7 +39,7 @@ const AdminMainLayout = () => {
         activeTab={path}
         onTabChange={onTabChange}
       />
-      
+
       {/* Main Content Area - Add margin-left on desktop to account for fixed sidebar */}
       <div className="flex-1 flex flex-col min-w-0 lg:ml-72">
         <Header

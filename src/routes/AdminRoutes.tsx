@@ -4,7 +4,7 @@ import AdminMainLayout from "../layout/AdminMainLayout";
 import Products from "../pages/admin/Products";
 import Orders from "../pages/admin/Orders";
 // import Analytics from "../pages/admin/Analytic";
-// import Dashboard from "../pages/admin/Dashboard";
+import Dashboard from "../pages/admin/Dashboard";
 import Error from "../pages/error";
 import Categories from "../pages/admin/Category";
 import Customers from "../pages/admin/Customer";
@@ -13,8 +13,8 @@ import Banners from "../pages/admin/Banner";
 
 const AdminRoutes = (
   <Route path="/" element={<AdminMainLayout />}>
-    {/* <Route index element={<Dashboard />} />
-      <Route path="dashboard" element={<Dashboard />} /> */}
+    <Route index element={<Dashboard />} />
+    <Route path="dashboard" element={<Dashboard />} />
     <Route path="products" element={<Products />} />
     <Route path="categories" element={<Categories />} />
     <Route path="orders" element={<Orders />} />

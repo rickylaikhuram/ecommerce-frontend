@@ -5,10 +5,7 @@ import {
   Package,
   ShoppingCart,
   Users,
-  Settings,
   GalleryHorizontalEnd,
-  HelpCircle,
-  TrendingUp,
   X,
   LogOut,
   FolderTree,
@@ -37,11 +34,8 @@ const Sidebar: React.FC<SidebarProps> = ({
     { id: "categories", label: "Categories", icon: FolderTree },
     { id: "orders", label: "Orders", icon: ShoppingCart },
     { id: "customers", label: "Customers", icon: Users },
-    { id: "analytics", label: "Analytics", icon: TrendingUp },
-    { id: "pricesetting", label: "Price Setting", icon: TruckElectric },
     { id: "banner", label: "Banner", icon: GalleryHorizontalEnd },
-    { id: "support", label: "Support", icon: HelpCircle },
-    { id: "settings", label: "Settings", icon: Settings },
+    { id: "pricesetting", label: "Price Setting", icon: TruckElectric },
   ];
   const handleLogout = async () => {
     await dispatch(logoutUser()).unwrap();

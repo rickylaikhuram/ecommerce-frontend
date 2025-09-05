@@ -38,7 +38,7 @@ export const useProductFilters = (): UseProductFiltersReturn => {
   const [priceRange, setPriceRange] = useState({ min: 0, max: 1000 });
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
 
-  // Build filters object from current state
+  // Build filters object from current state - Updated to use page instead of offset
   const buildFiltersFromState = useCallback((): ProductFilters => {
     return {
       search: searchTerm || undefined,
@@ -47,8 +47,8 @@ export const useProductFilters = (): UseProductFiltersReturn => {
       minPrice: priceRange.min > 0 ? priceRange.min : undefined,
       maxPrice: priceRange.max < 1000 ? priceRange.max : undefined,
       sizes: selectedSizes.length > 0 ? selectedSizes : undefined,
-      limit: 12,
-      offset: (currentPage - 1) * 12,
+      limit: 20, // Updated to match backend default
+      page: currentPage, // Changed from offset to page
     };
   }, [searchTerm, selectedCategory, sortBy, currentPage, priceRange, selectedSizes]);
 
@@ -64,7 +64,7 @@ export const useProductFilters = (): UseProductFiltersReturn => {
     priceRange.max < 1000
   );
 
-  // Update URL with current filters
+  // Update URL with current filters - Updated to use page
   const updateURL = useCallback((filters: Partial<ProductFilters>) => {
     const params = new URLSearchParams();
 
@@ -85,7 +85,7 @@ export const useProductFilters = (): UseProductFiltersReturn => {
     window.history.pushState({}, "", newUrl);
   }, [currentPage]);
 
-  // Initialize from URL parameters
+  // Initialize from URL parameters - Updated to use page
   const initializeFromURL = useCallback((): ProductFilters => {
     const params = new URLSearchParams(window.location.search);
     
@@ -105,7 +105,7 @@ export const useProductFilters = (): UseProductFiltersReturn => {
     setSelectedSizes(initialSizes);
     setCurrentPage(initialPage);
 
-    // Return filters object
+    // Return filters object - Updated to use page instead of offset
     return {
       search: initialSearch || undefined,
       category: initialCategory || undefined,
@@ -113,8 +113,8 @@ export const useProductFilters = (): UseProductFiltersReturn => {
       minPrice: initialMinPrice > 0 ? initialMinPrice : undefined,
       maxPrice: initialMaxPrice < 1000 ? initialMaxPrice : undefined,
       sizes: initialSizes.length > 0 ? initialSizes : undefined,
-      limit: 12,
-      offset: (initialPage - 1) * 12,
+      limit: 20, // Updated to match backend default
+      page: initialPage, // Changed from offset calculation to direct page
     };
   }, []);
 

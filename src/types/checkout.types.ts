@@ -30,7 +30,7 @@ export interface CartDetails {
   cartItemId: string;
   stockName: string;
   quantity: number;
-  itemTotal: number;
+  itemDiscountedTotal: number;
 }
 
 // Stock information

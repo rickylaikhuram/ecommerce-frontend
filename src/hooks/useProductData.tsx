@@ -16,17 +16,24 @@ import {
 // Import categories from Redux
 import { fetchCategories } from "../redux/slice/categories";
 
+// Updated pagination interface to match backend response
+interface PaginationData {
+  currentPage: number;
+  totalPages: number;
+  totalCount: number;
+  itemsPerPage: number;
+  hasMore: boolean;
+  hasPrevious: boolean;
+  startItem: number;
+  endItem: number;
+}
+
 interface UseProductDataReturn {
   // Data states
   products: Product[];
   categories: Category[];
   wishlistedItems: string[];
-  pagination: {
-    total: number;
-    limit: number;
-    offset: number;
-    hasMore: boolean;
-  };
+  pagination: PaginationData; // Updated pagination structure
   sizes: string[];
   // Loading and error states
   loading: boolean;
@@ -40,40 +47,48 @@ interface UseProductDataReturn {
   toggleWishlist: (productId: string) => Promise<void>;
   clearError: () => void;
 
-  // Computed
+  // Computed (kept for backward compatibility)
   totalPages: number;
 }
 
 export const useProductData = (): UseProductDataReturn => {
   const dispatch = useAppDispatch();
-  
+
   // Get auth state from Redux
   const { user, status } = useAppSelector((state) => state.auth);
   const isAuthenticated = user?.role === "user" && status === "succeeded";
-  
+
   // Get wishlist state from Redux
   const wishlistedIds = useAppSelector(selectWishlistedIds);
-  
+
   // Get categories from Redux instead of local state
-  const { categories: reduxCategories, status: categoriesStatus } = useAppSelector((state) => state.categories);
+  const { categories: reduxCategories, status: categoriesStatus } =
+    useAppSelector((state) => state.categories);
   const categoriesLoading = categoriesStatus === "loading";
 
   // Data states (removed categories from local state)
   const [products, setProducts] = useState<Product[]>([]);
-  const [wishlistedItems, setWishlistedItems] = useState<string[]>(wishlistedIds);
+  const [wishlistedItems, setWishlistedItems] =
+    useState<string[]>(wishlistedIds);
   const [sizes, setSizes] = useState<string[]>([]);
-  const [pagination, setPagination] = useState({
-    total: 0,
-    limit: 12,
-    offset: 0,
+
+  // Updated pagination state to match new backend structure
+  const [pagination, setPagination] = useState<PaginationData>({
+    currentPage: 1,
+    totalPages: 0,
+    totalCount: 0,
+    itemsPerPage: 20,
     hasMore: false,
+    hasPrevious: false,
+    startItem: 0,
+    endItem: 0,
   });
 
   // Loading and error states
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch products with error handling and loading states
+  // Fetch products with error handling and loading states - Updated for new pagination
   const fetchProducts = useCallback(async (filters: ProductFilters = {}) => {
     setLoading(true);
     setError(null);
@@ -83,7 +98,21 @@ export const useProductData = (): UseProductDataReturn => {
         await productService.getFilteredProducts(filters);
 
       setProducts(response.products);
-      setPagination(response.pagination);
+
+      // Handle the new pagination structure from backend
+      if (response.pagination) {
+        setPagination({
+          currentPage: response.pagination.currentPage || 1,
+          totalPages: response.pagination.totalPages || 0,
+          totalCount: response.pagination.totalCount || 0,
+          itemsPerPage: response.pagination.itemsPerPage || 20,
+          hasMore: response.pagination.hasMore || false,
+          hasPrevious: response.pagination.hasPrevious || false,
+          startItem: response.pagination.startItem || 0,
+          endItem: response.pagination.endItem || 0,
+        });
+      }
+
       const uniqueSizes = extractUniqueSizes(response.products);
       setSizes(uniqueSizes);
     } catch (error) {
@@ -97,10 +126,14 @@ export const useProductData = (): UseProductDataReturn => {
       // Reset to empty state on error
       setProducts([]);
       setPagination({
-        total: 0,
-        limit: 12,
-        offset: 0,
+        currentPage: 1,
+        totalPages: 0,
+        totalCount: 0,
+        itemsPerPage: 20,
         hasMore: false,
+        hasPrevious: false,
+        startItem: 0,
+        endItem: 0,
       });
     } finally {
       setLoading(false);
@@ -162,15 +195,15 @@ export const useProductData = (): UseProductDataReturn => {
     setError(null);
   }, []);
 
-  // Computed values
-  const totalPages = Math.ceil(pagination.total / (pagination.limit || 12));
+  // Computed values - kept for backward compatibility
+  const totalPages = pagination.totalPages;
 
   return {
     // Data
     products,
     categories: reduxCategories || [], // Use Redux categories
     wishlistedItems,
-    pagination,
+    pagination, // Updated pagination structure
     sizes,
     // States
     loading,

@@ -154,7 +154,7 @@ const Checkout: React.FC = () => {
       const subtotal =
         cartData?.cartSummary?.totalDiscountedPrice ||
         validItems.reduce((sum, item) => {
-          const itemTotal = item?.cartDetails?.itemTotal;
+          const itemTotal = item?.cartDetails?.itemDiscountedTotal;
           return sum + (itemTotal ? parseFloat(itemTotal.toString()) : 0);
         }, 0);
 

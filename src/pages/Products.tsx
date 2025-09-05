@@ -119,16 +119,16 @@ const ProductsPage = () => {
     [navigate]
   );
 
-  // Filter change handlers with URL update and refetch
+  // Filter change handlers with URL update and refetch - Updated for page-based pagination
   const handleSearchChange = useCallback(
     (value: string) => {
       setSearchTerm(value);
-      setCurrentPage(1);
+      setCurrentPage(1); // Reset to first page
 
       const filters: ProductFilters = {
         ...buildFiltersFromState(),
         search: value || undefined,
-        offset: 0,
+        page: 1, // Changed from offset: 0 to page: 1
       };
 
       updateURL(filters);
@@ -146,12 +146,12 @@ const ProductsPage = () => {
   const handleCategoryChange = useCallback(
     (category: string) => {
       setSelectedCategory(category);
-      setCurrentPage(1);
+      setCurrentPage(1); // Reset to first page
 
       const filters: ProductFilters = {
         ...buildFiltersFromState(),
         category: category || undefined,
-        offset: 0,
+        page: 1, // Changed from offset: 0 to page: 1
       };
 
       updateURL(filters);
@@ -181,13 +181,14 @@ const ProductsPage = () => {
     [setSortBy, buildFiltersFromState, updateURL, fetchProducts]
   );
 
+  // Updated handlePageChange to work with page numbers instead of offset
   const handlePageChange = useCallback(
     (page: number) => {
       setCurrentPage(page);
 
       const filters: ProductFilters = {
         ...buildFiltersFromState(),
-        offset: (page - 1) * 12,
+        page: page, // Direct page number instead of offset calculation
       };
 
       updateURL(filters);
@@ -206,12 +207,12 @@ const ProductsPage = () => {
         : [...selectedSizes, size];
 
       setSelectedSizes(newSizes);
-      setCurrentPage(1);
+      setCurrentPage(1); // Reset to first page
 
       const filters: ProductFilters = {
         ...buildFiltersFromState(),
         sizes: newSizes.length > 0 ? newSizes : undefined,
-        offset: 0,
+        page: 1, // Changed from offset: 0 to page: 1
       };
 
       updateURL(filters);
@@ -233,8 +234,8 @@ const ProductsPage = () => {
 
     const filters: ProductFilters = {
       sortBy: "newest",
-      limit: 12,
-      offset: 0,
+      limit: 20, // Updated to match backend default
+      page: 1, // Changed from offset: 0 to page: 1
     };
 
     updateURL(filters);
@@ -243,11 +244,11 @@ const ProductsPage = () => {
 
   const handleApplyMobileFilters = useCallback(() => {
     setShowMobileFilters(false);
-    setCurrentPage(1);
+    setCurrentPage(1); // Reset to first page
 
     const filters: ProductFilters = {
       ...buildFiltersFromState(),
-      offset: 0,
+      page: 1, // Changed from offset: 0 to page: 1
     };
 
     updateURL(filters);
@@ -277,17 +278,30 @@ const ProductsPage = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Header */}
+      {/* Header - Updated to use new pagination structure */}
       <ProductsHeader
         searchTerm={searchTerm}
         sortBy={sortBy}
         viewMode={viewMode}
-        totalProducts={pagination.total}
+        totalProducts={pagination.totalCount} // Changed from pagination.total
         onSortChange={handleSortChange}
         onViewModeChange={setViewMode}
       />
 
       <div className="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Enhanced pagination info display */}
+        {!loading && products.length > 0 && (
+          <div className="mb-4 text-sm text-gray-600">
+            Showing {pagination.startItem}-{pagination.endItem} of{" "}
+            {pagination.totalCount} products
+            {pagination.totalPages > 1 && (
+              <span className="ml-2">
+                (Page {pagination.currentPage} of {pagination.totalPages})
+              </span>
+            )}
+          </div>
+        )}
+
         <div className="flex gap-8">
           {/* Desktop Sidebar */}
           <div className="hidden lg:block w-72 flex-shrink-0">
@@ -385,20 +399,29 @@ const ProductsPage = () => {
               onClearFilters={handleClearAllFilters}
             />
 
-            {/* Pagination */}
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
-              loading={loading}
-            />
+            {/* Enhanced Pagination Component */}
+            <div className="mt-8">
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+                loading={loading}
+                // Additional pagination info
+                hasMore={pagination.hasMore}
+                hasPrevious={pagination.hasPrevious}
+                totalItems={pagination.totalCount}
+                itemsPerPage={pagination.itemsPerPage}
+                startItem={pagination.startItem}
+                endItem={pagination.endItem}
+              />
+            </div>
           </div>
         </div>
       </div>
 
       {/* Mobile Filter Modal */}
       {showMobileFilters && (
-        <div className="fixed inset-0 z-50 lg:hidden">
+        <div className="fixed inset-0 z-80 lg:hidden">
           <div
             className="fixed inset-0 bg-black/30"
             onClick={() => setShowMobileFilters(false)}

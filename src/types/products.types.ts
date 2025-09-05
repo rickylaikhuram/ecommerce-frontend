@@ -53,7 +53,7 @@ export interface Product {
   createdAt?: Date | string;
 }
 
-// product filter types -- uesd in product service
+// UPDATED: product filter types -- used in product service
 export interface ProductFilters {
   category?: string;
   sortBy?:
@@ -64,26 +64,38 @@ export interface ProductFilters {
     | "newest"
     | "popular";
   limit?: number;
-  offset?: number;
+  page?: number; // CHANGED: from offset to page
   filter?: "bestsellers" | "trending";
   period?: "week" | "month" | "year" | "alltime";
   search?: string;
   minPrice?: number;
   maxPrice?: number;
   sizes?: string[];
+  status?: "active" | "inactive" | "all"; // Added for admin filtering
 }
 
-// product filter type response -- uesd in product service
+// UPDATED: New pagination interface to match backend response
+export interface PaginationResponse {
+  currentPage: number;
+  totalPages: number;
+  totalCount: number;
+  itemsPerPage: number;
+  hasMore: boolean;
+  hasPrevious: boolean;
+  startItem: number;
+  endItem: number;
+}
+
+// UPDATED: product filter type response -- used in product service
 export interface ProductResponse {
+  success: boolean; // Added success field
   message: string;
   products: Product[];
-  pagination: {
-    total: number;
-    limit: number;
-    offset: number;
-    hasMore: boolean;
-  };
+  pagination: PaginationResponse; // CHANGED: Updated pagination structure
   searchTerm?: string;
+  statusFilter?: string; // Added for admin
+  sizesFilter?: string[]; // Added for size filtering
+  userRole?: string; // Added for role-based responses
 }
 
 // product card props
@@ -119,4 +131,98 @@ export interface ProductFormProps {
   initialData?: Product | null;
   onSubmit: (data: any) => Promise<void>;
   onCancel: () => void;
+}
+
+// ADDED: Additional interfaces for enhanced pagination functionality
+
+// View mode type
+export type ViewMode = "grid" | "list";
+
+// Pagination component props
+export interface PaginationProps {
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+  loading?: boolean;
+  hasMore?: boolean;
+  hasPrevious?: boolean;
+  totalItems?: number;
+  itemsPerPage?: number;
+  startItem?: number;
+  endItem?: number;
+  showInfo?: boolean; // Whether to show pagination info
+  maxVisiblePages?: number; // Maximum number of page buttons to show
+}
+
+// Filter sidebar props
+export interface FilterSidebarProps {
+  categories: Category[];
+  availableSizes: string[];
+  selectedCategory: string;
+  selectedSizes: string[];
+  priceRange?: {
+    min: number;
+    max: number;
+  };
+  onCategoryChange: (category: string) => void;
+  onSizeToggle: (size: string) => void;
+  onPriceChange?: (range: { min: number; max: number }) => void;
+  onClearFilters: () => void;
+  onApplyFilters?: () => void;
+  isMobile?: boolean;
+  onClose?: () => void;
+}
+
+// Products header props
+export interface ProductsHeaderProps {
+  searchTerm: string;
+  sortBy: ProductFilters["sortBy"];
+  viewMode: ViewMode;
+  totalProducts: number;
+  onSearchChange?: (value: string) => void;
+  onSortChange: (sortBy: ProductFilters["sortBy"]) => void;
+  onViewModeChange: (viewMode: ViewMode) => void;
+}
+
+// Active filters props
+export interface ActiveFiltersProps {
+  searchTerm: string;
+  selectedCategory: string;
+  selectedSizes: string[];
+  priceRange?: {
+    min: number;
+    max: number;
+  };
+  onRemoveSearch: () => void;
+  onRemoveCategory: () => void;
+  onRemoveSize: (size: string) => void;
+  onRemovePriceRange?: () => void;
+  onClearAll: () => void;
+}
+
+// Products grid props
+export interface ProductsGridProps {
+  products: Product[];
+  viewMode: ViewMode;
+  loading: boolean;
+  onProductClick: (productId: string) => void;
+  onClearFilters?: () => void;
+  emptyStateMessage?: string;
+  loadingSkeletonCount?: number;
+}
+
+// Sort option interface for UI
+export interface SortOption {
+  value: ProductFilters["sortBy"];
+  label: string;
+}
+
+// Filter options for UI components
+export interface FilterOptions {
+  categories: Category[];
+  sizes: string[];
+  priceRange: {
+    min: number;
+    max: number;
+  };
 }

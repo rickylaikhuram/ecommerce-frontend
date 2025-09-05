@@ -89,8 +89,8 @@ export const Navigation: React.FC<NavigationProps> = ({
               <button
                 className={`px-2 py-2 text-sm font-medium transition-all duration-300 rounded-r-lg border-l border-gray-200 ${
                   isOpen
-                    ? "text-blue-600 bg-blue-50 shadow-sm"
-                    : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+                    ? "text-emerald-600 bg-emerald-50 shadow-sm"
+                    : "text-gray-700 hover:text-emerald-600 hover:bg-gray-50"
                 }`}
                 onClick={() => setIsOpen((prev) => !prev)}
               >
@@ -111,7 +111,7 @@ export const Navigation: React.FC<NavigationProps> = ({
                     <div key={parent.id} className="relative group">
                       <div className="flex items-center justify-between hover:bg-gray-50 transition-colors duration-150">
                         <button
-                          className="flex-1 text-left px-4 py-2 text-sm text-gray-700 hover:text-blue-600 font-medium"
+                          className="flex-1 text-left px-4 py-2 text-sm text-gray-700 hover:text-emerald-600 font-medium"
                           onClick={() => handleCategoryClick(parent.name)}
                         >
                           {parent.name}
@@ -119,9 +119,9 @@ export const Navigation: React.FC<NavigationProps> = ({
 
                         {parent.children && parent.children.length > 0 && (
                           <button
-                            className={`px-3 py-3 text-gray-500 hover:text-blue-600 transition-all duration-200 ${
+                            className={`px-3 py-3 text-gray-500 hover:text-emerald-600 transition-all duration-200 ${
                               openParent === parent.id
-                                ? "text-blue-600 bg-blue-50"
+                                ? "text-emerald-600 bg-emerald-50"
                                 : ""
                             }`}
                             onClick={() =>
@@ -151,7 +151,7 @@ export const Navigation: React.FC<NavigationProps> = ({
                               {parent.children.map((child) => (
                                 <button
                                   key={child.id}
-                                  className="w-full text-left px-7 py-2 text-sm text-gray-600 hover:text-blue-600 hover:bg-white transition-colors duration-150 border-l-2 border-transparent hover:border-blue-200"
+                                  className="w-full text-left px-7 py-2 text-sm text-gray-600 hover:text-emerald-600 hover:bg-white transition-colors duration-150 border-l-2 border-transparent hover:border-emerald-200"
                                   onClick={() =>
                                     handleCategoryClick(child.name)
                                   }

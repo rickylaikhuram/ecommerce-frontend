@@ -56,7 +56,7 @@ const NavigationButtons: React.FC<NavigationButtonsProps> = ({
         <button
           onClick={onNextStep}
           disabled={isNextButtonDisabled()}
-          className={`flex-1 max-w-xs bg-gradient-to-r from-blue-500 to-blue-600 text-white px-8 py-3 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 ${
+          className={`flex-1 max-w-xs bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-8 py-3 rounded-lg hover:from-emerald-600 hover:to-emerald-700 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 ${
             isNextButtonDisabled() ? "opacity-50 cursor-not-allowed" : ""
           }`}
         >

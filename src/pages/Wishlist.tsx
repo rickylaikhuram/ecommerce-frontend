@@ -74,7 +74,7 @@ const Wishlist: React.FC = () => {
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
       </div>
     );
   }
@@ -127,7 +127,7 @@ const Wishlist: React.FC = () => {
           </p>
           <Link
             to="/"
-            className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
+            className="inline-flex items-center px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors duration-200"
           >
             Continue Shopping
           </Link>
@@ -158,7 +158,7 @@ const Wishlist: React.FC = () => {
               <div className="flex-grow min-w-0">
                 <Link
                   to={`/product/${item.id}`}
-                  className="text-base md:text-lg font-medium text-gray-900 hover:text-blue-600 transition-colors line-clamp-2"
+                  className="text-base md:text-lg font-medium text-gray-900 hover:text-emerald-600 transition-colors line-clamp-2"
                 >
                   {item.name}
                 </Link>

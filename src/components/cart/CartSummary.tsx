@@ -112,7 +112,7 @@ export const CartSummary: React.FC<CartSummaryProps> = ({ summary }) => {
       disabled: false,
       text: "Proceed to Checkout",
       icon: CreditCard,
-      className: "bg-blue-600 text-white hover:bg-blue-700",
+      className: "bg-emerald-600 text-white hover:bg-emerald-700",
     };
   };
 
@@ -178,24 +178,22 @@ export const CartSummary: React.FC<CartSummaryProps> = ({ summary }) => {
           <span>₹{summary.totalPrice}</span>
         </div>
 
-        {/* Shipping */}
-        {deliverySetting?.takeDeliveryFee && (
-          <div className="flex justify-between text-gray-600">
-            <span className="flex items-center gap-2">
-              <Truck className="w-4 h-4" />
-              Shipping
-            </span>
-            <span>
-              {shippingCost === 0 ? (
-                <span className="text-green-600 font-medium">FREE</span>
-              ) : (
-                `₹${shippingCost}`
-              )}
-            </span>
-          </div>
-        )}
+        {/* Shipping - Always show this section */}
+        <div className="flex justify-between text-gray-600">
+          <span className="flex items-center gap-2">
+            <Truck className="w-4 h-4" />
+            Shipping
+          </span>
+          <span>
+            {shippingCost === 0 ? (
+              <span className="text-green-600 font-medium">FREE</span>
+            ) : (
+              `₹${shippingCost}`
+            )}
+          </span>
+        </div>
 
-        {/* Free shipping threshold message */}
+        {/* Free shipping threshold message - only show if delivery fee is enabled and there's a cost */}
         {deliverySetting?.takeDeliveryFee &&
           deliverySetting?.checkThreshold &&
           shippingCost > 0 &&

@@ -68,7 +68,7 @@ export const CartButton: React.FC<CartButtonProps> = ({
         </div>
         <button
           onClick={() => navigate("/cart")}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+          className="bg-emerald-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-emerald-700 transition-colors"
         >
           View Cart
         </button>
@@ -96,7 +96,7 @@ export const CartButton: React.FC<CartButtonProps> = ({
               ? "bg-gray-200 text-gray-500 cursor-not-allowed"
               : isLowStock
               ? "bg-orange-500 text-white hover:bg-orange-600"
-              : "bg-blue-600 text-white hover:bg-blue-700 active:scale-95"
+              : "bg-emerald-600 text-white hover:bg-emerald-700 active:scale-95"
           }
           ${!selectedSize && "opacity-50 cursor-not-allowed"}
           ${isLoading && "opacity-75 cursor-wait"}

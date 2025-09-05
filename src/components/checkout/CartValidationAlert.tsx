@@ -41,7 +41,7 @@ const CartValidationAlert: React.FC<CartValidationAlertProps> = ({
             <button
               onClick={onRefresh}
               disabled={isRefreshing}
-              className="text-sm bg-blue-100 text-blue-800 px-3 py-1 rounded-md hover:bg-blue-200 transition-colors flex items-center gap-1 disabled:opacity-50"
+              className="text-sm bg-emerald-100 text-emerald-800 px-3 py-1 rounded-md hover:bg-emerald-200 transition-colors flex items-center gap-1 disabled:opacity-50"
             >
               <RefreshCw
                 className={`w-3 h-3 ${

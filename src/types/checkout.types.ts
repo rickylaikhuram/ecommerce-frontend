@@ -45,7 +45,7 @@ export interface StockInfo {
 // Individual product response from checkout validation
 export interface ProductResponse {
   productId: string;
-  status: 
+  status:
     | "available"
     | "low_stock_warning"
     | "out_of_stock"
@@ -60,21 +60,18 @@ export interface ProductResponse {
     | "VARIANT_NOT_FOUND"
     | "ITEM_NOT_IN_CART";
   message: string;
-  action: 
-    | "proceed"
-    | "proceed_with_caution"
-    | "remove"
-    | "reduce_quantity";
+  action: "proceed" | "proceed_with_caution" | "remove" | "reduce_quantity";
   canProceedToCheckout: boolean;
   stockInfo?: StockInfo; // Keep optional as it's not always provided
   productDetails: ProductDetails;
-  cartDetails: CartDetails; 
+  cartDetails: CartDetails;
 }
 
 // Cart summary for checkout
 export interface CartSummary {
   totalValidItems: number;
-  totalPrice: number;
+  totalDiscountedPrice: number;
+  totalOriginalPrice: number;
   itemsRequiringAttention: number;
   hasOutOfStockItems: boolean;
   hasLowStockWarnings: boolean;
@@ -132,7 +129,6 @@ export interface OrderItem {
   price: number;
   itemTotal: number;
 }
-
 
 export interface OrderResponse {
   success: boolean;

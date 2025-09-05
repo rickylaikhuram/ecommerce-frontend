@@ -6,11 +6,11 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="relative bg-gradient-to-br from-blue-50 via-sky-50 to-cyan-50 border-t border-blue-100 overflow-hidden">
+    <footer className="relative bg-gradient-to-br from-emerald-50 via-emerald-50 to-teal-50 border-t border-emerald-100 overflow-hidden">
       {/* Decorative background elements - Added green element */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-24 -right-24 w-48 h-48 sm:w-72 sm:h-72 lg:w-96 lg:h-96 bg-blue-200 rounded-full filter blur-3xl opacity-30"></div>
-        <div className="absolute -bottom-24 -left-24 w-48 h-48 sm:w-72 sm:h-72 lg:w-96 lg:h-96 bg-cyan-200 rounded-full filter blur-3xl opacity-30"></div>
+        <div className="absolute -top-24 -right-24 w-48 h-48 sm:w-72 sm:h-72 lg:w-96 lg:h-96 bg-emerald-200 rounded-full filter blur-3xl opacity-30"></div>
+        <div className="absolute -bottom-24 -left-24 w-48 h-48 sm:w-72 sm:h-72 lg:w-96 lg:h-96 bg-teal-200 rounded-full filter blur-3xl opacity-30"></div>
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 sm:w-48 sm:h-48 lg:w-64 lg:h-64 bg-emerald-200 rounded-full filter blur-3xl opacity-20"></div>
       </div>
 
@@ -19,17 +19,13 @@ const Footer = () => {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-8 mb-12">
           {/* Company Info - Full width on mobile */}
           <div className="col-span-2 md:col-span-1 space-y-4 sm:space-y-6">
-            <div className="flex items-center space-x-3">
-              <div className="relative flex-shrink-0">
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-400 via-emerald-400 to-cyan-400 rounded-xl blur-lg opacity-30"></div>
-                <div className="relative w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center">
-                  <img src="./logo.jpeg" alt="logo" className="rounded-2xl" />
-                </div>
-              </div>
-              <span className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-blue-600 via-emerald-600 to-cyan-600 bg-clip-text text-transparent">
-                Clover Arena
-              </span>
-            </div>
+            <Link to={"/"}>
+              <img
+                src="/logo_details.jpeg"
+                alt="Home"
+                className={`h-19 text-sm font-medium transition-all duration-200 rounded-lg hover:bg-gray-50 `}
+              />
+            </Link>
             <p className="text-gray-600 text-sm leading-relaxed">
               Your premier destination for quality products and exceptional
               service. We're committed to bringing you the best shopping
@@ -65,15 +61,17 @@ const Footer = () => {
             </h3>
             <ul className="space-y-2 sm:space-y-3 ml-5 sm:ml-6">
               {[
-                "About Us",
-                "Products",
-                "Categories",
-                "Sale",
-                "New Arrivals",
+                { path: "/about-us", name: "About Us" },
+                { path: "/products", name: "Products" },
+                { path: "/categories", name: "Categories" },
+                { path: "/products?sortBy=price-asc", name: "Sale" },
+                { path: "/products", name: "New Arrivals" },
               ].map((item, index) => (
-                <li key={item}>
+                <li key={item.name}>
                   <Link
-                    to="#"
+                    to={item.path}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="group text-gray-600 hover:text-emerald-600 transition-all duration-200 text-sm flex items-center"
                   >
                     <span
@@ -83,7 +81,7 @@ const Footer = () => {
                           : "bg-gradient-to-r from-blue-400 to-cyan-400"
                       } rounded-full mr-2 sm:mr-3 group-hover:scale-150 transition-transform flex-shrink-0`}
                     ></span>
-                    <span className="break-words">{item}</span>
+                    <span className="break-words">{item.name}</span>
                   </Link>
                 </li>
               ))}

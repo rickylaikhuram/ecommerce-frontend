@@ -66,7 +66,7 @@ export const LocationDisplay: React.FC<LocationDisplayProps> = ({
       {isCompact &&
         locationInfo.deliverableAddressesCount &&
         locationInfo.deliverableAddressesCount > 1 && (
-          <span className="text-xs bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded-full font-medium">
+          <span className="text-xs bg-emerald-100 text-emerald-600 px-1.5 py-0.5 rounded-full font-medium">
             {locationInfo.deliverableAddressesCount}
           </span>
         )}

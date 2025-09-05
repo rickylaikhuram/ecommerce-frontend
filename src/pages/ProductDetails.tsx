@@ -286,7 +286,7 @@ const ProductDetails: React.FC = () => {
       <div className="min-h-screen flex items-center justify-center bg-white">
         <div className="relative">
           <div className="animate-spin rounded-full h-16 w-16 border-4 border-gray-200"></div>
-          <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-600 border-t-transparent absolute top-0"></div>
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-emerald-600 border-t-transparent absolute top-0"></div>
         </div>
       </div>
     );
@@ -307,7 +307,7 @@ const ProductDetails: React.FC = () => {
           </p>
           <button
             onClick={() => navigate("/")}
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+            className="bg-emerald-600 text-white px-6 py-3 rounded-lg hover:bg-emerald-700 transition-colors font-medium"
           >
             Continue Shopping
           </button>
@@ -335,7 +335,7 @@ const ProductDetails: React.FC = () => {
             <nav className="flex items-center space-x-2 text-xs sm:text-sm overflow-x-auto">
               <button
                 onClick={() => navigate("/")}
-                className="text-gray-500 hover:text-blue-600 transition-colors whitespace-nowrap"
+                className="text-gray-500 hover:text-emerald-600 transition-colors whitespace-nowrap"
               >
                 Home
               </button>
@@ -384,13 +384,13 @@ const ProductDetails: React.FC = () => {
                             onClick={prevImage}
                             className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-2 sm:p-2.5 rounded-full shadow-lg transition-all group"
                           >
-                            <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700 group-hover:text-blue-600" />
+                            <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700 group-hover:text-emerald-600" />
                           </button>
                           <button
                             onClick={nextImage}
                             className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-2 sm:p-2.5 rounded-full shadow-lg transition-all group"
                           >
-                            <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700 group-hover:text-blue-600" />
+                            <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700 group-hover:text-emerald-600" />
                           </button>
                         </>
                       )}
@@ -415,7 +415,7 @@ const ProductDetails: React.FC = () => {
                       transition-all duration-200 transform hover:scale-105
                       ${
                         selectedImage === index
-                          ? "ring-2 ring-blue-600 ring-offset-2"
+                          ? "ring-2 ring-emerald-600 ring-offset-2"
                           : "ring-1 ring-gray-200"
                       }
                     `}
@@ -426,7 +426,7 @@ const ProductDetails: React.FC = () => {
                         className="w-full h-full object-cover"
                       />
                       {selectedImage === index && (
-                        <div className="absolute inset-0 bg-blue-600/10"></div>
+                        <div className="absolute inset-0 bg-emerald-600/10"></div>
                       )}
                     </button>
                   ))}
@@ -439,7 +439,7 @@ const ProductDetails: React.FC = () => {
               {/* Title and Rating */}
               <div>
                 <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-3">
-                  <span className="text-xs sm:text-sm font-medium text-blue-600 bg-blue-50 px-2 sm:px-3 py-1 rounded-full">
+                  <span className="text-xs sm:text-sm font-medium text-emerald-600 bg-emerald-50 px-2 sm:px-3 py-1 rounded-full">
                     {product.category?.name || "Uncategorized"}
                   </span>
                   {product.totalSales > 50 && (
@@ -470,7 +470,7 @@ const ProductDetails: React.FC = () => {
               </div>
 
               {/* Price */}
-              <div className="bg-blue-50 rounded-lg sm:rounded-xl p-3 sm:p-4 md:p-6">
+              <div className="bg-emerald-50 rounded-lg sm:rounded-xl p-3 sm:p-4 md:p-6">
                 <div className="flex items-baseline gap-2 sm:gap-3 flex-wrap">
                   <span className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">
                     ₹{Number(product.discountedPrice ?? 0).toFixed(2)}
@@ -493,7 +493,7 @@ const ProductDetails: React.FC = () => {
                 </div>
                 {/* Show total price if quantity > 1 */}
                 {displayQuantity > 1 && (
-                  <div className="mt-2 pt-2 border-t border-blue-200">
+                  <div className="mt-2 pt-2 border-t border-emerald-200">
                     <p className="text-sm text-gray-600">
                       Total ({displayQuantity} items):
                       <span className="font-semibold text-gray-900 ml-1">
@@ -514,7 +514,7 @@ const ProductDetails: React.FC = () => {
                     <h3 className="font-semibold text-gray-900 text-sm sm:text-base">
                       Select Size
                     </h3>
-                    <button className="text-xs sm:text-sm text-blue-600 hover:text-blue-700 underline">
+                    <button className="text-xs sm:text-sm text-emerald-600 hover:text-emerald-700 underline">
                       Size Guide
                     </button>
                   </div>
@@ -547,10 +547,10 @@ const ProductDetails: React.FC = () => {
                           relative py-2 px-3 rounded-xl font-medium text-sm transition-all duration-200 min-h-[45px] w-full
                           ${
                             selectedSize === size.stockName
-                              ? "bg-blue-600 text-white shadow-lg transform scale-105"
+                              ? "bg-emerald-600 text-white shadow-lg transform scale-105"
                               : size.stock === 0
                               ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                              : "bg-white border-2 border-gray-200 hover:border-blue-600 text-gray-700"
+                              : "bg-white border-2 border-gray-200 hover:border-emerald-600 text-gray-700"
                           }
                         `}
                         >
@@ -593,7 +593,7 @@ const ProductDetails: React.FC = () => {
                         onClick={() =>
                           handleQuantityChange(displayQuantity - 1)
                         }
-                        className="p-2 sm:p-3 hover:bg-blue-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="p-2 sm:p-3 hover:bg-emerald-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         disabled={displayQuantity <= 1}
                       >
                         <Minus className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -608,7 +608,7 @@ const ProductDetails: React.FC = () => {
                         disabled={
                           displayQuantity >= (selectedStock?.stock || 10)
                         }
-                        className="p-2 sm:p-3 hover:bg-blue-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="p-2 sm:p-3 hover:bg-emerald-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
                       </button>
@@ -642,7 +642,7 @@ const ProductDetails: React.FC = () => {
                       ? "bg-gray-200 text-gray-400 cursor-not-allowed"
                       : isProductInCart
                       ? "bg-green-600 hover:bg-green-700 text-white shadow-lg"
-                      : "bg-blue-600 hover:bg-blue-700 text-white shadow-lg"
+                      : "bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg"
                   }
                 `}
                 >
@@ -712,7 +712,7 @@ const ProductDetails: React.FC = () => {
                     </span>
                     <button
                       onClick={() => navigate("/cart")}
-                      className="text-sm font-medium text-blue-600 hover:text-blue-700"
+                      className="text-sm font-medium text-emerald-600 hover:text-emerald-700"
                     >
                       View in Cart →
                     </button>
@@ -722,8 +722,8 @@ const ProductDetails: React.FC = () => {
 
               {/* Delivery Info */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-                <div className="flex items-center gap-3 p-3 sm:p-4 bg-blue-50 rounded-lg sm:rounded-xl">
-                  <Truck className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 flex-shrink-0" />
+                <div className="flex items-center gap-3 p-3 sm:p-4 bg-emerald-50 rounded-lg sm:rounded-xl">
+                  <Truck className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-600 flex-shrink-0" />
                   <div>
                     <p className="font-medium text-gray-900 text-xs sm:text-sm">
                       Free Delivery
@@ -786,7 +786,7 @@ const ProductDetails: React.FC = () => {
                     px-4 sm:px-6 py-3 sm:py-4 font-medium text-sm sm:text-base capitalize whitespace-nowrap transition-all
                     ${
                       activeTab === tab
-                        ? "text-blue-600 border-b-2 border-blue-600 bg-blue-50/50"
+                        ? "text-emerald-600 border-b-2 border-emerald-600 bg-emerald-50/50"
                         : "text-gray-600 hover:text-gray-900"
                     }
                   `}
@@ -840,8 +840,8 @@ const ProductDetails: React.FC = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-blue-50 rounded-lg">
-                    <p className="text-xs sm:text-sm text-blue-800">
+                  <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-emerald-50 rounded-lg">
+                    <p className="text-xs sm:text-sm text-emerald-800">
                       <strong>Note:</strong> Delivery times may vary during peak
                       seasons.
                     </p>
@@ -870,11 +870,11 @@ const ProductDetails: React.FC = () => {
                       </h4>
                       <ul className="space-y-2 text-xs sm:text-sm text-gray-600">
                         <li className="flex items-start gap-2">
-                          <span className="text-blue-600 mt-0.5">•</span>
+                          <span className="text-emerald-600 mt-0.5">•</span>
                           Items must be unused and in original packaging
                         </li>
                         <li className="flex items-start gap-2">
-                          <span className="text-blue-600 mt-0.5">•</span>
+                          <span className="text-emerald-600 mt-0.5">•</span>
                           Include all tags and accessories
                         </li>
                       </ul>
@@ -895,7 +895,7 @@ const ProductDetails: React.FC = () => {
               <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden bg-gray-50">
                 <button
                   onClick={() => handleQuantityChange(displayQuantity - 1)}
-                  className="p-2 hover:bg-blue-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="p-2 hover:bg-emerald-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   disabled={displayQuantity <= 1}
                 >
                   <Minus className="w-3 h-3" />
@@ -906,7 +906,7 @@ const ProductDetails: React.FC = () => {
                 <button
                   onClick={() => handleQuantityChange(displayQuantity + 1)}
                   disabled={displayQuantity >= (selectedStock?.stock || 10)}
-                  className="p-2 hover:bg-blue-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="p-2 hover:bg-emerald-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Plus className="w-3 h-3" />
                 </button>
@@ -979,7 +979,7 @@ const ProductDetails: React.FC = () => {
                 ? "bg-gray-200 text-gray-400 cursor-not-allowed"
                 : isProductInCart
                 ? "bg-green-600 text-white"
-                : "bg-blue-600 text-white"
+                : "bg-emerald-600 text-white"
             }
           `}
           >

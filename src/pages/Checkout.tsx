@@ -15,6 +15,7 @@ import {
   removeFromCart,
   removeItemOptimistic,
 } from "../redux/slice/cart";
+import { fetchDeliverySetting } from "../redux/slice/delivery";
 import type {
   CartCheckoutResponse,
   CheckoutState,
@@ -58,7 +59,6 @@ const CHECKOUT_STEPS: Step[] = [
 
 interface PricingDetails {
   subtotal: number;
-  protectFee: number;
   discount: number;
   deliveryFee: number;
   total: number;
@@ -72,6 +72,9 @@ const Checkout: React.FC = () => {
   const { user, status } = useAppSelector((state) => state.auth);
   const { user: userProfile, status: userStatus } = useAppSelector(
     (state) => state.user
+  );
+  const { status: deliveryStatus, deliverySetting } = useAppSelector(
+    (state) => state.delivery
   );
   const state = location.state as CheckoutState | null;
 
@@ -99,12 +102,18 @@ const Checkout: React.FC = () => {
 
   const [pricingDetails, setPricingDetails] = useState<PricingDetails>({
     subtotal: 0,
-    protectFee: 0,
     discount: 0,
     deliveryFee: 0,
     total: 0,
     savings: 0,
   });
+
+  // Fetch delivery settings on component mount
+  useEffect(() => {
+    if (deliveryStatus === "idle") {
+      dispatch(fetchDeliverySetting());
+    }
+  }, [deliveryStatus, dispatch]);
 
   // Check for valid checkout state
   useEffect(() => {
@@ -114,32 +123,60 @@ const Checkout: React.FC = () => {
     }
   }, [isValidState, navigate]);
 
-  // Replace the existing calculatePricing function with this safer version:
+  // Calculate shipping cost based on delivery settings (same logic as cart summary)
+  const calculateShippingCost = useCallback(
+    (subtotal: number) => {
+      if (!deliverySetting || !deliverySetting.takeDeliveryFee) {
+        return 0;
+      }
+
+      if (
+        deliverySetting.checkThreshold &&
+        deliverySetting.freeDeliveryThreshold
+      ) {
+        return subtotal >= Number(deliverySetting.freeDeliveryThreshold)
+          ? 0
+          : Number(deliverySetting.deliveryFee) || 0;
+      }
+
+      return Number(deliverySetting.deliveryFee) || 0;
+    },
+    [deliverySetting]
+  );
+
+  // Updated calculatePricing function with correct discount calculation
   const calculatePricing = useCallback(
     (cartData: CartCheckoutResponse): PricingDetails => {
       const validItems =
         cartData?.products?.filter((item) => item?.canProceedToCheckout) || [];
 
-      const subtotal = validItems.reduce((sum, item) => {
-        const itemTotal = item?.cartDetails?.itemTotal;
-        return sum + (itemTotal ? parseFloat(itemTotal.toString()) : 0);
-      }, 0);
+      // Calculate subtotal from cart summary if available, otherwise from items
+      const subtotal =
+        cartData?.cartSummary?.totalDiscountedPrice ||
+        validItems.reduce((sum, item) => {
+          const itemTotal = item?.cartDetails?.itemTotal;
+          return sum + (itemTotal ? parseFloat(itemTotal.toString()) : 0);
+        }, 0);
 
-      const discount = subtotal * 0.1;
-      const deliveryFee = subtotal > 500 ? 0 : 50;
-      const protectFee = subtotal > 0 ? 25 : 0;
-      const total = subtotal - discount + deliveryFee + protectFee;
+      // Calculate discount as the difference between original and discounted price
+      const originalPrice = cartData?.cartSummary?.totalOriginalPrice || 0;
+      const discountedPrice = cartData?.cartSummary?.totalDiscountedPrice || 0;
+      const discount = originalPrice - discountedPrice;
+
+      // Calculate delivery fee using the same logic as cart summary
+      const deliveryFee = calculateShippingCost(subtotal);
+
+      const total = subtotal + deliveryFee;
 
       return {
         subtotal,
-        protectFee,
         discount,
         deliveryFee,
         total,
         savings: discount,
       };
     },
-    []
+    [calculateShippingCost]
   );
 
   const loadCheckoutUserData = useCallback(async () => {
@@ -164,7 +201,7 @@ const Checkout: React.FC = () => {
       setCartValidation(cartData);
       setCanProceedToPayment(cartData.canProceedToCheckout);
 
-      // Calculate pricing from valid items only
+      // Calculate pricing from valid items using real delivery settings
       const pricing = calculatePricing(cartData);
       setPricingDetails(pricing);
 
@@ -242,7 +279,7 @@ const Checkout: React.FC = () => {
     return null;
   }
 
-  if (isInitialLoading) {
+  if (isInitialLoading || deliveryStatus === "loading") {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white flex items-center justify-center">
         <div className="text-gray-600">Loading checkout...</div>
@@ -642,6 +679,7 @@ const Checkout: React.FC = () => {
             totalItems={totalItems}
             canProceedToPayment={canProceedToPayment}
             isValidatingCart={isValidatingCart}
+            deliverySetting={deliverySetting}
           />
         </div>
       </div>

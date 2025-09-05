@@ -7,10 +7,10 @@ import {
   RefreshCw 
 } from "lucide-react";
 import type { CartCheckoutResponse } from "../../types/checkout.types";
+import type { Settings } from "../../redux/slice/delivery";
 
 interface PricingDetails {
   subtotal: number;
-  protectFee: number;
   discount: number;
   deliveryFee: number;
   total: number;
@@ -25,6 +25,7 @@ interface PricingSidebarProps {
   totalItems: number;
   canProceedToPayment: boolean;
   isValidatingCart: boolean;
+  deliverySetting: Settings | null;
 }
 
 const PricingSidebar: React.FC<PricingSidebarProps> = ({
@@ -35,12 +36,17 @@ const PricingSidebar: React.FC<PricingSidebarProps> = ({
   totalItems,
   canProceedToPayment,
   isValidatingCart,
+  deliverySetting,
 }) => {
+  // Calculate original price from cart validation
+  const originalPrice = cartValidation?.cartSummary?.totalOriginalPrice || 0;
+  const discountedPrice = cartValidation?.cartSummary?.totalDiscountedPrice || pricingDetails.subtotal;
+
   return (
     <div className="mt-8 lg:mt-0 space-y-6">
       {/* Price Details */}
-      <div className="bg-white rounded-xl shadow-lg p-6 border border-blue-100 sticky top-24">
-        <h3 className="text-xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+      <div className="bg-white rounded-xl shadow-lg p-6 border border-emerald-100 sticky top-24">
+        <h3 className="text-xl font-bold mb-6 bg-gradient-to-r from-emerald-600 to-emerald-800 bg-clip-text text-transparent">
           Order Summary
         </h3>
 
@@ -89,54 +95,81 @@ const PricingSidebar: React.FC<PricingSidebarProps> = ({
         )}
 
         <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <span className="text-gray-600">
-              Subtotal ({validItemsCount} valid items)
-            </span>
-            <span className="font-semibold">
-              ₹{pricingDetails.subtotal.toFixed(2)}
-            </span>
-          </div>
+          {/* Original Price */}
+          {originalPrice > 0 && (
+            <div className="flex justify-between items-center">
+              <span className="text-gray-600">
+                Original Price
+              </span>
+              <span className="font-semibold text-gray-500 line-through">
+                ₹{originalPrice.toFixed(2)}
+              </span>
+            </div>
+          )}
 
+          {/* Discount Applied */}
           {pricingDetails.discount > 0 && (
             <div className="flex justify-between items-center text-green-600">
-              <span>Discount</span>
+              <span>Discount Applied</span>
               <span className="font-semibold">
                 -₹{pricingDetails.discount.toFixed(2)}
               </span>
             </div>
           )}
 
+          {/* Subtotal after discount */}
+          <div className="flex justify-between items-center">
+            <span className="text-gray-800 font-medium">
+              {pricingDetails.discount > 0 ? "Discounted Price" : "Subtotal"}
+            </span>
+            <span className="font-semibold text-gray-800">
+              ₹{discountedPrice.toFixed(2)}
+            </span>
+          </div>
+
+          {/* Delivery Fee */}
           <div className="flex justify-between items-center">
             <span className="text-gray-600">Delivery Fee</span>
             <span className="font-semibold">
-              {pricingDetails.deliveryFee === 0
-                ? "FREE"
-                : `₹${pricingDetails.deliveryFee.toFixed(2)}`}
+              {pricingDetails.deliveryFee === 0 ? (
+                <span className="text-green-600 font-medium">FREE</span>
+              ) : (
+                `₹${pricingDetails.deliveryFee.toFixed(2)}`
+              )}
             </span>
           </div>
 
-          <div className="flex justify-between items-center">
-            <span className="text-gray-600">Protection Fee</span>
-            <span className="font-semibold">
-              ₹{pricingDetails.protectFee.toFixed(2)}
-            </span>
-          </div>
+          {/* Free shipping threshold message */}
+          {deliverySetting?.takeDeliveryFee &&
+            deliverySetting?.checkThreshold &&
+            pricingDetails.deliveryFee > 0 &&
+            deliverySetting?.freeDeliveryThreshold && (
+              <div className="text-xs text-gray-500 bg-emerald-50 p-2 rounded">
+                Add ₹
+                {(Number(deliverySetting.freeDeliveryThreshold) - discountedPrice).toFixed(2)}{" "}
+                more for free delivery
+              </div>
+            )}
 
           <hr className="border-gray-200" />
 
-          <div className="flex justify-between items-center text-xl font-bold">
-            <span>Total</span>
-            <span className="text-blue-600">
-              ₹{pricingDetails.total.toFixed(2)}
-            </span>
+          {/* Total Amount - Prominent Display */}
+          <div className="flex justify-between items-center text-xl font-bold bg-gradient-to-r from-emerald-600 to-emerald-800 text-white rounded-lg p-4">
+            <span>Pay Amount</span>
+            <span>₹{pricingDetails.total.toFixed(2)}</span>
           </div>
 
+          {/* You're Saving */}
           {pricingDetails.savings > 0 && (
             <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-              <p className="text-green-700 font-medium text-center">
-                🎉 You're saving ₹{pricingDetails.savings.toFixed(2)}!
-              </p>
+              <div className="flex items-center justify-between">
+                <p className="text-green-700 font-medium">
+                  🎉 You're Saving:
+                </p>
+                <p className="text-green-700 font-bold text-lg">
+                  ₹{pricingDetails.savings.toFixed(2)}
+                </p>
+              </div>
             </div>
           )}
 
@@ -152,7 +185,7 @@ const PricingSidebar: React.FC<PricingSidebarProps> = ({
       </div>
 
       {/* Security Badge */}
-      <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-6 border border-green-200">
+      <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6 border border-green-200">
         <div className="flex items-center space-x-3">
           <ShieldCheck className="h-10 w-10 text-green-600" />
           <div>
@@ -168,7 +201,7 @@ const PricingSidebar: React.FC<PricingSidebarProps> = ({
 
       {/* Cart Status Info */}
       {cartValidation && (
-        <div className="bg-white rounded-xl shadow-lg p-6 border border-blue-100">
+        <div className="bg-white rounded-xl shadow-lg p-6 border border-emerald-100">
           <h3 className="text-lg font-semibold mb-4 text-gray-900">
             Cart Status
           </h3>
@@ -207,7 +240,7 @@ const PricingSidebar: React.FC<PricingSidebarProps> = ({
       )}
 
       {/* Help Section */}
-      <div className="bg-white rounded-xl shadow-lg p-6 border border-blue-100">
+      <div className="bg-white rounded-xl shadow-lg p-6 border border-emerald-100">
         <h3 className="text-lg font-semibold mb-4 text-gray-900">
           Need Help?
         </h3>
@@ -215,8 +248,8 @@ const PricingSidebar: React.FC<PricingSidebarProps> = ({
           <p className="text-sm text-gray-600">
             Having trouble with your order?
           </p>
-          <button className="text-blue-600 hover:text-blue-700 font-semibold hover:underline transition-colors">
-            📞 Contact Support
+          <button className="text-emerald-600 hover:text-emerald-700 font-semibold hover:underline transition-colors">
+            Contact Support
           </button>
           <p className="text-xs text-gray-500">
             Available 24/7 to help you
@@ -226,9 +259,9 @@ const PricingSidebar: React.FC<PricingSidebarProps> = ({
 
       {/* Loading indicator when validating cart */}
       {isValidatingCart && (
-        <div className="bg-white rounded-xl shadow-lg p-6 border border-blue-100">
+        <div className="bg-white rounded-xl shadow-lg p-6 border border-emerald-100">
           <div className="flex items-center justify-center space-x-3">
-            <RefreshCw className="w-5 h-5 animate-spin text-blue-600" />
+            <RefreshCw className="w-5 h-5 animate-spin text-emerald-600" />
             <span className="text-sm text-gray-600">
               Validating cart...
             </span>

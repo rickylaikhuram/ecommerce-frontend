@@ -1,9 +1,9 @@
 // pages/Cart.tsx
 import React from "react";
-import { ShoppingBag, Package, AlertTriangle, Info } from "lucide-react";
+import { ShoppingBag, AlertTriangle, Info } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../redux/hook";
-import {  clearCart } from "../redux/slice/cart";
+import { clearCart } from "../redux/slice/cart";
 
 import { CartItemCard } from "../components/cart/CartItemCard";
 import { CartSummary } from "../components/cart/CartSummary.tsx";
@@ -65,7 +65,7 @@ const CartPage: React.FC = () => {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-            <ShoppingBag className="w-8 h-8 text-blue-600" />
+            <ShoppingBag className="w-8 h-8 text-emerald-600" />
             Shopping Cart
             <span className="text-lg font-normal text-gray-500">
               ({cart.summary.totalItems} items)
@@ -75,7 +75,7 @@ const CartPage: React.FC = () => {
           <div className="mt-4 flex items-center justify-between">
             <Link
               to="/products"
-              className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center gap-1"
+              className="text-emerald-600 hover:text-emerald-700 text-sm font-medium flex items-center gap-1"
             >
               ← Continue Shopping
             </Link>
@@ -129,16 +129,6 @@ const CartPage: React.FC = () => {
             {cart.items.map((item) => (
               <CartItemCard key={item.id} item={item} />
             ))}
-
-            {/* Shipping Info */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-6">
-              <div className="flex items-center gap-2 text-blue-800">
-                <Package className="w-5 h-5" />
-                <p className="text-sm font-medium">
-                  Free shipping on orders over Rs-500!
-                </p>
-              </div>
-            </div>
           </div>
 
           {/* Cart Summary */}

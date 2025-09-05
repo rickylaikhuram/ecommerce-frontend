@@ -105,7 +105,7 @@ export const CartItemCard: React.FC<CartItemCardProps> = ({ item }) => {
 
       {isLoading && (
         <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center rounded-lg z-20">
-          <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
+          <Loader2 className="w-6 h-6 animate-spin text-emerald-600" />
         </div>
       )}
 
@@ -140,7 +140,7 @@ export const CartItemCard: React.FC<CartItemCardProps> = ({ item }) => {
             <div className="flex-1">
               <Link
                 to={`/products/${item.productId}`}
-                className="text-lg font-semibold text-gray-900 hover:text-blue-600 transition-colors"
+                className="text-lg font-semibold text-gray-900 hover:text-emerald-600 transition-colors"
               >
                 {item.name}
               </Link>
@@ -223,7 +223,7 @@ export const CartItemCard: React.FC<CartItemCardProps> = ({ item }) => {
                 <button
                   onClick={() => handleQuantityChange(item.quantity - 1)}
                   disabled={isLoading}
-                  className="w-8 h-8 rounded-full border-2 border-gray-300 flex items-center justify-center hover:border-blue-500 hover:bg-blue-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-8 h-8 rounded-full border-2 border-gray-300 flex items-center justify-center hover:border-emerald-500 hover:bg-emerald-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Minus className="w-4 h-4" />
                 </button>
@@ -235,7 +235,7 @@ export const CartItemCard: React.FC<CartItemCardProps> = ({ item }) => {
                 <button
                   onClick={() => handleQuantityChange(item.quantity + 1)}
                   disabled={isLoading || item.quantity >= maxQuantityAllowed}
-                  className="w-8 h-8 rounded-full border-2 border-gray-300 flex items-center justify-center hover:border-blue-500 hover:bg-blue-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-8 h-8 rounded-full border-2 border-gray-300 flex items-center justify-center hover:border-emerald-500 hover:bg-emerald-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Plus className="w-4 h-4" />
                 </button>

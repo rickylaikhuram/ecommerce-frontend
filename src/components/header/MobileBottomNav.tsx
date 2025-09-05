@@ -42,8 +42,8 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
             to={item.path}
             className={`flex flex-col items-center py-2 transition-colors relative ${
               isActive(item.path)
-                ? "text-blue-600"
-                : "text-gray-600 hover:text-blue-600"
+                ? "text-emerald-600"
+                : "text-gray-600 hover:text-emerald-600"
             }`}
             onClick={(e) => onNavClick(e, item.path)}
           >
@@ -67,7 +67,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
               {item.label}
             </span>
             {isActive(item.path) && (
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-10 h-0.5 bg-blue-600 rounded-full" />
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-10 h-0.5 bg-emerald-600 rounded-full" />
             )}
           </Link>
         ))}

@@ -78,8 +78,12 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
 
       {/* Sidebar */}
       <div className="fixed top-0 left-0 h-full w-72 bg-white z-90 transform transition-transform duration-300 ease-out shadow-2xl translate-x-0">
-        <div className="flex items-center justify-between p-4 border-b bg-emerald-900">
-          <h2 className="text-lg font-bold text-white">Clover Arena</h2>
+        <div className="flex items-center justify-between p-2 pr-5 border-b bg-emerald-900">
+          <img
+            src="/logo_white_details.jpeg"
+            alt="Home"
+            className="h-19 text-sm font-medium transition-all duration-200 rounded-lg hover:bg-gray-50 "
+          />
           <button
             onClick={onClose}
             className="p-2 hover:bg-white/50 rounded-lg transition-all duration-200 hover:scale-105"
@@ -98,7 +102,7 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
                 {/* Main Category Header */}
                 <div className="flex items-center bg-white rounded-lg shadow-sm">
                   <button
-                    className={`flex-1 text-left px-4 py-3 text-sm font-semibold text-gray-700 hover:text-blue-600 transition-colors ${
+                    className={`flex-1 text-left px-4 py-3 text-sm font-semibold text-gray-700 hover:text-emerald-600 transition-colors ${
                       isActive(item.path)
                         ? "bg-emerald-50 text-emerald-600"
                         : "text-gray-700 hover:bg-gray-50 hover:text-emerald-600"
@@ -108,8 +112,8 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
                     {item.name}
                   </button>
                   <button
-                    className={`px-4 py-3 text-gray-500 hover:text-blue-600 transition-all duration-200 border-l border-gray-100 ${
-                      dropdownOpen ? "text-blue-600" : ""
+                    className={`px-4 py-3 text-gray-500 hover:text-emerald-600 transition-all duration-200 border-l border-gray-100 ${
+                      dropdownOpen ? "text-emerald-600" : ""
                     }`}
                     onClick={() => setDropdownOpen(!dropdownOpen)}
                   >
@@ -132,7 +136,7 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
                       >
                         <div className="flex items-center">
                           <button
-                            className="flex-1 text-left px-4 py-3 text-sm text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-all duration-150"
+                            className="flex-1 text-left px-4 py-3 text-sm text-gray-700 hover:text-emerald-600 hover:bg-emerald-50 transition-all duration-150"
                             onClick={() => handleCategoryClick(parent.name)}
                           >
                             {parent.name}
@@ -140,9 +144,9 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
 
                           {parent.children && parent.children.length > 0 && (
                             <button
-                              className={`px-3 py-3 text-gray-400 hover:text-blue-600 transition-all duration-200 ${
+                              className={`px-3 py-3 text-gray-400 hover:text-emerald-600 transition-all duration-200 ${
                                 expandedCategories.has(parent.id)
-                                  ? "text-blue-600 bg-blue-50"
+                                  ? "text-emerald-600 bg-emerald-50"
                                   : ""
                               }`}
                               onClick={() => toggleCategoryExpansion(parent.id)}
@@ -167,7 +171,7 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
                               {parent.children.map((child) => (
                                 <button
                                   key={child.id}
-                                  className="w-full text-left px-6 py-2.5 text-sm text-gray-600 hover:text-blue-600 hover:bg-white transition-all duration-150 border-l-3 border-transparent hover:border-blue-200"
+                                  className="w-full text-left px-6 py-2.5 text-sm text-gray-600 hover:text-emerald-600 hover:bg-white transition-all duration-150 border-l-3 border-transparent hover:border-emerald-200"
                                   onClick={() =>
                                     handleCategoryClick(child.name)
                                   }
@@ -245,7 +249,7 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
                 {cartLoading ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
                 ) : cartCount > 0 ? (
-                  <span className="bg-blue-600 text-white text-xs px-2 py-0.5 rounded-full font-medium">
+                  <span className="bg-emerald-600 text-white text-xs px-2 py-0.5 rounded-full font-medium">
                     {cartCount}
                   </span>
                 ) : null}
@@ -276,7 +280,7 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
           {/* Cart Summary */}
           {cart && cart.items.length > 0 && (
             <div className="mt-6 pt-4 border-t border-gray-200">
-              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 mb-4 border border-blue-100">
+              <div className="bg-gradient-to-r from-emerald-50 to-indigo-50 rounded-lg p-4 mb-4 border border-emerald-100">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm text-gray-600">Cart Total</span>
                   <span className="text-xs text-gray-500">
@@ -288,7 +292,7 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
                 </p>
               </div>
               <button
-                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-center py-3 rounded-lg font-semibold transition-all duration-200 transform hover:scale-[1.02] shadow-lg hover:shadow-xl"
+                className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-indigo-700 text-white text-center py-3 rounded-lg font-semibold transition-all duration-200 transform hover:scale-[1.02] shadow-lg hover:shadow-xl"
                 onClick={() => handleNavigation("/checkout")}
               >
                 Proceed to Checkout

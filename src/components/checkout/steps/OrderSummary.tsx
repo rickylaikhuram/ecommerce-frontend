@@ -182,7 +182,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
                     <p className={`text-sm font-semibold ${
                       item.statusCode === 'OUT_OF_STOCK' ? 'text-gray-400 line-through' : 'text-gray-900'
                     }`}>
-                      ₹{parseFloat(item.cartDetails.itemTotal.toString()).toFixed(2)}
+                      ₹{parseFloat(item.cartDetails.itemDiscountedTotal.toString()).toFixed(2)}
                     </p>
                     
                     {/* Action buttons */}
@@ -215,7 +215,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
               {validItems.map((item) => {
                 const discountedPrice = parseFloat(item.productDetails.discountedPrice);
                 const originalPrice = parseFloat(item.productDetails.originalPrice);
-                const itemTotal = parseFloat(item.cartDetails.itemTotal.toString());
+                const itemTotal = parseFloat(item.cartDetails.itemDiscountedTotal.toString());
                 const hasDiscount = originalPrice !== discountedPrice;
 
                 return (
@@ -309,7 +309,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
             </p>
             <p className="text-xs text-green-600 mt-1">
               Total: ₹{validItems.reduce((sum, item) => 
-                sum + parseFloat(item.cartDetails.itemTotal.toString()), 0
+                sum + parseFloat(item.cartDetails.itemDiscountedTotal.toString()), 0
               ).toFixed(2)}
             </p>
           </div>

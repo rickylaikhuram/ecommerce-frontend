@@ -1,13 +1,18 @@
-import type {  CategoryResponse, ProductFilters, ProductResponse } from "../types/products.types";
+import type {
+  CategoryResponse,
+  ProductFilters,
+  ProductResponse,
+} from "../types/products.types";
 import instance from "../utils/axios";
 
 // Main service function
 export const productService = {
-
   // get categories
   async getCategories(): Promise<CategoryResponse> {
     try {
-      const response = await instance.get<CategoryResponse>("/api/product/categories");
+      const response = await instance.get<CategoryResponse>(
+        "/api/product/categories"
+      );
       return response.data;
     } catch (error) {
       console.error("Error fetching categories:", error);
@@ -62,13 +67,4 @@ export const productService = {
     return this.getFilteredProducts({ filter: "trending", limit });
   },
 
-  // Get paginated products
-  async getPaginatedProducts(
-    page: number = 1,
-    pageSize: number = 10,
-    filters: Omit<ProductFilters, "limit" | "offset"> = {}
-  ): Promise<ProductResponse> {
-    const offset = (page - 1) * pageSize;
-    return this.getFilteredProducts({ ...filters, limit: pageSize, offset });
-  },
 };

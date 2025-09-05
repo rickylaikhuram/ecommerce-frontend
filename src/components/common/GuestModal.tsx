@@ -51,11 +51,11 @@ export default function GuestModal({
         {/* Modal Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-100">
           <div className="flex items-center">
-            <div className="bg-blue-100 p-2 rounded-full mr-3">
+            <div className="bg-emerald-100 p-2 rounded-full mr-3">
               {reason === "wishlist" ? (
-                <Heart className="w-6 h-6 text-blue-600" />
+                <Heart className="w-6 h-6 text-emerald-600" />
               ) : (
-                <ShoppingCart className="w-6 h-6 text-blue-600" />
+                <ShoppingCart className="w-6 h-6 text-emerald-600" />
               )}
             </div>
             <h2 className="text-xl font-semibold text-gray-800">
@@ -73,8 +73,8 @@ export default function GuestModal({
         {/* Modal Body */}
         <div className="p-6">
           <div className="text-center mb-6">
-            <div className="bg-blue-50 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-              <Lock className="w-8 h-8 text-blue-600" />
+            <div className="bg-emerald-50 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+              <Lock className="w-8 h-8 text-emerald-600" />
             </div>
             <h3 className="text-lg font-semibold text-gray-800 mb-2">
               Sign in Required
@@ -92,7 +92,7 @@ export default function GuestModal({
           <div className="space-y-3">
             <button
               onClick={handleSignIn}
-              className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium flex items-center justify-center"
+              className="w-full bg-emerald-600 text-white py-3 px-4 rounded-lg hover:bg-emerald-700 transition-colors duration-200 font-medium flex items-center justify-center"
             >
               <User className="w-5 h-5 mr-2" />
               Sign In
@@ -100,7 +100,7 @@ export default function GuestModal({
 
             <button
               onClick={handleSignUp}
-              className="w-full bg-white text-blue-600 py-3 px-4 rounded-lg border-2 border-blue-600 hover:bg-blue-50 transition-colors duration-200 font-medium"
+              className="w-full bg-white text-emerald-600 py-3 px-4 rounded-lg border-2 border-emerald-600 hover:bg-emerald-50 transition-colors duration-200 font-medium"
             >
               Create Account
             </button>

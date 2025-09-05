@@ -251,7 +251,7 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({
                 }}
                 className={`rounded-full transition-all duration-300 ${
                   isCurrent 
-                    ? 'w-6 sm:w-8 h-1.5 sm:h-2 bg-blue-600' 
+                    ? 'w-6 sm:w-8 h-1.5 sm:h-2 bg-emerald-600' 
                     : 'w-1.5 sm:w-2 h-1.5 sm:h-2 bg-gray-300 hover:bg-gray-400'
                 }`}
                 aria-label={`Go to page ${index + 1}`}

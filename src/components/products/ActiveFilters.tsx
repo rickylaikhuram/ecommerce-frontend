@@ -86,11 +86,11 @@ interface FilterTagProps {
 
 const FilterTag: React.FC<FilterTagProps> = ({ label, onRemove }) => {
   return (
-    <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full">
+    <span className="inline-flex items-center gap-1 px-3 py-1 bg-emerald-100 text-emerald-800 text-sm rounded-full">
       {label}
       <button
         onClick={onRemove}
-        className="ml-1 hover:bg-blue-200 rounded-full p-0.5 transition-colors"
+        className="ml-1 hover:bg-emerald-200 rounded-full p-0.5 transition-colors"
         aria-label={`Remove ${label} filter`}
       >
         <X className="w-3 h-3" />

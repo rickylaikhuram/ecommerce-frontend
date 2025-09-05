@@ -111,9 +111,9 @@ const SignInOTP = () => {
 
   if (showOTPScreen) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-sky-50 to-cyan-50 px-4 py-8">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-50 via-sky-50 to-cyan-50 px-4 py-8">
         <div className="w-full max-w-md">
-          <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl shadow-blue-100/50 p-8 border border-white/50">
+          <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl shadow-emerald-100/50 p-8 border border-white/50">
             <OTPVerification
               phoneNumber={phoneNumber}
               onVerify={handleOTPVerify}
@@ -132,7 +132,7 @@ const SignInOTP = () => {
         <div className="w-full max-w-md">
           <div className="flex justify-center mb-8">
             <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-full blur-lg opacity-30 animate-pulse"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-cyan-400 rounded-full blur-lg opacity-30 animate-pulse"></div>
               <LogIn className="relative text-emerald-600 w-12 h-12" />
             </div>
           </div>
@@ -177,7 +177,7 @@ const SignInOTP = () => {
                         ? "border-red-300 focus:ring-red-400"
                         : touchedFields.phone && !errors.phone
                         ? "border-emerald-300 focus:ring-emerald-400"
-                        : "border-gray-200 focus:ring-blue-400"
+                        : "border-gray-200 focus:ring-emerald-400"
                     }`}
                     {...register("phone", {
                       required: "Phone number is required",
@@ -215,7 +215,7 @@ const SignInOTP = () => {
                 className={`w-full py-3.5 rounded-xl text-white font-medium transition-all duration-300 transform ${
                   loading || !isValid
                     ? "bg-gradient-to-r from-emerald-300 to-cyan-300 cursor-not-allowed opacity-60"
-                    : "bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-emerald-700 hover:to-cyan-700 hover:shadow-lg hover:-translate-y-0.5"
+                    : "bg-gradient-to-r from-emerald-600 to-cyan-600 hover:from-emerald-700 hover:to-cyan-700 hover:shadow-lg hover:-translate-y-0.5"
                 }`}
               >
                 {loading ? "Sending OTP..." : "Send OTP"}

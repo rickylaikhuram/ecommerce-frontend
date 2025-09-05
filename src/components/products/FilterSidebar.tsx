@@ -102,7 +102,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({
           </button>
           <button
             onClick={onApplyFilters}
-            className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="flex-1 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
           >
             Apply Filters
           </button>
@@ -138,7 +138,7 @@ const CategoryButton: React.FC<CategoryButtonProps> = ({
       onClick={onClick}
       className={`block w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
         isSelected
-          ? "bg-blue-50 text-blue-700"
+          ? "bg-emerald-50 text-emerald-700"
           : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
       }`}
     >
@@ -160,7 +160,7 @@ const SizeButton: React.FC<SizeButtonProps> = ({ size, isSelected, onClick }) =>
       onClick={onClick}
       className={`px-3 py-2 rounded-lg text-sm font-medium border transition-colors ${
         isSelected
-          ? "bg-blue-600 text-white border-blue-600"
+          ? "bg-emerald-600 text-white border-emerald-600"
           : "bg-white text-gray-700 border-gray-300 hover:border-gray-400"
       }`}
       aria-pressed={isSelected}

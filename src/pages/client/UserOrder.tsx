@@ -121,7 +121,7 @@ const Orders: React.FC = () => {
       case "PENDING":
         return `${baseClass} bg-yellow-100 text-yellow-800`;
       case "CONFIRMED":
-        return `${baseClass} bg-blue-100 text-blue-800`;
+        return `${baseClass} bg-emerald-100 text-emerald-800`;
       case "SHIPPED":
         return `${baseClass} bg-purple-100 text-purple-800`;
       case "DELIVERED":
@@ -212,7 +212,7 @@ const Orders: React.FC = () => {
                   onClick={() => setFilter(status)}
                   className={`py-2 px-1 border-b-2 font-medium text-sm ${
                     filter === status
-                      ? "border-blue-500 text-blue-600"
+                      ? "border-emerald-500 text-emerald-600"
                       : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                   }`}
                 >

@@ -51,7 +51,7 @@ const ProductsHeader: React.FC<ProductsHeaderProps> = ({
               onChange={(e) =>
                 onSortChange(e.target.value as ProductFilters["sortBy"])
               }
-              className="px-2 py-2 border border-gray-200 rounded focus:ring-1 focus:ring-blue-300 focus:border-transparent"
+              className="px-2 py-2 border border-gray-200 rounded focus:ring-1 focus:ring-emerald-300 focus:border-transparent"
               aria-label="Sort products"
             >
               {SORT_OPTIONS.map((option) => (
@@ -67,7 +67,7 @@ const ProductsHeader: React.FC<ProductsHeaderProps> = ({
                 onClick={() => onViewModeChange("grid")}
                 className={`p-2 rounded-lg transition-colors ${
                   viewMode === "grid"
-                    ? "bg-blue-100 text-blue-600"
+                    ? "bg-emerald-100 text-emerald-600"
                     : "text-gray-400 hover:text-gray-600"
                 }`}
                 aria-label="Grid view"
@@ -79,7 +79,7 @@ const ProductsHeader: React.FC<ProductsHeaderProps> = ({
                 onClick={() => onViewModeChange("list")}
                 className={`p-2 rounded-lg transition-colors ${
                   viewMode === "list"
-                    ? "bg-blue-100 text-blue-600"
+                    ? "bg-emerald-100 text-emerald-600"
                     : "text-gray-400 hover:text-gray-600"
                 }`}
                 aria-label="List view"

@@ -247,7 +247,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
                 },
               })}
               disabled={isFormDisabled}
-              className={`w-full px-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed ${
+              className={`w-full px-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:bg-gray-100 disabled:cursor-not-allowed ${
                 errors.fullName ? "border-red-500" : "border-gray-300"
               }`}
               placeholder="Name"
@@ -271,7 +271,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
               })}
               maxLength={10}
               disabled={isFormDisabled}
-              className={`w-full px-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed ${
+              className={`w-full px-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:bg-gray-100 disabled:cursor-not-allowed ${
                 errors.phone ? "border-red-500" : "border-gray-300"
               }`}
               placeholder="10-digit mobile number"
@@ -298,7 +298,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
               })}
               maxLength={6}
               disabled={isFormDisabled}
-              className={`w-full px-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed ${
+              className={`w-full px-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:bg-gray-100 disabled:cursor-not-allowed ${
                 errors.zipCode ? "border-red-500" : "border-gray-300"
               }`}
               placeholder="Pincode"
@@ -319,7 +319,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
               type="text"
               {...register("line2")}
               disabled={isFormDisabled}
-              className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+              className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
               placeholder="Locality"
             />
           </div>
@@ -333,7 +333,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
             })}
             rows={3}
             disabled={isFormDisabled}
-            className={`w-full px-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed ${
+            className={`w-full px-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:bg-gray-100 disabled:cursor-not-allowed ${
               errors.line1 ? "border-red-500" : "border-gray-300"
             }`}
             placeholder="Address (Area and Street)"
@@ -349,7 +349,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
               type="text"
               {...register("city", { required: "City is required" })}
               disabled={isFormDisabled}
-              className={`w-full px-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed ${
+              className={`w-full px-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:bg-gray-100 disabled:cursor-not-allowed ${
                 errors.city ? "border-red-500" : "border-gray-300"
               }`}
               placeholder="City/District/Town"
@@ -368,7 +368,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
                 <select
                   {...field}
                   disabled={isFormDisabled}
-                  className={`w-full px-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed ${
+                  className={`w-full px-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:bg-gray-100 disabled:cursor-not-allowed ${
                     errors.state ? "border-red-500" : "border-gray-300"
                   }`}
                 >
@@ -397,7 +397,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
                 setValueAs: (v) => (v === "" ? undefined : v),
               })}
               disabled={isFormDisabled}
-              className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+              className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
               placeholder="Landmark (Optional)"
             />
           </div>
@@ -414,7 +414,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
               })}
               maxLength={10}
               disabled={isFormDisabled}
-              className={`w-full px-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed ${
+              className={`w-full px-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:bg-gray-100 disabled:cursor-not-allowed ${
                 errors.alternatePhone ? "border-red-500" : "border-gray-300"
               }`}
               placeholder="Alternate Phone (Optional)"
@@ -448,7 +448,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
                       value={label}
                       checked={field.value === label}
                       disabled={isFormDisabled}
-                      className="text-blue-600 focus:ring-blue-500 disabled:opacity-50"
+                      className="text-emerald-600 focus:ring-emerald-500 disabled:opacity-50"
                     />
                     <span className="text-sm">
                       {label} (
@@ -470,7 +470,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
             id="isDefault"
             {...register("isDefault")}
             disabled={isFormDisabled}
-            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded disabled:opacity-50"
+            className="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded disabled:opacity-50"
           />
           <label htmlFor="isDefault" className={`ml-2 text-sm text-gray-700 ${isFormDisabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
             Make this my default address
@@ -496,7 +496,7 @@ const AddressForm: React.FC<AddressFormProps> = ({
             className={`px-6 py-3 font-medium transition-colors ${
               isFormDisabled 
                 ? "text-gray-400 cursor-not-allowed"
-                : "text-blue-600 hover:text-blue-700"
+                : "text-emerald-600 hover:text-emerald-700"
             }`}
           >
             {cancelButtonText}

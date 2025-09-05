@@ -153,7 +153,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           {/* Category - Fixed height */}
           <div className="h-5 mb-1 sm:mb-2">
             {product.category && (
-              <p className="text-xs sm:text-sm text-blue-600 font-medium uppercase tracking-wider truncate">
+              <p className="text-xs sm:text-sm text-emerald-600 font-medium uppercase tracking-wider truncate">
                 {product.category.name}
               </p>
             )}
@@ -163,7 +163,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
           <div className="h-10 sm:h-12 mb-2">
             <h3
               className={`font-bold text-sm sm:text-base text-gray-900 line-clamp-2 transition-colors duration-200 leading-tight ${
-                isHovered ? "text-blue-600" : ""
+                isHovered ? "text-emerald-600" : ""
               }`}
               style={{
                 display: "-webkit-box",

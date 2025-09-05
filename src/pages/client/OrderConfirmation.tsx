@@ -85,7 +85,7 @@ const OrderConfirmation: React.FC = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
       </div>
     );
   }
@@ -102,7 +102,7 @@ const OrderConfirmation: React.FC = () => {
           </p>
           <button
             onClick={handleContinueShopping}
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
           >
             Continue Shopping
           </button>
@@ -145,7 +145,7 @@ const OrderConfirmation: React.FC = () => {
             <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">
               Order #{order.id.slice(-8).toUpperCase()}
             </h2>
-            <p className="text-2xl sm:text-3xl font-bold text-blue-600">
+            <p className="text-2xl sm:text-3xl font-bold text-emerald-600">
               ₹{order.totalAmount.toFixed(2)}
             </p>
           </div>
@@ -188,13 +188,13 @@ const OrderConfirmation: React.FC = () => {
         <div className="flex  gap-3 mb-6">
           <button
             onClick={handleViewOrderDetails}
-            className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+            className="w-full px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-medium"
           >
             View Order Details
           </button>
           <button
             onClick={handleContinueShopping}
-            className="w-full px-6 py-3 text-blue-600 border border-blue-300 rounded-lg hover:bg-blue-50 transition-colors font-medium"
+            className="w-full px-6 py-3 text-emerald-600 border border-emerald-300 rounded-lg hover:bg-emerald-50 transition-colors font-medium"
           >
             Continue Shopping
           </button>
@@ -264,7 +264,7 @@ const OrderConfirmation: React.FC = () => {
               <hr className="my-2" />
               <div className="flex justify-between font-semibold text-base sm:text-lg">
                 <span>Total Amount:</span>
-                <span className="text-blue-600">₹{order.totalAmount.toFixed(2)}</span>
+                <span className="text-emerald-600">₹{order.totalAmount.toFixed(2)}</span>
               </div>
             </div>
           </div>
@@ -275,7 +275,7 @@ const OrderConfirmation: React.FC = () => {
           <p className="text-gray-600 text-sm mb-2 px-4">
             Need help with your order?
           </p>
-          <p className="text-blue-600 text-sm px-4">
+          <p className="text-emerald-600 text-sm px-4">
             Contact our support team at{" "}
             <a href="mailto:support@company.com" className="underline">
               support@company.com

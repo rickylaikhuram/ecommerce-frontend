@@ -41,12 +41,12 @@ const WarningModal: React.FC<ModalProps> = ({
         <div className={`relative bg-white rounded-lg shadow-xl ${sizeClasses[size]} w-full`}>
           {/* Header */}
           {(title || showCloseButton) && (
-            <div className="flex items-center justify-between p-6 border-b border-blue-100 bg-blue-600 rounded-t-lg">
+            <div className="flex items-center justify-between p-6 border-b border-emerald-100 bg-emerald-600 rounded-t-lg">
               {title && <h3 className="text-xl font-semibold text-white">{title}</h3>}
               {showCloseButton && (
                 <button
                   onClick={onClose}
-                  className="text-blue-100 hover:text-white transition-colors p-1 rounded-lg hover:bg-blue-700"
+                  className="text-emerald-100 hover:text-white transition-colors p-1 rounded-lg hover:bg-emerald-700"
                 >
                   <X className="h-6 w-6" />
                 </button>

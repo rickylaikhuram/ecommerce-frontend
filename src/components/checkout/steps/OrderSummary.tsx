@@ -78,10 +78,10 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
   return (
     <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
       {/* Header with status indicator */}
-      <div className={`px-4 py-3 ${hasInvalidItems ? 'bg-red-600' : 'bg-blue-600'} text-white`}>
+      <div className={`px-4 py-3 ${hasInvalidItems ? 'bg-red-600' : 'bg-emerald-600'} text-white`}>
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <span className="flex items-center justify-center w-7 h-7 bg-white bg-opacity-20 text-blue-600 rounded-full text-sm font-semibold">
+            <span className="flex items-center justify-center w-7 h-7 bg-white bg-opacity-20 text-emerald-600 rounded-full text-sm font-semibold">
               3
             </span>
             <h3 className="text-sm font-medium uppercase tracking-wide">
@@ -91,7 +91,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
               <AlertTriangle className="w-4 h-4 text-yellow-300" />
             )}
           </div>
-          <div className="flex items-center space-x-1.5 bg-white bg-opacity-20 hover:bg-opacity-30 text-blue-600 font-medium text-sm px-2 py-1.5 rounded-md border border-white border-opacity-30">
+          <div className="flex items-center space-x-1.5 bg-white bg-opacity-20 hover:bg-opacity-30 text-emerald-600 font-medium text-sm px-2 py-1.5 rounded-md border border-white border-opacity-30">
             <ShoppingBag className="h-4 w-4" />
             <span className="text-sm font-medium">{totalItems} items</span>
           </div>
@@ -146,7 +146,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
                       </div>
                     )}
                     {item.cartDetails.quantity > 1 && (
-                      <span className="absolute -top-1 -right-1 bg-blue-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-medium">
+                      <span className="absolute -top-1 -right-1 bg-emerald-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-medium">
                         {item.cartDetails.quantity}
                       </span>
                     )}
@@ -237,7 +237,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
                         </div>
                       )}
                       {item.cartDetails.quantity > 1 && (
-                        <span className="absolute -top-1 -right-1 bg-blue-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-medium">
+                        <span className="absolute -top-1 -right-1 bg-emerald-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-medium">
                           {item.cartDetails.quantity}
                         </span>
                       )}
@@ -289,7 +289,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
         <div className="mt-4 pt-3 border-t border-gray-100">
           <button
             onClick={onViewDetails}
-            className="w-full flex items-center justify-center space-x-2 text-blue-600 hover:text-blue-700 font-medium py-2 px-4 rounded hover:bg-blue-50 transition-colors text-sm"
+            className="w-full flex items-center justify-center space-x-2 text-emerald-600 hover:text-emerald-700 font-medium py-2 px-4 rounded hover:bg-emerald-50 transition-colors text-sm"
           >
             <Eye className="h-4 w-4" />
             <span>

@@ -40,12 +40,12 @@ const AddressSection: React.FC<AddressSectionProps> = ({
   const getAddressIcon = (label?: string) => {
     switch (label?.toLowerCase()) {
       case "home":
-        return <Home className="h-3 w-3 text-blue-600" />;
+        return <Home className="h-3 w-3 text-emerald-600" />;
       case "office":
       case "work":
-        return <Briefcase className="h-3 w-3 text-blue-600" />;
+        return <Briefcase className="h-3 w-3 text-emerald-600" />;
       default:
-        return <Building2 className="h-3 w-3 text-blue-600" />;
+        return <Building2 className="h-3 w-3 text-emerald-600" />;
     }
   };
 
@@ -57,7 +57,7 @@ const AddressSection: React.FC<AddressSectionProps> = ({
       case "work":
         return "bg-purple-100 text-purple-700";
       default:
-        return "bg-blue-100 text-blue-700";
+        return "bg-emerald-100 text-emerald-700";
     }
   };
 
@@ -147,9 +147,9 @@ const AddressSection: React.FC<AddressSectionProps> = ({
   if (isLoading) {
     return (
       <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-        <div className="bg-blue-600 text-white px-4 py-3">
+        <div className="bg-emerald-600 text-white px-4 py-3">
           <div className="flex items-center space-x-3">
-            <span className="flex items-center justify-center w-7 h-7 bg-white text-blue-600 rounded-full text-sm font-bold">
+            <span className="flex items-center justify-center w-7 h-7 bg-white text-emerald-600 rounded-full text-sm font-bold">
               2
             </span>
             <h3 className="text-sm font-medium uppercase tracking-wide">
@@ -170,10 +170,10 @@ const AddressSection: React.FC<AddressSectionProps> = ({
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-      {/* Blue Header */}
-      <div className="bg-blue-600 text-white px-4 py-3">
+      {/* emerald Header */}
+      <div className="bg-emerald-600 text-white px-4 py-3">
         <div className="flex items-center space-x-3">
-          <span className="flex items-center justify-center w-7 h-7 bg-white text-blue-600 rounded-full text-sm font-bold">
+          <span className="flex items-center justify-center w-7 h-7 bg-white text-emerald-600 rounded-full text-sm font-bold">
             2
           </span>
           <h3 className="text-sm font-medium uppercase tracking-wide">
@@ -210,8 +210,8 @@ const AddressSection: React.FC<AddressSectionProps> = ({
             {/* Check if there are any addresses */}
             {addresses.length === 0 ? (
               <div className="text-center py-8">
-                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <MapPin className="h-8 w-8 text-blue-600" />
+                <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <MapPin className="h-8 w-8 text-emerald-600" />
                 </div>
                 <h4 className="text-lg font-semibold text-gray-900 mb-2">
                   No addresses found
@@ -222,7 +222,7 @@ const AddressSection: React.FC<AddressSectionProps> = ({
                 <button
                   onClick={handleAddNewAddress}
                   disabled={isSaving}
-                  className="inline-flex items-center space-x-2 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 font-medium transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="inline-flex items-center space-x-2 bg-emerald-600 text-white px-6 py-2 rounded-lg hover:bg-emerald-700 font-medium transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Plus className="h-4 w-4" />
                   <span>Add Your First Address</span>
@@ -239,8 +239,8 @@ const AddressSection: React.FC<AddressSectionProps> = ({
                         key={address.id}
                         className={`relative p-3 border rounded-lg cursor-pointer transition-all duration-200 ${
                           selectedAddress?.id === address.id
-                            ? "border-blue-500 bg-blue-50 shadow-sm"
-                            : "border-gray-200 hover:border-blue-300 hover:bg-gray-50"
+                            ? "border-emerald-500 bg-emerald-50 shadow-sm"
+                            : "border-gray-200 hover:border-emerald-300 hover:bg-gray-50"
                         } ${isSaving ? "opacity-50 pointer-events-none" : ""}`}
                         onClick={() => !isSaving && onSelectAddress(address)}
                       >
@@ -255,7 +255,7 @@ const AddressSection: React.FC<AddressSectionProps> = ({
                           <input
                             type="radio"
                             checked={selectedAddress?.id === address.id}
-                            className="mt-1 text-blue-600"
+                            className="mt-1 text-emerald-600"
                             onChange={() => !isSaving && onSelectAddress(address)}
                             disabled={isSaving}
                           />
@@ -281,7 +281,7 @@ const AddressSection: React.FC<AddressSectionProps> = ({
                               )}
                             </div>
 
-                            <div className="flex items-center space-x-2 mb-1 text-blue-600">
+                            <div className="flex items-center space-x-2 mb-1 text-emerald-600">
                               <Phone className="h-3 w-3" />
                               <span className="text-xs font-medium">
                                 {address.phone}
@@ -310,7 +310,7 @@ const AddressSection: React.FC<AddressSectionProps> = ({
                               if (!isSaving) handleEditClick(address);
                             }}
                             disabled={isSaving}
-                            className="flex items-center space-x-1 text-blue-600 hover:text-blue-700 text-xs bg-white px-2 py-1 rounded border hover:shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="flex items-center space-x-1 text-emerald-600 hover:text-emerald-700 text-xs bg-white px-2 py-1 rounded border hover:shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             <Edit3 className="h-3 w-3" />
                             <span>EDIT</span>
@@ -324,7 +324,7 @@ const AddressSection: React.FC<AddressSectionProps> = ({
                   <button
                     onClick={() => setShowAllAddresses(!showAllAddresses)}
                     disabled={isSaving}
-                    className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 mt-3 font-medium hover:underline transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex items-center space-x-2 text-emerald-600 hover:text-emerald-700 mt-3 font-medium hover:underline transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {showAllAddresses ? (
                       <>
@@ -344,7 +344,7 @@ const AddressSection: React.FC<AddressSectionProps> = ({
                   <button
                     onClick={handleAddNewAddress}
                     disabled={isSaving}
-                    className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 font-medium hover:underline transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex items-center space-x-2 text-emerald-600 hover:text-emerald-700 font-medium hover:underline transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <Plus className="h-4 w-4" />
                     <span>Add a new address</span>

@@ -31,7 +31,7 @@ const CategoryList: React.FC<CategoryListProps> = ({
               onClick={() => handleCategoryChange(category.name)}
               className={`flex-1 text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                 selectedCategory === category.name
-                  ? "bg-blue-50 text-blue-700"
+                  ? "bg-emerald-50 text-emerald-700"
                   : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
               }`}
             >
@@ -56,7 +56,7 @@ const CategoryList: React.FC<CategoryListProps> = ({
                   onClick={() => handleCategoryChange(child.name)}
                   className={`block w-full text-left px-3 py-1 rounded-lg text-sm transition-colors ${
                     selectedCategory === child.name
-                      ? "bg-blue-50 text-blue-700"
+                      ? "bg-emerald-50 text-emerald-700"
                       : "text-gray-500 hover:text-gray-800 hover:bg-gray-50"
                   }`}
                 >

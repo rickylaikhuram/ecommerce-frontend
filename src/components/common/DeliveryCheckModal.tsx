@@ -158,7 +158,7 @@ const DeliveryCheckModal: React.FC<DeliveryCheckModalProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b">
           <div className="flex items-center space-x-2">
-            <MapPin className="w-5 h-5 text-blue-600" />
+            <MapPin className="w-5 h-5 text-emerald-600" />
             <h2 className="text-lg font-semibold text-gray-900">
               Check Delivery
             </h2>
@@ -185,7 +185,7 @@ const DeliveryCheckModal: React.FC<DeliveryCheckModalProps> = ({
                 onChange={handlePincodeChange}
                 onKeyPress={handleKeyPress}
                 placeholder="e.g., 110001"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                 maxLength={6}
               />
               <p className="text-xs text-gray-500 mt-1">
@@ -224,8 +224,8 @@ const DeliveryCheckModal: React.FC<DeliveryCheckModalProps> = ({
                        deliverySetting?.freeDeliveryThreshold && 
                        checkResult.deliveryFee && 
                        checkResult.deliveryFee > 0 && (
-                        <div className="bg-blue-50 border border-blue-200 rounded-md p-2 mt-2">
-                          <p className="text-xs text-blue-800 font-medium">
+                        <div className="bg-emerald-50 border border-emerald-200 rounded-md p-2 mt-2">
+                          <p className="text-xs text-emerald-800 font-medium">
                             💡 Get FREE delivery on orders above ₹{deliverySetting.freeDeliveryThreshold}
                           </p>
                         </div>
@@ -243,7 +243,7 @@ const DeliveryCheckModal: React.FC<DeliveryCheckModalProps> = ({
                   type="button"
                   onClick={checkDelivery}
                   disabled={pincode.length !== 6 || isChecking}
-                  className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                  className="flex-1 bg-emerald-600 text-white py-2 px-4 rounded-md hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
                 >
                   {isChecking ? 'Checking...' : 'Check Delivery'}
                 </button>

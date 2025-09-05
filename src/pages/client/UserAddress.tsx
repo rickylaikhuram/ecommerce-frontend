@@ -179,7 +179,7 @@ const Addresses: React.FC = () => {
         <div className="max-w-4xl mx-auto px-4">
           <h1 className="text-2xl font-semibold mb-6">Manage Addresses</h1>
           <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
           </div>
         </div>
       </div>
@@ -195,7 +195,7 @@ const Addresses: React.FC = () => {
         {!showAddForm && (
           <button
             onClick={() => setShowAddForm(true)}
-            className="w-full mb-6 py-4 border-2 border-dashed border-blue-500 rounded-lg flex items-center justify-center space-x-2 text-blue-600 hover:bg-blue-50 transition-colors"
+            className="w-full mb-6 py-4 border-2 border-dashed border-emerald-500 rounded-lg flex items-center justify-center space-x-2 text-emerald-600 hover:bg-emerald-50 transition-colors"
           >
             <Plus className="h-5 w-5" />
             <span className="font-medium uppercase">Add a New Address</span>
@@ -316,7 +316,7 @@ const Addresses: React.FC = () => {
               <p className="text-gray-500 mb-4">No addresses saved yet</p>
               <button
                 onClick={() => setShowAddForm(true)}
-                className="text-blue-600 hover:text-blue-700 font-medium"
+                className="text-emerald-600 hover:text-emerald-700 font-medium"
               >
                 Add your first address
               </button>

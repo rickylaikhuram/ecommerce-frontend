@@ -1,7 +1,7 @@
 // components/checkout/PaymentOptions.tsx
 import React, { useState } from "react";
 import {
-  CreditCard,
+  // CreditCard,
   Smartphone,
   Package,
   Shield,
@@ -32,17 +32,17 @@ const PaymentOptions: React.FC<PaymentOptionsProps> = ({
   const [selectedMethod, setSelectedMethod] = useState<string>("");
 
   const paymentMethods = [
-    {
-      id: "card",
-      name: "Credit/Debit Card",
-      icon: CreditCard,
-      description: "Visa, Mastercard, Rupay accepted",
-      popular: true,
-      secure: true,
-      buttonText: "Pay Now",
-      buttonIcon: CreditCard,
-      loadingText: "Processing Payment...",
-    },
+    // {
+    //   id: "card",
+    //   name: "Credit/Debit Card",
+    //   icon: CreditCard,
+    //   description: "Visa, Mastercard, Rupay accepted",
+    //   popular: true,
+    //   secure: true,
+    //   buttonText: "Pay Now",
+    //   buttonIcon: CreditCard,
+    //   loadingText: "Processing Payment...",
+    // },
     {
       id: "upi",
       name: "UPI Payment",
@@ -61,7 +61,7 @@ const PaymentOptions: React.FC<PaymentOptionsProps> = ({
       description: "Pay when you receive",
       popular: false,
       secure: false,
-      fee: "₹40",
+      // fee: "₹40",
       buttonText: "Place Order",
       buttonIcon: ShoppingBag,
       loadingText: "Placing Order...",
@@ -92,11 +92,11 @@ const PaymentOptions: React.FC<PaymentOptionsProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-lg border border-blue-100">
-      <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-4 rounded-t-xl">
+    <div className="bg-white rounded-xl shadow-lg border border-emerald-100">
+      <div className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white p-4 rounded-t-xl">
         <div className="flex items-center space-x-3">
           <div className="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-            <span className="text-sm text-blue-600 font-bold">4</span>
+            <span className="text-sm text-emerald-600 font-bold">4</span>
           </div>
           <h2 className="text-xl font-semibold">Payment Method</h2>
         </div>
@@ -129,8 +129,8 @@ const PaymentOptions: React.FC<PaymentOptionsProps> = ({
                   isDisabled
                     ? "border-gray-200 bg-gray-50 opacity-60"
                     : isSelected
-                    ? "border-blue-400 bg-gradient-to-r from-blue-50 to-blue-100 shadow-md"
-                    : "border-gray-200 hover:border-blue-200 bg-white hover:bg-blue-50 hover:shadow-sm cursor-pointer"
+                    ? "border-emerald-400 bg-gradient-to-r from-emerald-50 to-emerald-100 shadow-md"
+                    : "border-gray-200 hover:border-emerald-200 bg-white hover:bg-emerald-50 hover:shadow-sm cursor-pointer"
                 } ${isProcessing && !isSelected ? "pointer-events-none" : ""}`}
               >
                 {method.popular && !isDisabled && (
@@ -150,7 +150,7 @@ const PaymentOptions: React.FC<PaymentOptionsProps> = ({
                     onChange={() => handleSelectMethod(method.id)}
                     disabled={isProcessing}
                     className={`scale-125 ${
-                      isDisabled ? "text-gray-400" : "text-blue-600"
+                      isDisabled ? "text-gray-400" : "text-emerald-600"
                     }`}
                     style={{ pointerEvents: "none" }}
                   />
@@ -160,7 +160,7 @@ const PaymentOptions: React.FC<PaymentOptionsProps> = ({
                       isDisabled
                         ? "bg-gray-200"
                         : isSelected
-                        ? "bg-blue-200"
+                        ? "bg-emerald-200"
                         : "bg-gray-100"
                     }`}
                   >
@@ -169,7 +169,7 @@ const PaymentOptions: React.FC<PaymentOptionsProps> = ({
                         isDisabled
                           ? "text-gray-400"
                           : isSelected
-                          ? "text-blue-700"
+                          ? "text-emerald-700"
                           : "text-gray-600"
                       }`}
                     />
@@ -182,7 +182,7 @@ const PaymentOptions: React.FC<PaymentOptionsProps> = ({
                           isDisabled
                             ? "text-gray-400"
                             : isSelected
-                            ? "text-blue-900"
+                            ? "text-emerald-900"
                             : "text-gray-900"
                         }`}
                       >
@@ -195,22 +195,13 @@ const PaymentOptions: React.FC<PaymentOptionsProps> = ({
                           }`}
                         />
                       )}
-                      {method.fee && (
-                        <span
-                          className={`text-sm font-medium ${
-                            isDisabled ? "text-gray-400" : "text-orange-600"
-                          }`}
-                        >
-                          + {method.fee}
-                        </span>
-                      )}
                     </div>
                     <p
                       className={`text-sm ${
                         isDisabled
                           ? "text-gray-400"
                           : isSelected
-                          ? "text-blue-700"
+                          ? "text-emerald-700"
                           : "text-gray-600"
                       }`}
                     >
@@ -233,7 +224,7 @@ const PaymentOptions: React.FC<PaymentOptionsProps> = ({
                             : isProcessing
                             ? "bg-gray-300 cursor-not-allowed text-gray-500"
                             : method.id === "card"
-                            ? "bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
+                            ? "bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer"
                             : method.id === "upi"
                             ? "bg-purple-600 hover:bg-purple-700 text-white cursor-pointer"
                             : "bg-orange-600 hover:bg-orange-700 text-white cursor-pointer"
@@ -257,14 +248,14 @@ const PaymentOptions: React.FC<PaymentOptionsProps> = ({
 
                 {/* Additional info for selected method */}
                 {isSelected && !isDisabled && (
-                  <div className="mt-4 pt-4 border-t border-blue-200">
+                  <div className="mt-4 pt-4 border-t border-emerald-200">
                     {method.id === "card" && (
-                      <div className="bg-white rounded-lg p-4 border border-blue-200">
+                      <div className="bg-white rounded-lg p-4 border border-emerald-200">
                         <p className="text-sm text-gray-700 mb-2">
                           <strong>Accepted Cards:</strong>
                         </p>
                         <div className="flex space-x-2">
-                          <div className="w-8 h-6 bg-blue-600 rounded text-white text-xs flex items-center justify-center font-bold">
+                          <div className="w-8 h-6 bg-emerald-600 rounded text-white text-xs flex items-center justify-center font-bold">
                             VISA
                           </div>
                           <div className="w-8 h-6 bg-red-500 rounded text-white text-xs flex items-center justify-center font-bold">
@@ -278,7 +269,7 @@ const PaymentOptions: React.FC<PaymentOptionsProps> = ({
                     )}
 
                     {method.id === "upi" && (
-                      <div className="bg-white rounded-lg p-4 border border-blue-200">
+                      <div className="bg-white rounded-lg p-4 border border-emerald-200">
                         <p className="text-sm text-gray-700 mb-2">
                           <strong>Popular UPI Apps:</strong>
                         </p>
@@ -286,7 +277,7 @@ const PaymentOptions: React.FC<PaymentOptionsProps> = ({
                           <div className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded">
                             PhonePe
                           </div>
-                          <div className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
+                          <div className="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded">
                             Google Pay
                           </div>
                           <div className="text-xs bg-cyan-100 text-cyan-700 px-2 py-1 rounded">
@@ -305,9 +296,6 @@ const PaymentOptions: React.FC<PaymentOptionsProps> = ({
                             </span>
                           </div>
                           <div>
-                            <p className="text-sm text-orange-800 font-medium">
-                              Additional ₹40 fee applies
-                            </p>
                             <p className="text-xs text-orange-700 mt-1">
                               Please have exact change ready for the delivery
                               person

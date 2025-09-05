@@ -146,14 +146,14 @@ const ProductListCard: React.FC<ProductListCardProps> = ({
           <div className="flex-1 p-6 flex flex-col justify-between">
             <div>
               {product.category && (
-                <p className="text-sm text-blue-600 font-medium uppercase tracking-wider mb-2">
+                <p className="text-sm text-emerald-600 font-medium uppercase tracking-wider mb-2">
                   {product.category.name}
                 </p>
               )}
 
               <h3
                 className={`font-bold text-lg text-gray-900 mb-2 line-clamp-2 transition-colors duration-200 ${
-                  isHovered ? "text-blue-600" : ""
+                  isHovered ? "text-emerald-600" : ""
                 }`}
               >
                 {product.name}

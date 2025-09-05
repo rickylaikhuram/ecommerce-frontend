@@ -21,7 +21,7 @@ const Loading: React.FC<LoadingProps> = ({
         {/* Animated Shopping Bag */}
         <div className="relative w-24 h-24 mx-auto mb-8">
           <div className="absolute inset-0 flex items-center justify-center">
-            <ShoppingBag className="w-16 h-16 text-blue-600 animate-bounce" />
+            <ShoppingBag className="w-16 h-16 text-emerald-600 animate-bounce" />
           </div>
         </div>
 
@@ -31,15 +31,15 @@ const Loading: React.FC<LoadingProps> = ({
         {/* Animated dots */}
         <div className="flex justify-center gap-1">
           <span
-            className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"
+            className="w-2 h-2 bg-emerald-600 rounded-full animate-bounce"
             style={{ animationDelay: "0ms" }}
           ></span>
           <span
-            className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"
+            className="w-2 h-2 bg-emerald-600 rounded-full animate-bounce"
             style={{ animationDelay: "150ms" }}
           ></span>
           <span
-            className="w-2 h-2 bg-blue-600 rounded-full animate-bounce"
+            className="w-2 h-2 bg-emerald-600 rounded-full animate-bounce"
             style={{ animationDelay: "300ms" }}
           ></span>
         </div>

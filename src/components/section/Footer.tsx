@@ -34,7 +34,7 @@ const Footer = () => {
             <div className="flex space-x-2 sm:space-x-3">
               <Link
                 to="#"
-                className="group relative p-2 sm:p-2.5 bg-white/70 backdrop-blur-sm rounded-lg border border-blue-100 hover:bg-emerald-50 hover:border-emerald-200 transition-all duration-300 shadow-sm hover:shadow-md"
+                className="group relative p-2 sm:p-2.5 bg-white/70 backdrop-blur-sm rounded-lg border border-emerald-100 hover:bg-emerald-50 hover:border-emerald-200 transition-all duration-300 shadow-sm hover:shadow-md"
               >
                 <FaFacebookF className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 group-hover:text-emerald-600 transition-colors" />
               </Link>
@@ -46,7 +46,7 @@ const Footer = () => {
               </Link>
               <Link
                 to="#"
-                className="group relative p-2 sm:p-2.5 bg-white/70 backdrop-blur-sm rounded-lg border border-blue-100 hover:bg-emerald-50 hover:border-emerald-200 transition-all duration-300 shadow-sm hover:shadow-md"
+                className="group relative p-2 sm:p-2.5 bg-white/70 backdrop-blur-sm rounded-lg border border-emerald-100 hover:bg-emerald-50 hover:border-emerald-200 transition-all duration-300 shadow-sm hover:shadow-md"
               >
                 <FaInstagram className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 group-hover:text-emerald-600 transition-colors" />
               </Link>
@@ -78,7 +78,7 @@ const Footer = () => {
                       className={`w-1.5 h-1.5 ${
                         index === 2
                           ? "bg-gradient-to-r from-emerald-400 to-green-400"
-                          : "bg-gradient-to-r from-blue-400 to-cyan-400"
+                          : "bg-gradient-to-r from-emerald-400 to-cyan-400"
                       } rounded-full mr-2 sm:mr-3 group-hover:scale-150 transition-transform flex-shrink-0`}
                     ></span>
                     <span className="break-words">{item.name}</span>
@@ -91,7 +91,7 @@ const Footer = () => {
           {/* Customer Service - 2nd column on mobile */}
           <div className="space-y-4">
             <h3 className="text-base sm:text-lg font-semibold text-gray-800 flex items-center">
-              <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500 mr-1 flex-shrink-0" />
+              <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-500 mr-1 flex-shrink-0" />
               Customer Service
             </h3>
             <ul className="space-y-2 sm:space-y-3 ml-5 sm:ml-6">
@@ -105,13 +105,13 @@ const Footer = () => {
                 <li key={item}>
                   <Link
                     to="#"
-                    className="group text-gray-600 hover:text-blue-600 transition-all duration-200 text-sm flex items-center"
+                    className="group text-gray-600 hover:text-emerald-600 transition-all duration-200 text-sm flex items-center"
                   >
                     <span
                       className={`w-1.5 h-1.5 ${
                         index === 1
                           ? "bg-gradient-to-r from-emerald-400 to-green-400"
-                          : "bg-gradient-to-r from-blue-400 to-cyan-400"
+                          : "bg-gradient-to-r from-emerald-400 to-cyan-400"
                       } rounded-full mr-2 sm:mr-3 group-hover:scale-150 transition-transform flex-shrink-0`}
                     ></span>
                     <span className="break-words">{item}</span>
@@ -124,7 +124,7 @@ const Footer = () => {
           {/* Contact Info & Newsletter - Full width below on mobile */}
           <div className="col-span-2 md:col-span-1 space-y-4">
             <h3 className="text-base sm:text-lg font-semibold text-gray-800 flex items-center">
-              <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500 mr-1 flex-shrink-0" />
+              <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-500 mr-1 flex-shrink-0" />
               Get in Touch
             </h3>
             <div className="space-y-3">
@@ -157,7 +157,7 @@ const Footer = () => {
         </div>
 
         {/* Bottom Section - Added green accent */}
-        <div className="border-t border-blue-100 pt-6 sm:pt-8">
+        <div className="border-t border-emerald-100 pt-6 sm:pt-8">
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
             <div className="flex items-center space-x-1 sm:space-x-2 text-gray-600 text-xs sm:text-sm">
               <span>© {currentYear} Keithel. Made with</span>
@@ -175,10 +175,10 @@ const Footer = () => {
               </Link>
               <Link
                 to="#"
-                className="text-gray-600 hover:text-blue-600 transition-colors duration-200 text-xs sm:text-sm relative group"
+                className="text-gray-600 hover:text-emerald-600 transition-colors duration-200 text-xs sm:text-sm relative group"
               >
                 Terms of Service
-                <span className="absolute -bottom-0.5 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-cyan-400 group-hover:w-full transition-all duration-300"></span>
+                <span className="absolute -bottom-0.5 left-0 w-0 h-0.5 bg-gradient-to-r from-emerald-400 to-cyan-400 group-hover:w-full transition-all duration-300"></span>
               </Link>
               <Link
                 to="#"

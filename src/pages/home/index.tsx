@@ -228,7 +228,7 @@ const Home: React.FC = () => {
         title="Featured Products"
         fetcher={() => productService.getTrendingProducts(8)}
         onProductClick={handleProductClick}
-        sectionClassName="bg-gradient-to-r from-blue-50 to-purple-50"
+        sectionClassName="bg-gradient-to-r from-emerald-50 to-purple-50"
         containerClassName="container mx-auto px-4 py-12"
         cardCount={4}
       />

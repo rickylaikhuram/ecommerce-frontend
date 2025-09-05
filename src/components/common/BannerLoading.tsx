@@ -36,7 +36,7 @@ const BannerLoading = () => {
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="bg-white bg-opacity-90 px-4 py-2 rounded-lg shadow-sm">
             <div className="flex items-center space-x-2">
-              <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+              <div className="w-5 h-5 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
               <span className="text-gray-600 text-sm md:text-base">Loading banners...</span>
             </div>
           </div>

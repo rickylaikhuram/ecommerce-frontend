@@ -23,9 +23,9 @@ const ErrorAlert: React.FC<ErrorAlertProps> = ({
         };
       case "info":
         return {
-          container: "bg-blue-50 border-l-4 border-blue-400",
-          icon: "text-blue-400",
-          text: "text-blue-800"
+          container: "bg-emerald-50 border-l-4 border-emerald-400",
+          icon: "text-emerald-400",
+          text: "text-emerald-800"
         };
       default:
         return {

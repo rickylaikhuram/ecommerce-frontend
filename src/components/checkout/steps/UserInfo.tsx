@@ -18,11 +18,11 @@ const UserInfo: React.FC<UserInfoProps> = ({ user, onChangeClick }) => {
   const isGuest = !user;
 
   return (
-    <div className="bg-white rounded-xl shadow-lg p-6 border border-blue-100">
+    <div className="bg-white rounded-xl shadow-lg p-6 border border-emerald-100">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <div className="relative">
-            <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
+            <div className="w-16 h-16 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full flex items-center justify-center">
               <UserCircle className="h-10 w-10 text-white" />
             </div>
             {user && (
@@ -42,7 +42,7 @@ const UserInfo: React.FC<UserInfoProps> = ({ user, onChangeClick }) => {
             <div className="space-y-2">
               {user?.phone && (
                 <div className="flex items-center space-x-2 text-gray-600">
-                  <Phone className="h-4 w-4 text-blue-600" />
+                  <Phone className="h-4 w-4 text-emerald-600" />
                   <span className="font-medium">{user.phone}</span>
                   <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
                     Verified
@@ -52,7 +52,7 @@ const UserInfo: React.FC<UserInfoProps> = ({ user, onChangeClick }) => {
 
               {user?.email && (
                 <div className="flex items-center space-x-2 text-gray-600">
-                  <Mail className="h-4 w-4 text-blue-600" />
+                  <Mail className="h-4 w-4 text-emerald-600" />
                   <span className="text-sm">{user.email}</span>
                 </div>
               )}
@@ -83,7 +83,7 @@ const UserInfo: React.FC<UserInfoProps> = ({ user, onChangeClick }) => {
 
         <button
           onClick={onChangeClick}
-          className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 font-semibold transition-all duration-200 bg-blue-50 hover:bg-blue-100 px-4 py-2 rounded-lg border border-blue-200 hover:border-blue-300"
+          className="flex items-center space-x-2 text-emerald-600 hover:text-emerald-700 font-semibold transition-all duration-200 bg-emerald-50 hover:bg-emerald-100 px-4 py-2 rounded-lg border border-emerald-200 hover:border-emerald-300"
         >
           <LogOut className="h-4 w-4" />
           <span>{isGuest ? "LOGIN" : "LOGOUT"}</span>

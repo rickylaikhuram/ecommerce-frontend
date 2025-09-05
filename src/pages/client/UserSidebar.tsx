@@ -74,7 +74,7 @@ const UserSidebar: React.FC = () => {
             to={item.path}
             className={`flex items-center justify-between px-4 py-3 rounded-lg transition-all duration-200 group ${
               location.pathname === item.path
-                ? "bg-blue-50 text-blue-600 border-l-4 border-blue-600"
+                ? "bg-emerald-50 text-emerald-600 border-l-4 border-emerald-600"
                 : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
             }`}
           >

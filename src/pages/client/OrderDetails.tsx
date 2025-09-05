@@ -113,7 +113,7 @@ const OrderDetails: React.FC = () => {
       case "PENDING":
         return `${baseClass} bg-yellow-100 text-yellow-800`;
       case "PROCESSING":
-        return `${baseClass} bg-blue-100 text-blue-800`;
+        return `${baseClass} bg-emerald-100 text-emerald-800`;
       case "SHIPPED":
         return `${baseClass} bg-purple-100 text-purple-800`;
       case "DELIVERED":
@@ -172,7 +172,7 @@ const OrderDetails: React.FC = () => {
             </p>
             <button
               onClick={handleBackToOrders}
-              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              className="px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
             >
               Back to Orders
             </button>
@@ -206,7 +206,7 @@ const OrderDetails: React.FC = () => {
             </svg>
             Back to Orders
           </button>
-          <button className="flex items-center px-4 py-2 text-blue-600 border border-blue-300 rounded-lg hover:bg-blue-50 transition-colors">
+          <button className="flex items-center px-4 py-2 text-emerald-600 border border-emerald-300 rounded-lg hover:bg-emerald-50 transition-colors">
             <svg
               className="w-4 h-4 mr-2"
               fill="none"

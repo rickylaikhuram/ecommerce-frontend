@@ -350,7 +350,7 @@ const AccountDetails: React.FC = () => {
             <p className="text-gray-600 text-lg">Unable to load user data</p>
             <button 
               onClick={fetchUserData}
-              className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              className="mt-4 px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
             >
               Retry
             </button>
@@ -383,7 +383,7 @@ const AccountDetails: React.FC = () => {
             {!editing.personalInfo && (
               <button
                 onClick={() => handleEdit("personalInfo")}
-                className="text-blue-600 hover:text-blue-700 font-medium text-sm transition-colors"
+                className="text-emerald-600 hover:text-emerald-700 font-medium text-sm transition-colors"
               >
                 Edit
               </button>
@@ -405,7 +405,7 @@ const AccountDetails: React.FC = () => {
                 readOnly={!editing.personalInfo}
                 className={`w-full px-4 py-3 border rounded-lg focus:outline-none transition-colors ${
                   editing.personalInfo
-                    ? "border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    ? "border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                     : "bg-gray-50 border-gray-200 cursor-not-allowed"
                 } ${errors.Fullname ? "border-red-500 focus:ring-red-500" : ""}`}
                 placeholder="Enter your full name"
@@ -431,7 +431,7 @@ const AccountDetails: React.FC = () => {
                 <button
                   onClick={() => handleSave("personalInfo")}
                   disabled={saving === "personalInfo"}
-                  className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="px-6 py-2 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   {saving === "personalInfo" ? (
                     <span className="flex items-center">
@@ -462,7 +462,7 @@ const AccountDetails: React.FC = () => {
             {!editing.email && (
               <button
                 onClick={() => handleEdit("email")}
-                className="text-blue-600 hover:text-blue-700 font-medium text-sm transition-colors"
+                className="text-emerald-600 hover:text-emerald-700 font-medium text-sm transition-colors"
               >
                 Edit
               </button>
@@ -484,7 +484,7 @@ const AccountDetails: React.FC = () => {
                 readOnly={!editing.email}
                 className={`w-full px-4 py-3 border rounded-lg focus:outline-none transition-colors ${
                   editing.email
-                    ? "border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    ? "border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                     : "bg-gray-50 border-gray-200 cursor-not-allowed"
                 } ${errors.email ? "border-red-500 focus:ring-red-500" : ""}`}
                 placeholder="Enter your email address"
@@ -501,13 +501,13 @@ const AccountDetails: React.FC = () => {
 
             {/* OTP Section for Email */}
             {otpState.email.show && (
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
                 <div className="flex items-center mb-3">
-                  <svg className="w-5 h-5 text-blue-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <svg className="w-5 h-5 text-emerald-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
                     <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
                   </svg>
-                  <span className="text-sm font-medium text-blue-800">
+                  <span className="text-sm font-medium text-emerald-800">
                     Enter 6-digit OTP sent to your phone
                   </span>
                 </div>
@@ -545,13 +545,13 @@ const AccountDetails: React.FC = () => {
                           }
                         }
                       }}
-                      className="w-12 h-12 text-center border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg font-medium"
+                      className="w-12 h-12 text-center border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-lg font-medium"
                     />
                   ))}
                 </div>
                 
                 {otpState.email.countdown > 0 && (
-                  <p className="text-sm text-blue-600 mb-2">
+                  <p className="text-sm text-emerald-600 mb-2">
                     OTP expires in: {formatTime(otpState.email.countdown)}
                   </p>
                 )}
@@ -578,7 +578,7 @@ const AccountDetails: React.FC = () => {
                 <button
                   onClick={() => handleSave("email")}
                   disabled={saving === "email" || otpState.email.loading}
-                  className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="px-6 py-2 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   {saving === "email" || otpState.email.loading ? (
                     <span className="flex items-center">
@@ -609,7 +609,7 @@ const AccountDetails: React.FC = () => {
             {!editing.phone && (
               <button
                 onClick={() => handleEdit("phone")}
-                className="text-blue-600 hover:text-blue-700 font-medium text-sm transition-colors"
+                className="text-emerald-600 hover:text-emerald-700 font-medium text-sm transition-colors"
               >
                 Edit
               </button>
@@ -631,7 +631,7 @@ const AccountDetails: React.FC = () => {
                 readOnly={!editing.phone}
                 className={`w-full px-4 py-3 border rounded-lg focus:outline-none transition-colors ${
                   editing.phone
-                    ? "border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    ? "border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                     : "bg-gray-50 border-gray-200 cursor-not-allowed"
                 } ${errors.phone ? "border-red-500 focus:ring-red-500" : ""}`}
                 placeholder="Enter your phone number"

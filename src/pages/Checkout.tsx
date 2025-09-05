@@ -281,7 +281,7 @@ const Checkout: React.FC = () => {
 
   if (isInitialLoading || deliveryStatus === "loading") {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-white flex items-center justify-center">
         <div className="text-gray-600">Loading checkout...</div>
       </div>
     );
@@ -609,7 +609,7 @@ const Checkout: React.FC = () => {
   const invalidItems = cartItems.filter((item) => !item.canProceedToCheckout);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-white">
       {/* Header */}
       <CheckoutHeader onBackClick={() => navigate("/cart")} />
       {/* Progress Bar */}

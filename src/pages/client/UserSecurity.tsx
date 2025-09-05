@@ -147,7 +147,7 @@ const Security: React.FC = () => {
                   setServerError(""); // Clear server errors when opening form
                 }
               }}
-              className="px-4 py-2 text-blue-600 border border-blue-600 rounded-lg hover:bg-blue-50 transition-colors w-full sm:w-auto"
+              className="px-4 py-2 text-emerald-600 border border-emerald-600 rounded-lg hover:bg-emerald-50 transition-colors w-full sm:w-auto"
             >
               {showPasswordForm ? "Cancel" : "Change Password"}
             </button>
@@ -204,7 +204,7 @@ const Security: React.FC = () => {
                     {...register("currentPassword", {
                       validate: validateCurrentPassword,
                     })}
-                    className={`w-full px-4 py-2 pr-10 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                    className={`w-full px-4 py-2 pr-10 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
                       errors.currentPassword ? "border-red-300" : "border-gray-300"
                     }`}
                     placeholder="Enter your current password"
@@ -235,7 +235,7 @@ const Security: React.FC = () => {
                     {...register("newPassword", {
                       validate: validateNewPassword,
                     })}
-                    className={`w-full px-4 py-2 pr-10 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                    className={`w-full px-4 py-2 pr-10 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
                       errors.newPassword ? "border-red-300" : "border-gray-300"
                     }`}
                     placeholder="Enter your new password"
@@ -292,7 +292,7 @@ const Security: React.FC = () => {
                     {...register("confirmPassword", {
                       validate: validateConfirmPassword,
                     })}
-                    className={`w-full px-4 py-2 pr-10 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                    className={`w-full px-4 py-2 pr-10 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
                       errors.confirmPassword ? "border-red-300" : "border-gray-300"
                     }`}
                     placeholder="Confirm your new password"
@@ -320,11 +320,11 @@ const Security: React.FC = () => {
               </div>
 
               {/* Password Requirements */}
-              <div className="bg-blue-50 p-3 rounded-lg">
-                <h4 className="text-sm font-medium text-blue-800 mb-2">
+              <div className="bg-emerald-50 p-3 rounded-lg">
+                <h4 className="text-sm font-medium text-emerald-800 mb-2">
                   Password Requirements:
                 </h4>
-                <ul className="text-xs text-blue-700 space-y-1">
+                <ul className="text-xs text-emerald-700 space-y-1">
                   <li className="flex items-center space-x-2">
                     <span className={`w-2 h-2 rounded-full ${newPassword && newPassword.length >= 6 ? 'bg-green-500' : 'bg-gray-300'}`} />
                     <span>At least 6 characters long</span>
@@ -357,10 +357,10 @@ const Security: React.FC = () => {
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className={`px-6 py-2 bg-blue-600 text-white rounded-lg transition-colors ${
+                  className={`px-6 py-2 bg-emerald-600 text-white rounded-lg transition-colors ${
                     isLoading 
                       ? "opacity-50 cursor-not-allowed" 
-                      : "hover:bg-blue-700"
+                      : "hover:bg-emerald-700"
                   }`}
                 >
                   {isLoading ? "Updating..." : "Update Password"}

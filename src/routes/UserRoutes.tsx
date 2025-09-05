@@ -17,12 +17,14 @@ import OrderDetails from "../pages/client/OrderDetails";
 import OrderConfirmation from "../pages/client/OrderConfirmation";
 import CategoryPage from "../pages/CategoryPage";
 
+
 const UserRoutes = (
   <Route element={<MainLayout />}>
     <Route path="/" element={<Home />} />
 
     {/* Account Routes - Nested properly */}
     <Route path="/account" element={<AccountLayout />}>
+      {/* Show account home/welcome message on desktop, sidebar menu on mobile */}
       <Route index element={<UserDetails />} />
       <Route path="profile" element={<UserDetails />} />
       <Route path="addresses" element={<UserAddress />} />

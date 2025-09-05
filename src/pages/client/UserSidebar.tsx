@@ -8,6 +8,7 @@ import {
   FaHeart,
   FaShieldAlt,
   FaSignOutAlt,
+  FaChevronRight,
 } from "react-icons/fa";
 import { useAppDispatch } from "../../redux/hook";
 import { logoutUser } from "../../redux/slice/auth";
@@ -21,6 +22,7 @@ interface SidebarItem {
 const UserSidebar: React.FC = () => {
   const dispatch = useAppDispatch();
   const location = useLocation();
+
   const handleLogout = async () => {
     try {
       await dispatch(logoutUser()).unwrap();
@@ -29,6 +31,7 @@ const UserSidebar: React.FC = () => {
       console.error("Logout failed:", error);
     }
   };
+
   const sidebarItems: SidebarItem[] = [
     {
       icon: <FaUser className="w-5 h-5" />,
@@ -58,7 +61,7 @@ const UserSidebar: React.FC = () => {
   ];
 
   return (
-    <div className="bg-white shadow-lg rounded-lg p-6 h-full">
+    <div className="bg-white shadow-lg rounded-lg p-6 ">
       <div className="mb-8">
         <h2 className="text-2xl font-bold text-gray-800 mb-2">My Account</h2>
         <p className="text-gray-600 text-sm">Manage your account settings</p>
@@ -69,14 +72,18 @@ const UserSidebar: React.FC = () => {
           <Link
             key={item.path}
             to={item.path}
-            className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 ${
+            className={`flex items-center justify-between px-4 py-3 rounded-lg transition-all duration-200 group ${
               location.pathname === item.path
                 ? "bg-blue-50 text-blue-600 border-l-4 border-blue-600"
                 : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
             }`}
           >
-            {item.icon}
-            <span className="font-medium">{item.label}</span>
+            <div className="flex items-center space-x-3">
+              {item.icon}
+              <span className="font-medium">{item.label}</span>
+            </div>
+            {/* Show chevron on mobile for better UX indication */}
+            <FaChevronRight className="w-4 h-4 md:hidden text-gray-400 group-hover:text-gray-600 transition-colors duration-200" />
           </Link>
         ))}
       </nav>

@@ -23,7 +23,7 @@ export const useHeaderState = () => {
 
   const isAuthenticated = user !== null && status === "succeeded";
   const isGuest = user?.role === "guest";
-  const profileHref = isGuest ? "/signin" : "/account/profile";
+  const profileHref = isGuest ? "/signin" : "/account";
   const profileLabel = isGuest ? "Sign in" : "Profile";
 
   // Fetch delivery settings on component mount

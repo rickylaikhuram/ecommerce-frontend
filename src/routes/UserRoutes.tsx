@@ -39,7 +39,8 @@ const UserRoutes = (
     <Route path="/products" element={<ProductsPage />} />
     <Route path="/search" element={<ProductsPage />} />
     <Route path="/categories" element={<CategoryPage />} />
-    <Route path="/products/:id" element={<ProductDetails />} />
+    <Route path="/products/:slug" element={<ProductDetails />} />
+    <Route path="/search/:slug" element={<ProductDetails />} />
     <Route path="/cart" element={<CartPage />} />
     <Route path="/wishlist" element={<Wishlist />} />
     <Route path="/checkout" element={<Checkout />} />

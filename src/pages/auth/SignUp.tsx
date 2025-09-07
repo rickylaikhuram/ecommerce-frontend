@@ -153,7 +153,7 @@ const SignUp = () => {
   // Show OTP verification screen
   if (showOTPScreen) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-50 via-sky-50 to-cyan-50 px-4 py-8">
+      <div className="flex items-center justify-center bg-gradient-to-br from-emerald-50 via-sky-50 to-cyan-50 px-4 py-8">
         <div className="w-full max-w-md">
           <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl shadow-emerald-100/50 p-8 sm:p-10 border border-white/50">
             <OTPVerification
@@ -170,7 +170,7 @@ const SignUp = () => {
     );
   }
   return (
-    <div className=" flex items-center justify-center bg-gradient-to-br from-emerald-50 via-sky-50 to-cyan-50 px-4 py-8">
+    <div className="flex items-center justify-center bg-gradient-to-br from-emerald-50 via-sky-50 to-cyan-50 px-4 py-8">
       <div className="w-full max-w-md">
         {/* Decorative element */}
         <div className="flex justify-center mb-8">

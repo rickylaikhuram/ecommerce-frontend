@@ -1,38 +1,41 @@
 // pages/Addresses.tsx
 import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Plus, MoreVertical, Edit2, Trash2, MapPin } from "lucide-react";
 import AddressForm from "../../components/common/AddressForm";
 import WarningModal from "../../components/common/WarningModal";
 import type { CreateAddressPayload } from "../../services/address.services";
-import addressService from "../../services/address.services";
-import type { Address } from "../../types/user.types"; // Update this import path based on your structure
+import type { Address } from "../../types/user.types";
+import type { RootState, AppDispatch } from "../../redux/store"; 
+import {
+  fetchAddresses,
+  createAddress,
+  updateAddress,
+  deleteAddress,
+  setDefaultAddress,
+} from "../../redux/slice/address";
 
 const Addresses: React.FC = () => {
-  const [addresses, setAddresses] = useState<Address[]>([]);
-  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch<AppDispatch>();
+  const { addresses, status, error } = useSelector(
+    (state: RootState) => state.address
+  );
+
+  // Local UI state
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingAddressId, setEditingAddressId] = useState<string | null>(null);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [addressToDelete, setAddressToDelete] = useState<Address | null>(null);
 
+  const loading = status === "loading";
+
   // Fetch addresses on component mount
   useEffect(() => {
-    fetchAddresses();
-  }, []);
-
-  const fetchAddresses = async () => {
-    try {
-      setLoading(true);
-      const fetchedAddresses = await addressService.getAddresses();
-      setAddresses(fetchedAddresses);
-    } catch (error) {
-      console.error("Failed to fetch addresses:", error);
-      // You might want to show a toast notification here
-    } finally {
-      setLoading(false);
+    if (status === "idle") {
+      dispatch(fetchAddresses());
     }
-  };
+  }, [dispatch, status]);
 
   const handleSaveAddress = async (
     data: Omit<Address, "id" | "userId" | "createdAt" | "updatedAt">
@@ -57,27 +60,12 @@ const Addresses: React.FC = () => {
           isDefault: data.isDefault,
         };
 
-        const updatedAddress = await addressService.updateAddress(
-          editingAddress.id,
-          payload
-        );
-
-        // If the updated address is set as default, update other addresses
-        if (updatedAddress.isDefault) {
-          setAddresses(
-            addresses.map((a) =>
-              a.id === updatedAddress.id
-                ? updatedAddress
-                : { ...a, isDefault: false }
-            )
-          );
-        } else {
-          setAddresses(
-            addresses.map((a) =>
-              a.id === updatedAddress.id ? updatedAddress : a
-            )
-          );
-        }
+        await dispatch(
+          updateAddress({
+            addressId: editingAddress.id,
+            data: payload,
+          })
+        ).unwrap();
 
         setEditingAddressId(null);
       } else {
@@ -97,18 +85,7 @@ const Addresses: React.FC = () => {
           isDefault: data.isDefault,
         };
 
-        const newAddress = await addressService.createAddress(payload);
-
-        // If the new address is set as default, update other addresses
-        if (newAddress.isDefault) {
-          setAddresses([
-            ...addresses.map((a) => ({ ...a, isDefault: false })),
-            newAddress,
-          ]);
-        } else {
-          setAddresses([...addresses, newAddress]);
-        }
-
+        await dispatch(createAddress(payload)).unwrap();
         setShowAddForm(false);
       }
     } catch (error) {
@@ -121,8 +98,7 @@ const Addresses: React.FC = () => {
   const handleDeleteAddress = async () => {
     if (addressToDelete) {
       try {
-        await addressService.deleteAddress(addressToDelete.id);
-        fetchAddresses();
+        await dispatch(deleteAddress(addressToDelete.id)).unwrap();
         setDeleteModalOpen(false);
         setAddressToDelete(null);
       } catch (error) {
@@ -134,13 +110,7 @@ const Addresses: React.FC = () => {
 
   const handleSetDefault = async (addressId: string) => {
     try {
-      await addressService.setDefaultAddress(addressId);
-      setAddresses(
-        addresses.map((a) => ({
-          ...a,
-          isDefault: a.id === addressId,
-        }))
-      );
+      await dispatch(setDefaultAddress(addressId)).unwrap();
       setActiveDropdown(null);
     } catch (error) {
       console.error("Failed to set default address:", error);
@@ -150,7 +120,7 @@ const Addresses: React.FC = () => {
 
   const openDeleteModal = (address: Address) => {
     setAddressToDelete(address);
-    setDeleteModalOpen(true); // FIXED: Changed from false to true
+    setDeleteModalOpen(true);
     setActiveDropdown(null);
   };
 
@@ -173,7 +143,47 @@ const Addresses: React.FC = () => {
     }
   }, [activeDropdown]);
 
-  if (loading) {
+  // Show error state
+  if (status === "failed" && error) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-6">
+        <div className="max-w-4xl mx-auto px-4">
+          <h1 className="text-2xl font-semibold mb-6">Manage Addresses</h1>
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <div className="flex items-center">
+              <div className="flex-shrink-0">
+                <svg
+                  className="h-5 w-5 text-red-400"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <h3 className="text-sm font-medium text-red-800">
+                  Error loading addresses
+                </h3>
+                <p className="text-sm text-red-700 mt-1">{error}</p>
+                <button
+                  onClick={() => dispatch(fetchAddresses())}
+                  className="mt-2 text-sm text-red-800 underline hover:text-red-900"
+                >
+                  Try again
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (loading && addresses.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50 py-6">
         <div className="max-w-4xl mx-auto px-4">
@@ -195,7 +205,8 @@ const Addresses: React.FC = () => {
         {!showAddForm && (
           <button
             onClick={() => setShowAddForm(true)}
-            className="w-full mb-6 py-4 border-2 border-dashed border-emerald-500 rounded-lg flex items-center justify-center space-x-2 text-emerald-600 hover:bg-emerald-50 transition-colors"
+            disabled={loading}
+            className="w-full mb-6 py-4 border-2 border-dashed border-emerald-500 rounded-lg flex items-center justify-center space-x-2 text-emerald-600 hover:bg-emerald-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Plus className="h-5 w-5" />
             <span className="font-medium uppercase">Add a New Address</span>
@@ -213,6 +224,16 @@ const Addresses: React.FC = () => {
               submitButtonText="SAVE ADDRESS"
               cancelButtonText="CANCEL"
             />
+          </div>
+        )}
+
+        {/* Loading indicator for operations */}
+        {loading && addresses.length > 0 && (
+          <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="flex items-center">
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-3"></div>
+              <span className="text-blue-800 text-sm">Processing...</span>
+            </div>
           </div>
         )}
 
@@ -250,7 +271,8 @@ const Addresses: React.FC = () => {
                             activeDropdown === address.id ? null : address.id
                           );
                         }}
-                        className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                        disabled={loading}
+                        className="p-2 hover:bg-gray-100 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <MoreVertical className="h-5 w-5 text-gray-600" />
                       </button>
@@ -259,7 +281,8 @@ const Addresses: React.FC = () => {
                         <div className="absolute right-0 mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10">
                           <button
                             onClick={() => handleEdit(address.id)}
-                            className="w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center space-x-3 text-gray-700"
+                            disabled={loading}
+                            className="w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center space-x-3 text-gray-700 disabled:opacity-50"
                           >
                             <Edit2 className="h-4 w-4" />
                             <span>Edit</span>
@@ -267,7 +290,8 @@ const Addresses: React.FC = () => {
                           {!address.isDefault && (
                             <button
                               onClick={() => handleSetDefault(address.id)}
-                              className="w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center space-x-3 text-gray-700 border-t"
+                              disabled={loading}
+                              className="w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center space-x-3 text-gray-700 border-t disabled:opacity-50"
                             >
                               <MapPin className="h-4 w-4" />
                               <span>Set as Default</span>
@@ -275,7 +299,8 @@ const Addresses: React.FC = () => {
                           )}
                           <button
                             onClick={() => openDeleteModal(address)}
-                            className="w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center space-x-3 text-red-600 border-t"
+                            disabled={loading}
+                            className="w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center space-x-3 text-red-600 border-t disabled:opacity-50"
                           >
                             <Trash2 className="h-4 w-4" />
                             <span>Delete</span>
@@ -310,7 +335,7 @@ const Addresses: React.FC = () => {
             </div>
           ))}
 
-          {addresses.length === 0 && !showAddForm && (
+          {addresses.length === 0 && !showAddForm && !loading && (
             <div className="text-center py-12 bg-white rounded-lg">
               <MapPin className="h-12 w-12 text-gray-300 mx-auto mb-4" />
               <p className="text-gray-500 mb-4">No addresses saved yet</p>
@@ -345,15 +370,17 @@ const Addresses: React.FC = () => {
           <div className="flex justify-center space-x-4">
             <button
               onClick={() => setDeleteModalOpen(false)}
-              className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+              disabled={loading}
+              className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               onClick={handleDeleteAddress}
-              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+              disabled={loading}
+              className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Delete
+              {loading ? "Deleting..." : "Delete"}
             </button>
           </div>
         </div>

@@ -11,28 +11,18 @@ interface StatsFooterProps {
   data: (User | Admin)[];
   activeTab: TabType;
   currentTab: TabConfig | undefined;
-  formatCurrency: (amount: number) => string;
 }
 
 export const StatsFooter: React.FC<StatsFooterProps> = ({
   data,
   activeTab,
   currentTab,
-  formatCurrency,
 }) => {
   if (data.length === 0) return null;
 
   const usersWithOrders =
     activeTab !== "admins"
       ? (data as User[]).filter((item) => item.latestOrder).length
-      : 0;
-
-  const totalOrderValue =
-    activeTab !== "admins"
-      ? (data as User[]).reduce(
-          (sum, item) => sum + (item.latestOrder?.totalAmount || 0),
-          0
-        )
       : 0;
 
   return (
@@ -49,14 +39,6 @@ export const StatsFooter: React.FC<StatsFooterProps> = ({
                 {usersWithOrders}
               </div>
               <div className="text-sm text-gray-500">With Orders</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-purple-600">
-                {formatCurrency(totalOrderValue)}
-              </div>
-              <div className="text-sm text-gray-500">
-                Total Latest Order Value
-              </div>
             </div>
           </>
         )}

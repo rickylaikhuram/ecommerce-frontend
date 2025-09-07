@@ -2,21 +2,23 @@
 import { useState, useEffect, useRef } from "react";
 import { useAppSelector, useAppDispatch } from "../redux/hook";
 import { fetchDeliverySetting } from "../redux/slice/delivery";
-import addressService from "../services/address.services";
-import type { Address } from "../types/user.types";
+import { fetchAddresses, clearAddresses } from "../redux/slice/address";
 
 export const useHeaderState = () => {
   const dispatch = useAppDispatch();
   const { user, status } = useAppSelector((state) => state.auth);
-  const { deliverySetting, status: deliveryStatus } = useAppSelector((state) => state.delivery);
-  
+  const { deliverySetting, status: deliveryStatus } = useAppSelector(
+    (state) => state.delivery
+  );
+  const { addresses: userAddresses, status: addressStatus } = useAppSelector(
+    (state) => state.address
+  );
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [shouldFixHeader, setShouldFixHeader] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [showHeader, setShowHeader] = useState(true);
-  const [userAddresses, setUserAddresses] = useState<Address[]>([]);
-  const [addressLoading, setAddressLoading] = useState(false);
   const [isDeliveryModalOpen, setIsDeliveryModalOpen] = useState(false);
 
   const lastClickRef = useRef({ path: "", timestamp: 0 });
@@ -26,34 +28,21 @@ export const useHeaderState = () => {
   const profileHref = isGuest ? "/signin" : "/account";
   const profileLabel = isGuest ? "Sign in" : "Profile";
 
-  // Fetch delivery settings on component mount
+  // Fetch delivery settings once
   useEffect(() => {
     if (deliveryStatus === "idle") {
       dispatch(fetchDeliverySetting());
     }
   }, [deliveryStatus, dispatch]);
 
-  // Fetch user addresses when authenticated
+  // Fetch addresses when authenticated
   useEffect(() => {
-    const fetchAddresses = async () => {
-      if (isAuthenticated && user?.role !== "guest") {
-        try {
-          setAddressLoading(true);
-          const addresses = await addressService.getAddresses();
-          setUserAddresses(addresses);
-        } catch (error) {
-          console.error("Failed to fetch addresses:", error);
-          setUserAddresses([]);
-        } finally {
-          setAddressLoading(false);
-        }
-      } else {
-        setUserAddresses([]);
-      }
-    };
-
-    fetchAddresses();
-  }, [isAuthenticated, user?.role]);
+    if (isAuthenticated && !isGuest && addressStatus === "idle") {
+      dispatch(fetchAddresses());
+    } else if (!isAuthenticated || isGuest) {
+      dispatch(clearAddresses());
+    }
+  }, [isAuthenticated, isGuest, addressStatus, dispatch]);
 
   // Filter addresses based on delivery settings
   const getDeliverableAddresses = () => {
@@ -68,9 +57,8 @@ export const useHeaderState = () => {
       return userAddresses;
     }
 
-    // Filter addresses that have zip codes in the allowed list
-    return userAddresses.filter(address => 
-      address.zipCode && allowedZipCodes.includes(address.zipCode)
+    return userAddresses.filter(
+      (address) => address.zipCode && allowedZipCodes.includes(address.zipCode)
     );
   };
 
@@ -81,7 +69,6 @@ export const useHeaderState = () => {
     } else {
       document.body.style.overflow = "unset";
     }
-
     return () => {
       document.body.style.overflow = "unset";
     };
@@ -110,50 +97,50 @@ export const useHeaderState = () => {
   // Get location display info with delivery logic
   const getLocationInfo = () => {
     if (isGuest || !isAuthenticated) {
-      return { 
-        text: "Manipur", 
+      return {
+        text: "Manipur",
         isDefault: true,
-        showDeliveryCheck: true 
+        showDeliveryCheck: true,
       };
     }
 
-    if (addressLoading || deliveryStatus === "loading") {
-      return { 
-        text: "Loading location...", 
+    if (addressStatus === "loading" || deliveryStatus === "loading") {
+      return {
+        text: "Loading location...",
         isDefault: true,
-        showDeliveryCheck: false 
+        showDeliveryCheck: false,
       };
     }
 
     if (userAddresses.length === 0) {
-      return { 
-        text: "Manipur", 
+      return {
+        text: "Manipur",
         isDefault: true,
-        showDeliveryCheck: true 
+        showDeliveryCheck: true,
       };
     }
 
     const deliverableAddresses = getDeliverableAddresses();
 
-    // If no deliverable addresses, show default with delivery check option
     if (deliverableAddresses.length === 0) {
       return {
         text: "Manipur",
         isDefault: true,
         showDeliveryCheck: true,
-        hasUndeliverableAddresses: true
+        hasUndeliverableAddresses: true,
       };
     }
 
-    // Find the default deliverable address or use the first deliverable one
-    const defaultDeliverableAddress = deliverableAddresses.find((addr) => addr.isDefault) || deliverableAddresses[0];
-    
+    const defaultDeliverableAddress =
+      deliverableAddresses.find((addr) => addr.isDefault) ||
+      deliverableAddresses[0];
+
     return {
       text: `${defaultDeliverableAddress.city}, ${defaultDeliverableAddress.state}`,
       isDefault: false,
       address: defaultDeliverableAddress,
       showDeliveryCheck: true,
-      deliverableAddressesCount: deliverableAddresses.length
+      deliverableAddressesCount: deliverableAddresses.length,
     };
   };
 
@@ -188,12 +175,7 @@ export const useHeaderState = () => {
   };
 
   const handleDeliveryConfirmed = (pincode: string, deliveryFee: number) => {
-    // Handle successful delivery confirmation
-    // You might want to save this to local storage or Redux
     console.log(`Delivery confirmed for ${pincode} with fee ₹${deliveryFee}`);
-    
-    // Optionally, you can update the location display or save the selected pincode
-    // This would depend on your specific requirements
   };
 
   return {
@@ -201,7 +183,6 @@ export const useHeaderState = () => {
     isScrolled,
     shouldFixHeader,
     showHeader,
-    addressLoading,
     isAuthenticated,
     isGuest,
     profileHref,
@@ -210,6 +191,7 @@ export const useHeaderState = () => {
     isDeliveryModalOpen,
     deliverySetting,
     deliveryStatus,
+    addressStatus,
     toggleMenu,
     handleNavClick,
     handleLocationClick,

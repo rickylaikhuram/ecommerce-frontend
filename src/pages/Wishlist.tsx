@@ -144,7 +144,7 @@ const Wishlist: React.FC = () => {
             >
               {/* Product Image */}
               <Link
-                to={`/product/${item.id}`}
+                to={`/products/${item.id}`}
                 className="flex-shrink-0 w-24 h-24 md:w-32 md:h-32 mr-4"
               >
                 <img
@@ -157,7 +157,7 @@ const Wishlist: React.FC = () => {
               {/* Product Info */}
               <div className="flex-grow min-w-0">
                 <Link
-                  to={`/product/${item.id}`}
+                  to={`/products/${item.id}`}
                   className="text-base md:text-lg font-medium text-gray-900 hover:text-emerald-600 transition-colors line-clamp-2"
                 >
                   {item.name}

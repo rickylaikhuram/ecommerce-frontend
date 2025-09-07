@@ -1,5 +1,5 @@
 // routes/AdminRoutes.tsx
-import { Route } from "react-router-dom";
+import { Navigate, Route } from "react-router-dom";
 import AdminMainLayout from "../layout/AdminMainLayout";
 import Products from "../pages/admin/Products";
 import Orders from "../pages/admin/Orders";
@@ -25,6 +25,11 @@ const AdminRoutes = (
       <Route path="support" element={<Support />} />
       <Route path="settings" element={<Settings />} /> */}
     <Route path="*" element={<Error />} />
+    {/* Routes to Navigate to home */}
+    <Route path="/signin" element={<Navigate to="/" replace />} />
+    <Route path="/signinwithotp" element={<Navigate to="/" replace />} />
+    <Route path="/signup" element={<Navigate to="/" replace />} />
+    <Route path="/forgot-password" element={<Navigate to="/" replace />} />
   </Route>
 );
 

@@ -16,6 +16,7 @@ import {
   removeItemOptimistic,
 } from "../redux/slice/cart";
 import { fetchDeliverySetting } from "../redux/slice/delivery";
+import { fetchAddresses, clearAddresses } from "../redux/slice/address";
 import type {
   CartCheckoutResponse,
   CheckoutState,
@@ -23,7 +24,6 @@ import type {
 } from "../types/checkout.types";
 import type { ShippingAddress, CreateOrderRequest } from "../types/order.types";
 import type { Address } from "../types/user.types";
-import addressService from "../services/address.services";
 import { cartService } from "../services/cart.services";
 import { orderService } from "../services/order.services";
 
@@ -76,6 +76,13 @@ const Checkout: React.FC = () => {
   const { status: deliveryStatus, deliverySetting } = useAppSelector(
     (state) => state.delivery
   );
+  // Use Redux address state instead of local state
+  const {
+    addresses,
+    status: addressStatus,
+    error: addressError,
+  } = useAppSelector((state) => state.address);
+
   const state = location.state as CheckoutState | null;
 
   const [currentStep, setCurrentStep] = useState(1);
@@ -87,10 +94,8 @@ const Checkout: React.FC = () => {
   const [isValidatingCart, setIsValidatingCart] = useState(false);
   const [isInitialLoading, setIsInitialLoading] = useState(true);
 
-  // User data state
-  const [addresses, setAddresses] = useState<Address[]>([]);
+  // Use Redux addresses instead of local state
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
-  const [isAddressLoading, setIsAddressLoading] = useState(false);
 
   // Cart validation state
   const [showValidationModal, setShowValidationModal] = useState(false);
@@ -114,6 +119,22 @@ const Checkout: React.FC = () => {
       dispatch(fetchDeliverySetting());
     }
   }, [deliveryStatus, dispatch]);
+
+  // Fetch addresses when user is authenticated
+  useEffect(() => {
+    if (user?.role === "user" && addressStatus === "idle") {
+      dispatch(fetchAddresses());
+    }
+  }, [user, addressStatus, dispatch]);
+
+  // Set default selected address when addresses are loaded
+  useEffect(() => {
+    if (addresses.length > 0 && !selectedAddress) {
+      const defaultAddr =
+        addresses.find((addr) => addr.isDefault) || addresses[0];
+      setSelectedAddress(defaultAddr);
+    }
+  }, [addresses, selectedAddress]);
 
   // Check for valid checkout state
   useEffect(() => {
@@ -189,10 +210,7 @@ const Checkout: React.FC = () => {
       setError(null);
       setIsValidatingCart(true);
 
-      // Load user addresses
-      const userAddresses = await addressService.getAddresses();
-      setAddresses(userAddresses || []);
-
+      // No need to load addresses here - Redux handles it
       // Validate cart items
       const cartData: CartCheckoutResponse =
         await cartService.checkProductsInCart(state.items);
@@ -205,26 +223,14 @@ const Checkout: React.FC = () => {
       const pricing = calculatePricing(cartData);
       setPricingDetails(pricing);
 
-      // Set default address
-      if (userAddresses && userAddresses.length > 0) {
-        const defaultAddr =
-          userAddresses.find((addr) => addr.isDefault) || userAddresses[0];
-        setSelectedAddress(defaultAddr);
-      }
-
       // Auto-advance to review step if authenticated and has addresses
-      if (user !== null && userAddresses?.length > 0) {
+      if (user !== null && addresses?.length > 0) {
         setCurrentStep(3);
       }
 
       // Handle userProfile
-      if (userProfile) {
-        console.log("User profile is available:", userProfile);
-      } else if (userStatus === "loading") {
-        console.log("User profile is still loading...");
-      } else {
-        console.log("User profile is not available, fetching...");
-        dispatch(fetchProfile());
+      if (userStatus === "idle") {
+        await dispatch(fetchProfile());
       }
     } catch (error) {
       console.error("Error loading checkout data:", error);
@@ -237,6 +243,7 @@ const Checkout: React.FC = () => {
     user,
     userProfile,
     userStatus,
+    addresses?.length,
     dispatch,
     navigate,
     calculatePricing,
@@ -313,54 +320,19 @@ const Checkout: React.FC = () => {
   };
 
   const handleLogout = async () => {
+    dispatch(clearAddresses()); // Clear addresses from Redux on logout
     await dispatch(logoutUser()).unwrap();
     window.location.href = "/";
   };
 
+  // Simplified address handlers using Redux actions
   const handleAddressUpdated = async (savedAddress?: Address) => {
-    await fetchAddresses(savedAddress);
-    setCurrentStep(3);
-  };
-
-  const fetchAddresses = async (addressToSelect?: Address) => {
-    try {
-      setIsAddressLoading(true);
-
-      const userAddresses = await addressService.getAddresses();
-      setAddresses(userAddresses || []);
-
-      if (addressToSelect) {
-        const updatedAddress = userAddresses.find(
-          (addr) => addr.id === addressToSelect.id
-        );
-        if (updatedAddress) {
-          setSelectedAddress(updatedAddress);
-        } else {
-          setSelectedAddress(addressToSelect);
-        }
-      } else if (
-        !selectedAddress ||
-        !userAddresses.find((addr) => addr.id === selectedAddress.id)
-      ) {
-        const defaultAddr =
-          userAddresses.find((addr) => addr.isDefault) || userAddresses[0];
-        if (defaultAddr) {
-          setSelectedAddress(defaultAddr);
-        }
-      } else {
-        const updatedSelectedAddress = userAddresses.find(
-          (addr) => addr.id === selectedAddress.id
-        );
-        if (updatedSelectedAddress) {
-          setSelectedAddress(updatedSelectedAddress);
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching addresses:", error);
-      setError("Failed to load addresses. Please try again.");
-    } finally {
-      setIsAddressLoading(false);
+    // The address slice will automatically refetch after create/update
+    // Just set the selected address and move to next step
+    if (savedAddress) {
+      setSelectedAddress(savedAddress);
     }
+    setCurrentStep(3);
   };
 
   // Transform Address to ShippingAddress
@@ -632,16 +604,24 @@ const Checkout: React.FC = () => {
               <ErrorAlert message={error} onDismiss={() => setError(null)} />
             )}
 
+            {/* Address Error Alert */}
+            {addressError && (
+              <ErrorAlert
+                message={addressError}
+                onDismiss={() => {
+                  /* Handle address error dismissal */
+                }}
+              />
+            )}
+
             {/* Step Content */}
             <StepRenderer
               currentStep={currentStep}
               isAuthenticated={isAuthenticated}
               userProfile={userProfile}
-              addresses={addresses}
               selectedAddress={selectedAddress}
               onSelectAddress={setSelectedAddress}
               onAddressUpdated={handleAddressUpdated}
-              isAddressLoading={isAddressLoading}
               cartItems={cartItems}
               onViewDetails={() => navigate("/cart")}
               onRemoveInvalidItem={handleRemoveInvalidItem}
@@ -678,7 +658,7 @@ const Checkout: React.FC = () => {
             invalidItemsCount={invalidItems.length}
             totalItems={totalItems}
             canProceedToPayment={canProceedToPayment}
-            isValidatingCart={isValidatingCart}
+            isValidatingCart={isValidatingCart || addressStatus === "loading"} // Include address loading
             deliverySetting={deliverySetting}
           />
         </div>

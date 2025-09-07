@@ -1,6 +1,8 @@
 // components/checkout/AddressSection.tsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import type { Address } from "../../../types/user.types";
+import type { RootState, AppDispatch } from "../../../redux/store";
 import {
   Plus,
   ChevronDown,
@@ -14,28 +16,43 @@ import {
   Check,
 } from "lucide-react";
 import AddressForm from "../../common/AddressForm";
-import addressService from "../../../services/address.services";
+import {
+  fetchAddresses,
+  createAddress,
+  updateAddress,
+} from "../../../redux/slice/address";
+import type { CreateAddressPayload } from "../../../services/address.services";
 
 interface AddressSectionProps {
-  addresses: Address[];
   selectedAddress: Address | null;
   onSelectAddress: (address: Address) => void;
-  onAddressUpdated?: (savedAddress?: Address) => void; 
-  isLoading?: boolean;
+  onAddressUpdated?: (savedAddress?: Address) => void;
 }
 
 const AddressSection: React.FC<AddressSectionProps> = ({
-  addresses,
   selectedAddress,
   onSelectAddress,
   onAddressUpdated,
-  isLoading = false,
 }) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { addresses, status, error } = useSelector(
+    (state: RootState) => state.address
+  );
+
+  // Local UI state
   const [showAllAddresses, setShowAllAddresses] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingAddress, setEditingAddress] = useState<Address | null>(null);
-  const [isSaving, setIsSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [localError, setLocalError] = useState<string | null>(null);
+
+  const isLoading = status === "loading";
+
+  // Fetch addresses on component mount if not already loaded
+  useEffect(() => {
+    if (status === "idle") {
+      dispatch(fetchAddresses());
+    }
+  }, [dispatch, status]);
 
   const getAddressIcon = (label?: string) => {
     switch (label?.toLowerCase()) {
@@ -64,33 +81,32 @@ const AddressSection: React.FC<AddressSectionProps> = ({
   const handleAddNewAddress = () => {
     setShowAddForm(true);
     setEditingAddress(null);
-    setError(null);
+    setLocalError(null);
   };
 
   const handleEditClick = (address: Address) => {
     setEditingAddress(address);
     setShowAddForm(true);
-    setError(null);
+    setLocalError(null);
   };
 
   const handleCancel = () => {
     setShowAddForm(false);
     setEditingAddress(null);
-    setError(null);
+    setLocalError(null);
   };
 
   const handleSaveAddress = async (
     data: Omit<Address, "id" | "userId" | "createdAt" | "updatedAt">
   ) => {
-    setIsSaving(true);
-    setError(null);
+    setLocalError(null);
 
     try {
       let savedAddress: Address;
 
       if (editingAddress) {
         // Update existing address
-        await addressService.updateAddress(editingAddress.id, {
+        const payload: Partial<CreateAddressPayload> = {
           fullName: data.fullName,
           phone: data.phone,
           alternatePhone: data.alternatePhone,
@@ -103,13 +119,20 @@ const AddressSection: React.FC<AddressSectionProps> = ({
           zipCode: data.zipCode,
           label: data.label,
           isDefault: data.isDefault,
-        });
+        };
+
+        await dispatch(
+          updateAddress({
+            addressId: editingAddress.id,
+            data: payload,
+          })
+        ).unwrap();
 
         // Create the updated address object to pass back
         savedAddress = { ...editingAddress, ...data };
       } else {
         // Create new address
-        savedAddress = await addressService.createAddress({
+        const payload: CreateAddressPayload = {
           fullName: data.fullName,
           phone: data.phone,
           alternatePhone: data.alternatePhone,
@@ -122,7 +145,21 @@ const AddressSection: React.FC<AddressSectionProps> = ({
           zipCode: data.zipCode,
           label: data.label,
           isDefault: data.isDefault,
-        });
+        };
+
+        await dispatch(createAddress(payload)).unwrap();
+
+        // Get the newly created address from the updated state
+        // Since Redux will refetch addresses after creation, we need to wait a bit
+        // and then find the address or pass it through the callback
+        const updatedAddresses = await dispatch(fetchAddresses()).unwrap();
+        savedAddress =
+          updatedAddresses.find(
+            (addr) =>
+              addr.fullName === data.fullName &&
+              addr.phone === data.phone &&
+              addr.line1 === data.line1
+          ) || updatedAddresses[updatedAddresses.length - 1];
       }
 
       setShowAddForm(false);
@@ -134,17 +171,16 @@ const AddressSection: React.FC<AddressSectionProps> = ({
       }
     } catch (error: any) {
       console.error("Error saving address:", error);
-      setError(
-        error.response?.data?.message ||
-          "Failed to save address. Please try again."
+      setLocalError(
+        error.message || "Failed to save address. Please try again."
       );
       throw error;
-    } finally {
-      setIsSaving(false);
     }
   };
 
-  if (isLoading) {
+  const displayError = localError || error;
+
+  if (isLoading && addresses.length === 0) {
     return (
       <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
         <div className="bg-emerald-600 text-white px-4 py-3">
@@ -179,14 +215,27 @@ const AddressSection: React.FC<AddressSectionProps> = ({
           <h3 className="text-sm font-medium uppercase tracking-wide">
             DELIVERY ADDRESS
           </h3>
+          {isLoading && addresses.length > 0 && (
+            <div className="ml-auto">
+              <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+            </div>
+          )}
         </div>
       </div>
 
       <div className="p-4">
         {/* Error message */}
-        {error && !showAddForm && (
+        {displayError && !showAddForm && (
           <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded text-sm text-red-700">
-            {error}
+            {displayError}
+            {error && (
+              <button
+                onClick={() => dispatch(fetchAddresses())}
+                className="ml-2 underline hover:no-underline"
+              >
+                Retry
+              </button>
+            )}
           </div>
         )}
 
@@ -196,19 +245,26 @@ const AddressSection: React.FC<AddressSectionProps> = ({
             <h4 className="text-base font-semibold mb-3 text-gray-900">
               {editingAddress ? "Edit Address" : "Add New Address"}
             </h4>
+            {localError && (
+              <div className="mb-3 p-2 bg-red-50 border border-red-200 rounded text-sm text-red-700">
+                {localError}
+              </div>
+            )}
             <AddressForm
               initialData={editingAddress}
               onSubmit={handleSaveAddress}
               onCancel={handleCancel}
-              submitButtonText={isSaving ? "SAVING..." : "SAVE AND DELIVER HERE"}
+              submitButtonText={
+                isLoading ? "SAVING..." : "SAVE AND DELIVER HERE"
+              }
               cancelButtonText="CANCEL"
-              disabled={isSaving}
+              disabled={isLoading}
             />
           </div>
         ) : (
           <>
             {/* Check if there are any addresses */}
-            {addresses.length === 0 ? (
+            {addresses.length === 0 && status !== "loading" ? (
               <div className="text-center py-8">
                 <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <MapPin className="h-8 w-8 text-emerald-600" />
@@ -221,7 +277,7 @@ const AddressSection: React.FC<AddressSectionProps> = ({
                 </p>
                 <button
                   onClick={handleAddNewAddress}
-                  disabled={isSaving}
+                  disabled={isLoading}
                   className="inline-flex items-center space-x-2 bg-emerald-600 text-white px-6 py-2 rounded-lg hover:bg-emerald-700 font-medium transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Plus className="h-4 w-4" />
@@ -241,8 +297,8 @@ const AddressSection: React.FC<AddressSectionProps> = ({
                           selectedAddress?.id === address.id
                             ? "border-emerald-500 bg-emerald-50 shadow-sm"
                             : "border-gray-200 hover:border-emerald-300 hover:bg-gray-50"
-                        } ${isSaving ? "opacity-50 pointer-events-none" : ""}`}
-                        onClick={() => !isSaving && onSelectAddress(address)}
+                        } ${isLoading ? "opacity-50 pointer-events-none" : ""}`}
+                        onClick={() => !isLoading && onSelectAddress(address)}
                       >
                         {/* Selected indicator */}
                         {selectedAddress?.id === address.id && (
@@ -256,8 +312,10 @@ const AddressSection: React.FC<AddressSectionProps> = ({
                             type="radio"
                             checked={selectedAddress?.id === address.id}
                             className="mt-1 text-emerald-600"
-                            onChange={() => !isSaving && onSelectAddress(address)}
-                            disabled={isSaving}
+                            onChange={() =>
+                              !isLoading && onSelectAddress(address)
+                            }
+                            disabled={isLoading}
                           />
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center space-x-2 mb-1">
@@ -307,9 +365,9 @@ const AddressSection: React.FC<AddressSectionProps> = ({
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
-                              if (!isSaving) handleEditClick(address);
+                              if (!isLoading) handleEditClick(address);
                             }}
-                            disabled={isSaving}
+                            disabled={isLoading}
                             className="flex items-center space-x-1 text-emerald-600 hover:text-emerald-700 text-xs bg-white px-2 py-1 rounded border hover:shadow-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             <Edit3 className="h-3 w-3" />
@@ -323,7 +381,7 @@ const AddressSection: React.FC<AddressSectionProps> = ({
                 {addresses.length > 3 && (
                   <button
                     onClick={() => setShowAllAddresses(!showAllAddresses)}
-                    disabled={isSaving}
+                    disabled={isLoading}
                     className="flex items-center space-x-2 text-emerald-600 hover:text-emerald-700 mt-3 font-medium hover:underline transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {showAllAddresses ? (
@@ -343,7 +401,7 @@ const AddressSection: React.FC<AddressSectionProps> = ({
                 <div className="mt-4 pt-3 border-t border-gray-100">
                   <button
                     onClick={handleAddNewAddress}
-                    disabled={isSaving}
+                    disabled={isLoading}
                     className="flex items-center space-x-2 text-emerald-600 hover:text-emerald-700 font-medium hover:underline transition-colors text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <Plus className="h-4 w-4" />

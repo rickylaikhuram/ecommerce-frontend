@@ -5,15 +5,17 @@ import Cart from "./slice/cart";
 import Wishlist from "./slice/wishlist";
 import Categories from "./slice/categories";
 import Delivery from "./slice/delivery";
+import Address from "./slice/address";
 
 export const store = configureStore({
   reducer: {
     auth: Auth,
-    user: UserProfile,
+    address: Address,
     cart: Cart,
-    wishlist: Wishlist,
     categories: Categories,
     delivery: Delivery,
+    user: UserProfile,
+    wishlist: Wishlist,
   },
 });
 

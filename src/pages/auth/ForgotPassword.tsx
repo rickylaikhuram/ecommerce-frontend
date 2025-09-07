@@ -245,7 +245,7 @@ const ForgotPassword = () => {
                 <input
                   type="text"
                   inputMode="numeric"
-                  placeholder="9876543210"
+                  placeholder="1234567890"
                   maxLength={10}
                   className={`w-full pl-20 pr-10 py-3 bg-gray-50 border rounded-xl focus:border-transparent focus:bg-white transition-all duration-200 outline-none focus:ring-2 ${
                     errors.phone

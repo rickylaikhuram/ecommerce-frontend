@@ -162,7 +162,6 @@ const Customers: React.FC = () => {
             data={data}
             activeTab={activeTab}
             currentTab={currentTab}
-            formatCurrency={formatCurrency}
           />
         )}
       </div>

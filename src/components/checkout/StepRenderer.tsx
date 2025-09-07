@@ -15,19 +15,17 @@ interface StepRendererProps {
   currentStep: number;
   isAuthenticated: boolean;
   userProfile: UserProfile | null;
-  
+
   // Address related props
-  addresses: Address[];
   selectedAddress: Address | null;
   onSelectAddress: (address: Address) => void;
   onAddressUpdated: (savedAddress?: Address) => void;
-  isAddressLoading: boolean;
-  
+
   // Cart/Order related props
   cartItems: ProductResponse[];
   onViewDetails: () => void;
   onRemoveInvalidItem: (cartItemId: string) => void;
-  
+
   // Payment related props
   onSelectPayment: (method: string) => void;
   onPayNow: (method: string) => void;
@@ -35,7 +33,7 @@ interface StepRendererProps {
   onPlaceOrder: () => void;
   isProcessing: boolean;
   selectedPayment: string;
-  
+
   // Navigation props
   onNavigateToSignIn: () => void;
   onNavigateToSignUp: () => void;
@@ -47,11 +45,11 @@ const StepRenderer: React.FC<StepRendererProps> = ({
   currentStep,
   isAuthenticated,
   userProfile,
-  addresses,
+  // addresses,
   selectedAddress,
   onSelectAddress,
   onAddressUpdated,
-  isAddressLoading,
+  // isAddressLoading,
   cartItems,
   onViewDetails,
   onRemoveInvalidItem,
@@ -129,11 +127,9 @@ const StepRenderer: React.FC<StepRendererProps> = ({
     case 2:
       return (
         <AddressSection
-          addresses={addresses}
           selectedAddress={selectedAddress}
           onSelectAddress={onSelectAddress}
           onAddressUpdated={onAddressUpdated}
-          isLoading={isAddressLoading}
         />
       );
 
@@ -216,9 +212,7 @@ const StepRenderer: React.FC<StepRendererProps> = ({
       return (
         <div className="bg-white rounded-xl shadow-lg p-8 text-center border border-gray-200">
           <Package className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-gray-900 mb-2">
-            Invalid Step
-          </h2>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">Invalid Step</h2>
           <p className="text-gray-600">
             Something went wrong. Please refresh the page.
           </p>

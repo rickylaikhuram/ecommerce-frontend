@@ -28,7 +28,6 @@ const LandingHeader = () => {
     isScrolled,
     shouldFixHeader,
     showHeader,
-    addressLoading,
     profileHref,
     profileLabel,
     locationInfo,
@@ -83,7 +82,7 @@ const LandingHeader = () => {
         profileHref={profileHref}
         profileLabel={profileLabel}
         locationInfo={locationInfo}
-        addressLoading={addressLoading}
+        
         onNavClick={handleNavClick}
         onSearch={handleSearch}
         onSuggestionClick={handleSuggestionClick}
@@ -99,7 +98,6 @@ const LandingHeader = () => {
         onSuggestionClick={handleSuggestionClick}
         onNavClick={handleNavClick}
         locationInfo={locationInfo}
-        addressLoading={addressLoading}
         onLocationClick={handleLocationClick} // Pass the location click handler
       />
 

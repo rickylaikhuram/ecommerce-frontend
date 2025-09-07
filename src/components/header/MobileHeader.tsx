@@ -14,7 +14,6 @@ interface MobileHeaderProps {
   onSuggestionClick: (suggestion: AutocompleteResult) => void;
   onNavClick: (e: React.MouseEvent<HTMLAnchorElement>, path: string) => void;
   locationInfo: any;
-  addressLoading: boolean;
   onLocationClick?: () => void; // Add this prop for delivery check
 }
 
@@ -26,7 +25,6 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
   onSuggestionClick,
   onNavClick,
   locationInfo,
-  addressLoading,
   onLocationClick, // Add this prop
 }) => {
   return (
@@ -73,7 +71,6 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
             >
               <LocationDisplay
                 locationInfo={locationInfo}
-                addressLoading={addressLoading}
                 isMobile={true}
               />
             </button>
@@ -85,7 +82,6 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
             >
               <LocationDisplay
                 locationInfo={locationInfo}
-                addressLoading={addressLoading}
                 isMobile={true}
               />
             </Link>

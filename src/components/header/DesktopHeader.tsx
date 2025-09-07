@@ -15,7 +15,6 @@ interface DesktopHeaderProps {
   profileHref: string;
   profileLabel: string;
   locationInfo: any;
-  addressLoading: boolean;
   onNavClick: (e: React.MouseEvent<HTMLAnchorElement>, path: string) => void;
   onSearch: (query: string) => void;
   onSuggestionClick: (suggestion: AutocompleteResult) => void;
@@ -28,7 +27,6 @@ export const DesktopHeader: React.FC<DesktopHeaderProps> = ({
   navItems,
   profileHref,
   locationInfo,
-  addressLoading,
   onNavClick,
   onSearch,
   onSuggestionClick,
@@ -64,7 +62,6 @@ export const DesktopHeader: React.FC<DesktopHeaderProps> = ({
               >
                 <LocationDisplay
                   locationInfo={locationInfo}
-                  addressLoading={addressLoading}
                 />
               </button>
             </div>
@@ -77,7 +74,6 @@ export const DesktopHeader: React.FC<DesktopHeaderProps> = ({
               >
                 <LocationDisplay
                   locationInfo={locationInfo}
-                  addressLoading={addressLoading}
                   isCompact
                 />
               </button>

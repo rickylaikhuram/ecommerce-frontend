@@ -1,6 +1,7 @@
 // components/Header/LocationDisplay.tsx - Enhanced version
 import React from "react";
 import { MapPin, ChevronDown, AlertTriangle } from "lucide-react";
+import { useAppSelector } from "../../redux/hook";
 
 interface LocationDisplayProps {
   locationInfo: {
@@ -10,14 +11,12 @@ interface LocationDisplayProps {
     hasUndeliverableAddresses?: boolean;
     deliverableAddressesCount?: number;
   };
-  addressLoading: boolean;
   isMobile?: boolean;
   isCompact?: boolean;
 }
 
 export const LocationDisplay: React.FC<LocationDisplayProps> = ({
   locationInfo,
-  addressLoading,
   isMobile = false,
   isCompact = false,
 }) => {
@@ -26,7 +25,8 @@ export const LocationDisplay: React.FC<LocationDisplayProps> = ({
   const chevronSize = isMobile ? 12 : 14;
   const textSize = isMobile ? "text-xs" : isCompact ? "text-sm" : "text-sm";
   const maxWidth = isMobile ? "max-w-24" : isCompact ? "max-w-28" : "max-w-32";
-
+  const { status } = useAppSelector((state) => state.address);
+  const addressLoading = status === "loading";
   if (addressLoading) {
     return (
       <div className="flex items-center space-x-1 text-gray-500">

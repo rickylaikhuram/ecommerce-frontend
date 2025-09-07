@@ -921,16 +921,8 @@ const ProductDetails: React.FC = () => {
               )}
 
               {/* Service Info Cards */}
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-                <div className="flex items-center gap-3 p-3 lg:p-4 bg-emerald-50 rounded-lg lg:rounded-xl">
-                  <Truck className="w-5 h-5 lg:w-6 lg:h-6 text-emerald-600 flex-shrink-0" />
-                  <div>
-                    <p className="font-medium text-gray-900 text-sm">
-                      Free Delivery
-                    </p>
-                    <p className="text-xs text-gray-600">Orders over ₹500</p>
-                  </div>
-                </div>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+
                 <div className="flex items-center gap-3 p-3 lg:p-4 bg-green-50 rounded-lg lg:rounded-xl">
                   <Shield className="w-5 h-5 lg:w-6 lg:h-6 text-green-600 flex-shrink-0" />
                   <div>
@@ -946,7 +938,7 @@ const ProductDetails: React.FC = () => {
                     <p className="font-medium text-gray-900 text-sm">
                       Easy Returns
                     </p>
-                    <p className="text-xs text-gray-600">30 Day Policy</p>
+                    <p className="text-xs text-gray-600">7 Day Policy</p>
                   </div>
                 </div>
               </div>

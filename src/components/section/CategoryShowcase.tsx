@@ -112,20 +112,20 @@ const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({ categoryIndex }) =>
 
   return (
     <>
-      <section className="py-16 px-6 bg-gradient-to-b from-gray-50 to-white overflow-hidden">
+      <section className="p-3 bg-gradient-to-b from-gray-50 to-white overflow-hidden">
         <div className="max-w-7xl mx-auto">
           {/* Section Header */}
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+          <div className="text-center mb-2">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2">
               Shop by {selectedCategory.name}
             </h2>
-            <p className="text-gray-600 text-lg">
+            <p className="text-gray-600 md:text-lg">
               Authentic products from your favorite {selectedCategory.name.toLowerCase()}
             </p>
           </div>
 
           {/* Category Grid - Mobile horizontal scroll */}
-          <div className="md:hidden overflow-x-auto pb-4 -mx-6 px-6  py-6">
+          <div className="md:hidden overflow-x-auto pb-4 -mx-6 px-6  py-2">
             <div className="flex space-x-8 w-max">
               {childCategories.map((category) => (
                 <div
@@ -176,7 +176,7 @@ const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({ categoryIndex }) =>
             {childCategories.map((category) => (
               <div
                 key={category.id}
-                className="group cursor-pointer transform transition-all duration-300 hover:scale-110"
+                className="group cursor-pointer transform transition-all duration-300 hover:scale-102"
                 onClick={() => handleCategoryClick(category.name)}
               >
                 {/* Circular Image Container */}
@@ -217,10 +217,10 @@ const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({ categoryIndex }) =>
           </div>
 
           {/* View All Button */}
-          <div className="text-center mt-12">
+          <div className="text-center mt-3">
             <button 
               onClick={() => handleCategoryClick(selectedCategory.name)}
-              className="px-8 py-3 bg-gradient-to-r from-teal-600 to-teal-700 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transform transition-all duration-300 hover:scale-105 hover:from-teal-700 hover:to-teal-800"
+              className="px-8 py-3 bg-gradient-to-r from-teal-600 to-teal-700 text-white font-semibold rounded-full shadow-lg transform transition-all duration-300 hover:scale-105 hover:from-teal-700 hover:to-teal-800"
             >
               View All {selectedCategory.name}
             </button>

@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { FaFacebookF, FaInstagram, FaTwitter } from "react-icons/fa";
+import { FaFacebookF, FaInstagram, FaWhatsapp } from "react-icons/fa";
 import { Mail, Phone, MapPin, ChevronRight, Heart } from "lucide-react";
 
 const Footer = () => {
@@ -32,24 +32,30 @@ const Footer = () => {
               experience.
             </p>
             <div className="flex space-x-2 sm:space-x-3">
-              <Link
-                to="#"
+              <a
+                href="https://www.facebook.com/profile.php?id=61580200125912"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="group relative p-2 sm:p-2.5 bg-white/70 backdrop-blur-sm rounded-lg border border-emerald-100 hover:bg-emerald-50 hover:border-emerald-200 transition-all duration-300 shadow-sm hover:shadow-md"
               >
-                <FaFacebookF className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 group-hover:text-emerald-600 transition-colors" />
-              </Link>
-              <Link
-                to="#"
+                <FaFacebookF className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 group-hover:text-emerald-700 transition-colors" />
+              </a>
+              <a
+                href="https://whatsapp.com/channel/0029Vb6nJZC3bbVB6GIH5i1r"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="group relative p-2 sm:p-2.5 bg-white/70 backdrop-blur-sm rounded-lg border border-emerald-100 hover:bg-emerald-50 hover:border-emerald-200 transition-all duration-300 shadow-sm hover:shadow-md"
               >
-                <FaTwitter className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 group-hover:text-emerald-700 transition-colors" />
-              </Link>
-              <Link
-                to="#"
+                <FaWhatsapp className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 group-hover:text-emerald-700 transition-colors" />
+              </a>
+              <a
+                href="https://www.instagram.com/clover.arena"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="group relative p-2 sm:p-2.5 bg-white/70 backdrop-blur-sm rounded-lg border border-emerald-100 hover:bg-emerald-50 hover:border-emerald-200 transition-all duration-300 shadow-sm hover:shadow-md"
               >
-                <FaInstagram className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 group-hover:text-emerald-600 transition-colors" />
-              </Link>
+                <FaInstagram className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 group-hover:text-emerald-700 transition-colors" />
+              </a>
             </div>
           </div>
 
@@ -133,7 +139,7 @@ const Footer = () => {
                   <Mail className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600" />
                 </div>
                 <span className="text-gray-600 text-xs sm:text-sm break-all">
-                  support@keithel.com
+                  cloverarena.cs@gmail.com
                 </span>
               </div>
               <div className="flex items-center space-x-2 sm:space-x-3 group">
@@ -141,7 +147,7 @@ const Footer = () => {
                   <Phone className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600" />
                 </div>
                 <span className="text-gray-600 text-xs sm:text-sm">
-                  +91 98765 43210
+                  +91 8416082998
                 </span>
               </div>
               <div className="flex items-center space-x-2 sm:space-x-3 group">
@@ -149,7 +155,7 @@ const Footer = () => {
                   <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600" />
                 </div>
                 <span className="text-gray-600 text-xs sm:text-sm">
-                  Mumbai, India
+                  Manipur, India
                 </span>
               </div>
             </div>
@@ -160,7 +166,7 @@ const Footer = () => {
         <div className="border-t border-emerald-100 pt-6 sm:pt-8">
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
             <div className="flex items-center space-x-1 sm:space-x-2 text-gray-600 text-xs sm:text-sm">
-              <span>© {currentYear} Keithel. Made with</span>
+              <span>© {currentYear} Clover Arena. Made with</span>
               <Heart className="w-3 h-3 sm:w-4 sm:h-4 text-emerald-500 fill-current animate-pulse" />
               <span>in India</span>
             </div>

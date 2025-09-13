@@ -5,6 +5,7 @@ import { ChevronDown } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "../../redux/hook";
 import { fetchCategories } from "../../redux/slice/categories";
 import type { Category as Categories } from "../../types/products.types";
+
 export type NavItem =
   | { name: string; path: string; isDropdown?: false }
   | {
@@ -64,7 +65,7 @@ export const Navigation: React.FC<NavigationProps> = ({
   };
 
   return (
-    <nav className={`flex items-center gap-8 relative ${className}`}>
+    <nav className={`flex items-center gap-2 relative ${className}`}>
       {items.map((item) =>
         item.isDropdown ? (
           <div
@@ -72,14 +73,14 @@ export const Navigation: React.FC<NavigationProps> = ({
             className="relative flex items-center"
             ref={dropdownRef}
           >
-            {/* Parent Category Link and Dropdown Button Combined */}
-            <div className="flex items-center bg-white hover:bg-gray-50 rounded-lg transition-all duration-200">
+            {/* Modern Dropdown Button with White Text */}
+            <div className="flex items-center">
               <Link
                 to={item.path}
-                className={`px-3 py-2 text-sm font-medium transition-colors rounded-l-lg ${
+                className={`px-4 py-2.5 text-sm font-medium transition-all duration-200 rounded-l-md ${
                   isActive(item.path)
-                    ? "bg-emerald-50 text-emerald-600"
-                    : "text-gray-700 hover:text-emerald-600"
+                    ? "bg-white/20 text-white shadow-sm backdrop-blur-sm"
+                    : "text-white/90 hover:text-white hover:bg-white/10 backdrop-blur-sm"
                 }`}
                 onClick={(e) => onNavClick(e, item.path)}
               >
@@ -87,31 +88,33 @@ export const Navigation: React.FC<NavigationProps> = ({
               </Link>
 
               <button
-                className={`px-2 py-2 text-sm font-medium transition-all duration-300 rounded-r-lg border-l border-gray-200 ${
+                className={`px-3 py-2.5 text-sm font-medium transition-all duration-200 rounded-r-md border-l border-white/20 ${
                   isOpen
-                    ? "text-emerald-600 bg-emerald-50 shadow-sm"
-                    : "text-gray-700 hover:text-emerald-600 hover:bg-gray-50"
+                    ? "bg-white/20 text-white shadow-sm backdrop-blur-sm"
+                    : "text-white/90 hover:text-white hover:bg-white/10 backdrop-blur-sm"
+                } ${
+                  isActive(item.path) && !isOpen ? "bg-white/20 text-white" : ""
                 }`}
                 onClick={() => setIsOpen((prev) => !prev)}
               >
                 <ChevronDown
                   size={16}
-                  className={`transition-transform duration-300 ${
+                  className={`transition-transform duration-200 ${
                     isOpen ? "rotate-180" : "rotate-0"
                   }`}
                 />
               </button>
             </div>
 
-            {/* Enhanced Dropdown Menu */}
+            {/* Modern Dropdown Menu */}
             {isOpen && categories && (
-              <div className="absolute top-full left-0 bg-white border border-gray-200 rounded-xl min-w-[200px] shadow-xl z-30 overflow-hidden animate-in slide-in-from-top-2 duration-200">
-                <div className="py-1">
+              <div className="absolute top-full left-0 mt-2 bg-white border border-gray-200 rounded-lg min-w-[220px] shadow-xl z-30 overflow-hidden backdrop-blur-md">
+                <div className="py-2">
                   {categories.map((parent: Categories) => (
-                    <div key={parent.id} className="relative group">
-                      <div className="flex items-center justify-between hover:bg-gray-50 transition-colors duration-150">
+                    <div key={parent.id} className="relative">
+                      <div className="flex items-center justify-between hover:bg-emerald-50 transition-colors duration-150">
                         <button
-                          className="flex-1 text-left px-4 py-2 text-sm text-gray-700 hover:text-emerald-600 font-medium"
+                          className="flex-1 text-left px-4 py-2.5 text-sm text-gray-700 hover:text-emerald-600 font-medium"
                           onClick={() => handleCategoryClick(parent.name)}
                         >
                           {parent.name}
@@ -119,7 +122,7 @@ export const Navigation: React.FC<NavigationProps> = ({
 
                         {parent.children && parent.children.length > 0 && (
                           <button
-                            className={`px-3 py-3 text-gray-500 hover:text-emerald-600 transition-all duration-200 ${
+                            className={`px-3 py-2.5 text-gray-400 hover:text-emerald-600 transition-all duration-200 ${
                               openParent === parent.id
                                 ? "text-emerald-600 bg-emerald-50"
                                 : ""
@@ -146,12 +149,12 @@ export const Navigation: React.FC<NavigationProps> = ({
                       {openParent === parent.id &&
                         parent.children &&
                         parent.children.length > 0 && (
-                          <div className="bg-gray-50 border-t border-gray-100 animate-in slide-in-from-top-1 duration-200">
+                          <div className="bg-gray-50 border-t border-gray-100">
                             <div className="py-1">
                               {parent.children.map((child) => (
                                 <button
                                   key={child.id}
-                                  className="w-full text-left px-7 py-2 text-sm text-gray-600 hover:text-emerald-600 hover:bg-white transition-colors duration-150 border-l-2 border-transparent hover:border-emerald-200"
+                                  className="w-full text-left px-8 py-2 text-sm text-gray-600 hover:text-emerald-600 hover:bg-white transition-colors duration-150 border-l-2 border-transparent hover:border-emerald-500"
                                   onClick={() =>
                                     handleCategoryClick(child.name)
                                   }
@@ -176,16 +179,16 @@ export const Navigation: React.FC<NavigationProps> = ({
           >
             {item.name === "Home" ? (
               <img
-                src="/logo_details.jpeg"
+                src="/logo_white_details.jpeg"
                 alt="Home"
-                className={`h-19 text-sm font-medium transition-all duration-200 rounded-lg hover:bg-gray-50 `}
+                className="h-10 w-auto transition-all duration-200 rounded-lg hover:shadow-lg hover:scale-105"
               />
             ) : (
               <span
-                className={`px-3 py-2 text-sm font-medium transition-all duration-200 rounded-lg hover:bg-gray-50 ${
+                className={`px-4 py-2.5 text-sm font-medium transition-all duration-200 rounded-md ${
                   isActive(item.path)
-                    ? "bg-emerald-50 text-emerald-600"
-                    : "text-gray-700 hover:text-emerald-600"
+                    ? "bg-white/20 text-white shadow-sm backdrop-blur-sm"
+                    : "text-white/90 hover:text-white hover:bg-white/10 backdrop-blur-sm"
                 }`}
               >
                 {item.name}

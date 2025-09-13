@@ -19,8 +19,15 @@ interface Payment {
 // used in order details and order confirmation page
 export interface OrderDetails {
   id: string;
+  orderNumber: string;
   totalAmount: number;
-  status: "PENDING" | "CONFIRMED" | "SHIPPED" | "DELIVERED" | "CANCELLED";
+  status:
+    | "PENDING"
+    | "CONFIRMED"
+    | "SHIPPED"
+    | "DELIVERED"
+    | "CANCELLED"
+    | "UNPLACED";
   createdAt: Date;
   customerName: string;
   customerEmail: string;

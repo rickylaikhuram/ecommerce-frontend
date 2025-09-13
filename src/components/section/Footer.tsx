@@ -103,7 +103,6 @@ const Footer = () => {
             <ul className="space-y-2 sm:space-y-3 ml-5 sm:ml-6">
               {[
                 "Contact Us",
-                "FAQ",
                 "Shipping Info",
                 "Returns",
                 "Size Guide",
@@ -185,13 +184,6 @@ const Footer = () => {
               >
                 Terms of Service
                 <span className="absolute -bottom-0.5 left-0 w-0 h-0.5 bg-gradient-to-r from-emerald-400 to-cyan-400 group-hover:w-full transition-all duration-300"></span>
-              </Link>
-              <Link
-                to="#"
-                className="text-gray-600 hover:text-emerald-600 transition-colors duration-200 text-xs sm:text-sm relative group"
-              >
-                Cookie Policy
-                <span className="absolute -bottom-0.5 left-0 w-0 h-0.5 bg-gradient-to-r from-emerald-400 to-green-400 group-hover:w-full transition-all duration-300"></span>
               </Link>
             </div>
           </div>

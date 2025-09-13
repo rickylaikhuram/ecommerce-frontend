@@ -109,18 +109,10 @@ class OrderService {
   async cancelOrder(
     orderId: string
   ): Promise<{ success: boolean; message: string }> {
-    const response = await instance.patch(`${this.baseUrl}/${orderId}/cancel`);
+    const response = await instance.patch(`${this.baseUrl}/cancel-orders/${orderId}`);
     return response.data;
   }
 
-  async verifyPayment(
-    orderId: string
-  ): Promise<{ success: boolean; paymentStatus: string }> {
-    const response = await instance.post(
-      `${this.baseUrl}/${orderId}/verify-payment`
-    );
-    return response.data;
-  }
 }
 
 export const orderService = new OrderService();

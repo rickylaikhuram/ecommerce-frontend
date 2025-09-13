@@ -23,7 +23,9 @@ export const SearchAutoComplete: React.FC<SearchAutocompleteProps> = ({
 }) => {
   const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState<AutocompleteResult[]>([]);
-  const [popularSuggestions, setPopularSuggestions] = useState<AutocompleteResult[]>([]);
+  const [popularSuggestions, setPopularSuggestions] = useState<
+    AutocompleteResult[]
+  >([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
@@ -228,23 +230,23 @@ export const SearchAutoComplete: React.FC<SearchAutocompleteProps> = ({
           onBlur={handleInputBlur}
           onKeyDown={handleKeyDown}
           placeholder={placeholder}
-          className={`w-full pl-10 pr-10 py-2.5 bg-gray-50 border border-gray-200 rounded-lg 
-            focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 
+          className={`w-full pl-10 pr-10 py-2.5 bg-white/95 border border-white/30 rounded-lg text-gray-700 placeholder-gray-500
+            focus:outline-none focus:ring-2 focus:ring-white/40 focus:border-white/50 focus:bg-white backdrop-blur-sm
             transition-all ${isMobile ? "text-sm" : ""}`}
         />
 
         <Search
-          className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+          className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"
           size={isMobile ? 16 : 18}
         />
 
         {query && (
           <button
             onClick={clearSearch}
-            className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 hover:bg-gray-200 
+            className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 hover:bg-gray-200/60 
               rounded-full transition-colors"
           >
-            <X size={14} className="text-gray-400" />
+            <X size={14} className="text-gray-500" />
           </button>
         )}
       </div>
@@ -253,7 +255,7 @@ export const SearchAutoComplete: React.FC<SearchAutocompleteProps> = ({
         <div
           ref={dropdownRef}
           className={`absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 
-            rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto ${
+            rounded-lg shadow-xl z-50 max-h-96 overflow-y-auto backdrop-blur-sm ${
               isMobile ? "max-h-80" : ""
             }`}
         >

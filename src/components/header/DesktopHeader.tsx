@@ -39,13 +39,13 @@ export const DesktopHeader: React.FC<DesktopHeaderProps> = ({
       {shouldFixHeader && <div className="hidden sm:block h-[73px]" />}
 
       <header
-        className={`hidden sm:block w-full bg-white transition-all duration-300 ${
+        className={`hidden sm:block w-full bg-emerald-800 transition-all duration-300 ${
           shouldFixHeader
             ? "fixed top-0 left-0 z-50 animate-slideDown"
             : "relative"
         } ${isScrolled ? "shadow-lg" : ""}`}
       >
-        <div className="border-b border-gray-100">
+        <div className="border-b border-white/10">
           <div className="flex items-center justify-between py-4 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
             {/* Left Section */}
             <div className="flex items-center gap-6">
@@ -58,11 +58,9 @@ export const DesktopHeader: React.FC<DesktopHeaderProps> = ({
               {/* Location Display - Desktop (lg and above) */}
               <button
                 onClick={onLocationClick}
-                className="hidden lg:flex hover:bg-gray-50 p-2 rounded-lg transition-colors"
+                className="hidden lg:flex hover:bg-white/10 p-2 rounded-lg transition-colors"
               >
-                <LocationDisplay
-                  locationInfo={locationInfo}
-                />
+                <LocationDisplay locationInfo={locationInfo} />
               </button>
             </div>
 
@@ -70,12 +68,9 @@ export const DesktopHeader: React.FC<DesktopHeaderProps> = ({
             <div className="hidden md:flex lg:hidden">
               <button
                 onClick={onLocationClick}
-                className="hover:bg-gray-50 p-2 rounded-lg transition-colors"
+                className="hover:bg-white/10 p-2 rounded-lg transition-colors"
               >
-                <LocationDisplay
-                  locationInfo={locationInfo}
-                  isCompact
-                />
+                <LocationDisplay locationInfo={locationInfo} isCompact />
               </button>
             </div>
 
@@ -94,8 +89,8 @@ export const DesktopHeader: React.FC<DesktopHeaderProps> = ({
                   to={profileHref}
                   className={`p-2.5 rounded-lg transition-colors ${
                     isActive(profileHref)
-                      ? "bg-emerald-50 text-emerald-600"
-                      : "hover:bg-gray-100 text-gray-700"
+                      ? "bg-white/20 text-white shadow-sm backdrop-blur-sm"
+                      : "text-white/80 hover:text-white hover:bg-white/10"
                   }`}
                   onClick={(e) => onNavClick(e, profileHref)}
                 >
@@ -109,8 +104,8 @@ export const DesktopHeader: React.FC<DesktopHeaderProps> = ({
                   to="/wishlist"
                   className={`p-2.5 rounded-lg transition-colors relative ${
                     isActive("/wishlist")
-                      ? "bg-emerald-50 text-emerald-600"
-                      : "hover:bg-gray-100 text-gray-700"
+                      ? "bg-white/20 text-white shadow-sm backdrop-blur-sm"
+                      : "text-white/80 hover:text-white hover:bg-white/10"
                   }`}
                   onClick={(e) => onNavClick(e, "/wishlist")}
                 >
@@ -124,8 +119,8 @@ export const DesktopHeader: React.FC<DesktopHeaderProps> = ({
                   to="/cart"
                   className={`p-2.5 rounded-lg transition-colors relative ${
                     isActive("/cart")
-                      ? "bg-emerald-50 text-emerald-600"
-                      : "hover:bg-gray-100 text-gray-700"
+                      ? "bg-white/20 text-white shadow-sm backdrop-blur-sm"
+                      : "text-white/80 hover:text-white hover:bg-white/10"
                   }`}
                   onClick={(e) => onNavClick(e, "/cart")}
                 >

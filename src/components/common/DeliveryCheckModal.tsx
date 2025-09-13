@@ -1,12 +1,12 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { X, MapPin, CheckCircle, XCircle } from 'lucide-react';
+import React, { useState, useRef, useEffect } from "react";
+import { useSelector } from "react-redux";
+import { X, MapPin, CheckCircle, XCircle } from "lucide-react";
 
 // Types
 interface Settings {
   takeDeliveryFee: boolean;
   checkThreshold: boolean;
-  deliveryFee: number; 
+  deliveryFee: number;
   freeDeliveryThreshold: number;
   allowedZipCodes: string[];
 }
@@ -27,9 +27,9 @@ const validateIndianPincode = (pincode: string): boolean => {
 const DeliveryCheckModal: React.FC<DeliveryCheckModalProps> = ({
   isOpen,
   onClose,
-  onDeliveryConfirmed
+  onDeliveryConfirmed,
 }) => {
-  const [pincode, setPincode] = useState('');
+  const [pincode, setPincode] = useState("");
   const [checkResult, setCheckResult] = useState<{
     isDeliverable: boolean;
     message: string;
@@ -39,50 +39,55 @@ const DeliveryCheckModal: React.FC<DeliveryCheckModalProps> = ({
   const modalRef = useRef<HTMLDivElement>(null);
 
   // Get delivery settings from Redux store
-  const deliverySetting = useSelector((state: any) => state.delivery?.deliverySetting as Settings | null);
+  const deliverySetting = useSelector(
+    (state: any) => state.delivery?.deliverySetting as Settings | null
+  );
 
   // Handle click outside modal
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+      if (
+        modalRef.current &&
+        !modalRef.current.contains(event.target as Node)
+      ) {
         handleClose();
       }
     };
 
     if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
     }
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isOpen]);
 
   // Handle ESC key press
   useEffect(() => {
     const handleEscapeKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
+      if (event.key === "Escape") {
         handleClose();
       }
     };
 
     if (isOpen) {
-      document.addEventListener('keydown', handleEscapeKey);
+      document.addEventListener("keydown", handleEscapeKey);
     }
 
     return () => {
-      document.removeEventListener('keydown', handleEscapeKey);
+      document.removeEventListener("keydown", handleEscapeKey);
     };
   }, [isOpen]);
 
   const handlePincodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/\D/g, '').slice(0, 6); // Only digits, max 6
+    const value = e.target.value.replace(/\D/g, "").slice(0, 6); // Only digits, max 6
     setPincode(value);
     setCheckResult(null); // Clear previous result when typing
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && pincode.length === 6 && !isChecking) {
+    if (e.key === "Enter" && pincode.length === 6 && !isChecking) {
       checkDelivery();
     }
   };
@@ -91,7 +96,7 @@ const DeliveryCheckModal: React.FC<DeliveryCheckModalProps> = ({
     if (!deliverySetting) {
       setCheckResult({
         isDeliverable: false,
-        message: "Delivery settings not loaded. Please try again."
+        message: "Delivery settings not loaded. Please try again.",
       });
       return;
     }
@@ -100,7 +105,7 @@ const DeliveryCheckModal: React.FC<DeliveryCheckModalProps> = ({
     if (!validateIndianPincode(pincode)) {
       setCheckResult({
         isDeliverable: false,
-        message: "Please enter a valid 6-digit Indian pin code"
+        message: "Please enter a valid 6-digit Indian pin code",
       });
       return;
     }
@@ -108,25 +113,26 @@ const DeliveryCheckModal: React.FC<DeliveryCheckModalProps> = ({
     setIsChecking(true);
 
     // Simulate API delay for better UX
-    await new Promise(resolve => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
     const { allowedZipCodes, deliveryFee, takeDeliveryFee } = deliverySetting;
 
     // Check if delivery is allowed
     // If allowedZipCodes array is empty (length 0), deliver to all Indian pin codes
-    const isDeliverable = allowedZipCodes.length === 0 || allowedZipCodes.includes(pincode);
+    const isDeliverable =
+      allowedZipCodes.length === 0 || allowedZipCodes.includes(pincode);
 
     if (isDeliverable) {
       const fee = takeDeliveryFee ? deliveryFee : 0;
       setCheckResult({
         isDeliverable: true,
         message: `Great! We deliver to ${pincode}`,
-        deliveryFee: fee
+        deliveryFee: fee,
       });
     } else {
       setCheckResult({
         isDeliverable: false,
-        message: "Sorry, we do not deliver to this location"
+        message: "Sorry, we do not deliver to this location",
       });
     }
 
@@ -141,7 +147,7 @@ const DeliveryCheckModal: React.FC<DeliveryCheckModalProps> = ({
   };
 
   const handleClose = () => {
-    setPincode('');
+    setPincode("");
     setCheckResult(null);
     setIsChecking(false);
     onClose();
@@ -151,7 +157,7 @@ const DeliveryCheckModal: React.FC<DeliveryCheckModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-      <div 
+      <div
         ref={modalRef}
         className="bg-white rounded-lg shadow-xl w-full max-w-md"
       >
@@ -175,7 +181,10 @@ const DeliveryCheckModal: React.FC<DeliveryCheckModalProps> = ({
         <div className="p-6">
           <div className="space-y-4">
             <div>
-              <label htmlFor="pincode" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="pincode"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Enter your pin code
               </label>
               <input
@@ -195,43 +204,28 @@ const DeliveryCheckModal: React.FC<DeliveryCheckModalProps> = ({
 
             {/* Check Result */}
             {checkResult && (
-              <div className={`p-3 rounded-md flex items-start space-x-2 ${
-                checkResult.isDeliverable 
-                  ? 'bg-green-50 border border-green-200' 
-                  : 'bg-red-50 border border-red-200'
-              }`}>
+              <div
+                className={`p-3 rounded-md flex items-start space-x-2 ${
+                  checkResult.isDeliverable
+                    ? "bg-green-50 border border-green-200"
+                    : "bg-red-50 border border-red-200"
+                }`}
+              >
                 {checkResult.isDeliverable ? (
                   <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
                 ) : (
                   <XCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
                 )}
                 <div className="flex-1">
-                  <p className={`text-sm font-medium ${
-                    checkResult.isDeliverable ? 'text-green-800' : 'text-red-800'
-                  }`}>
+                  <p
+                    className={`text-sm font-medium ${
+                      checkResult.isDeliverable
+                        ? "text-green-800"
+                        : "text-red-800"
+                    }`}
+                  >
                     {checkResult.message}
                   </p>
-                  {checkResult.isDeliverable && (
-                    <div className="mt-2 space-y-1">
-                      {checkResult.deliveryFee !== undefined && (
-                        <p className="text-xs text-green-700">
-                          {checkResult.deliveryFee > 0 
-                            ? `Delivery fee: ₹${checkResult.deliveryFee}` 
-                            : 'Free delivery'}
-                        </p>
-                      )}
-                      {deliverySetting?.checkThreshold && 
-                       deliverySetting?.freeDeliveryThreshold && 
-                       checkResult.deliveryFee && 
-                       checkResult.deliveryFee > 0 && (
-                        <div className="bg-emerald-50 border border-emerald-200 rounded-md p-2 mt-2">
-                          <p className="text-xs text-emerald-800 font-medium">
-                            💡 Get FREE delivery on orders above ₹{deliverySetting.freeDeliveryThreshold}
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  )}
                 </div>
               </div>
             )}
@@ -245,10 +239,10 @@ const DeliveryCheckModal: React.FC<DeliveryCheckModalProps> = ({
                   disabled={pincode.length !== 6 || isChecking}
                   className="flex-1 bg-emerald-600 text-white py-2 px-4 rounded-md hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
                 >
-                  {isChecking ? 'Checking...' : 'Check Delivery'}
+                  {isChecking ? "Checking..." : "Check Delivery"}
                 </button>
               )}
-              
+
               {checkResult && checkResult.isDeliverable && (
                 <button
                   type="button"
@@ -258,12 +252,12 @@ const DeliveryCheckModal: React.FC<DeliveryCheckModalProps> = ({
                   Proceed
                 </button>
               )}
-              
+
               {checkResult && (
                 <button
                   type="button"
                   onClick={() => {
-                    setPincode('');
+                    setPincode("");
                     setCheckResult(null);
                   }}
                   className="flex-1 bg-gray-200 text-gray-800 py-2 px-4 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"

@@ -14,7 +14,7 @@ interface MobileHeaderProps {
   onSuggestionClick: (suggestion: AutocompleteResult) => void;
   onNavClick: (e: React.MouseEvent<HTMLAnchorElement>, path: string) => void;
   locationInfo: any;
-  onLocationClick?: () => void; // Add this prop for delivery check
+  onLocationClick?: () => void;
 }
 
 export const MobileHeader: React.FC<MobileHeaderProps> = ({
@@ -25,67 +25,70 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
   onSuggestionClick,
   onNavClick,
   locationInfo,
-  onLocationClick, // Add this prop
+  onLocationClick,
 }) => {
   return (
     <header
-      className={`sm:hidden w-full bg-white transition-transform duration-300 ${
-        isScrolled ? "fixed top-0 left-0 z-[60] shadow-md" : "relative z-[60]"
+      className={`sm:hidden w-full bg-gradient-to-r from-emerald-900 to-emerald-900 transition-transform duration-300 ${
+        isScrolled
+          ? "fixed top-0 left-0 z-[60] shadow-lg shadow-emerald-200"
+          : "relative z-[60]"
       } ${!showHeader && isScrolled ? "-translate-y-full" : "translate-y-0"}`}
     >
-      <div className="border-b border-gray-100">
-        <div className="flex items-center gap-2 p-3">
-          <button
-            onClick={onMenuToggle}
-            className="p-1.5 -ml-1.5 hover:bg-gray-100 rounded-lg transition-colors flex-shrink-0"
-          >
-            <Menu size={20} className="text-gray-700" />
-          </button>
+      <div className="border-b border-emerald-400/30">
+        {/* Top row - Menu, Logo, and Location */}
+        <div className="flex items-center justify-between p-4">
+          {/* Left side - Menu and Logo */}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={onMenuToggle}
+              className="p-2 -ml-1 hover:bg-white/10 rounded-lg transition-colors flex-shrink-0"
+            >
+              <Menu size={22} className="text-white" />
+            </button>
 
-          <SearchAutoComplete
-            placeholder="Search..."
-            onSearch={onSearch}
-            onSuggestionClick={onSuggestionClick}
-            className="flex-1"
-            isMobile={true}
-          />
+            <Link
+              key={"home"}
+              to={"/"}
+              onClick={(e) => onNavClick(e, "/")}
+              className="hover:bg-white/10 rounded-lg p-1 transition-colors"
+            >
+              <img src="/logo_white_details.jpeg" alt="Home" className="h-10" />
+            </Link>
+          </div>
 
-          <Link
-            key={"home"}
-            to={"/"}
-            onClick={(e) => onNavClick(e, "/")}
-          >
-            <img
-              src="/logo.jpeg"
-              alt="Home"
-              className={`h-9 w-9 text-sm font-medium transition-all duration-200 rounded-lg hover:bg-gray-50 `}
-            />
-          </Link>
+          {/* Right side - Location Display */}
+          <div className="flex-shrink-0">
+            {onLocationClick ? (
+              <button
+                onClick={onLocationClick}
+                className="flex items-center p-2 hover:bg-white/10 rounded-lg transition-colors text-white"
+              >
+                <LocationDisplay locationInfo={locationInfo} isMobile={true} />
+              </button>
+            ) : (
+              <Link
+                to="/location"
+                className="flex items-center p-2 hover:bg-white/10 rounded-lg transition-colors text-white"
+                onClick={(e) => onNavClick(e, "/location")}
+              >
+                <LocationDisplay locationInfo={locationInfo} isMobile={true} />
+              </Link>
+            )}
+          </div>
         </div>
 
-        <div className="px-3 pb-2">
-          {onLocationClick ? (
-            <button
-              onClick={onLocationClick}
-              className="flex items-center p-2 hover:bg-gray-50 rounded-lg transition-colors w-full text-left"
-            >
-              <LocationDisplay
-                locationInfo={locationInfo}
-                isMobile={true}
-              />
-            </button>
-          ) : (
-            <Link
-              to="/location"
-              className="flex items-center p-2 hover:bg-gray-50 rounded-lg transition-colors"
-              onClick={(e) => onNavClick(e, "/location")}
-            >
-              <LocationDisplay
-                locationInfo={locationInfo}
-                isMobile={true}
-              />
-            </Link>
-          )}
+        {/* Bottom row - Search Bar */}
+        <div className="px-4 pb-4">
+          <div className="bg-white/95 backdrop-blur-sm rounded-lg shadow-sm">
+            <SearchAutoComplete
+              placeholder="Search Jerseys..."
+              onSearch={onSearch}
+              onSuggestionClick={onSuggestionClick}
+              className="w-full"
+              isMobile={true}
+            />
+          </div>
         </div>
       </div>
     </header>

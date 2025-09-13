@@ -27,9 +27,10 @@ export const LocationDisplay: React.FC<LocationDisplayProps> = ({
   const maxWidth = isMobile ? "max-w-24" : isCompact ? "max-w-28" : "max-w-32";
   const { status } = useAppSelector((state) => state.address);
   const addressLoading = status === "loading";
+
   if (addressLoading) {
     return (
-      <div className="flex items-center space-x-1 text-gray-500">
+      <div className="flex items-center space-x-1 text-white/70">
         <MapPin size={iconSize} />
         <span className={`${textSize} ${maxWidth} truncate`}>Loading...</span>
       </div>
@@ -38,7 +39,7 @@ export const LocationDisplay: React.FC<LocationDisplayProps> = ({
 
   return (
     <div
-      className="flex items-center space-x-1 text-gray-600 hover:text-gray-900 transition-colors cursor-pointer"
+      className="flex items-center space-x-1 text-white/80 hover:text-white transition-colors cursor-pointer"
       title={
         locationInfo.hasUndeliverableAddresses
           ? "Some addresses may not be deliverable. Click to check delivery."
@@ -52,13 +53,13 @@ export const LocationDisplay: React.FC<LocationDisplayProps> = ({
 
       {/* Show chevron if delivery check is available */}
       {locationInfo.showDeliveryCheck && (
-        <ChevronDown size={chevronSize} className="text-gray-400" />
+        <ChevronDown size={chevronSize} className="text-white/60" />
       )}
 
       {/* Show warning icon if user has addresses that can't be delivered to */}
       {locationInfo.hasUndeliverableAddresses && (
         <span title="Some of your addresses may not be deliverable">
-          <AlertTriangle size={chevronSize} className="text-orange-500" />
+          <AlertTriangle size={chevronSize} className="text-amber-400" />
         </span>
       )}
 
@@ -66,7 +67,7 @@ export const LocationDisplay: React.FC<LocationDisplayProps> = ({
       {isCompact &&
         locationInfo.deliverableAddressesCount &&
         locationInfo.deliverableAddressesCount > 1 && (
-          <span className="text-xs bg-emerald-100 text-emerald-600 px-1.5 py-0.5 rounded-full font-medium">
+          <span className="text-xs bg-white/20 text-white px-1.5 py-0.5 rounded-full font-medium backdrop-blur-sm">
             {locationInfo.deliverableAddressesCount}
           </span>
         )}

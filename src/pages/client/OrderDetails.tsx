@@ -4,7 +4,6 @@ import WarningModal from "../../components/common/WarningModal";
 import { useNavigate } from "react-router-dom";
 import type { OrderDetails as OrderDetailsType } from "../../types/order.types";
 
-
 const S3_BASE_URL = import.meta.env.VITE_S3_BASE_URL;
 
 // Helper function to safely convert Decimal to number
@@ -27,9 +26,18 @@ const convertToNumber = (value: any): number => {
   return 0; // Fallback value
 };
 
+// Progress steps for normal order flow
+const PROGRESS_STEPS = [
+  { key: "PENDING", label: "Pending" },
+  { key: "CONFIRMED", label: "Confirmed" },
+  { key: "SHIPPED", label: "Shipped" },
+  { key: "DELIVERED", label: "Delivered" },
+];
+
 const OrderDetails: React.FC = () => {
   const navigate = useNavigate();
-  // Get orderId from URL - you can replace this with your router's useParams
+
+  // Get orderId from URL
   const getOrderIdFromUrl = () => {
     const pathParts = window.location.pathname.split("/");
     return pathParts[pathParts.length - 1];
@@ -106,37 +114,149 @@ const OrderDetails: React.FC = () => {
     }
   };
 
-  const getStatusBadge = (status: string) => {
-    const baseClass =
-      "inline-flex items-center px-3 py-1 rounded-full text-sm font-medium";
-    switch (status) {
-      case "PENDING":
-        return `${baseClass} bg-yellow-100 text-yellow-800`;
-      case "PROCESSING":
-        return `${baseClass} bg-emerald-100 text-emerald-800`;
-      case "SHIPPED":
-        return `${baseClass} bg-purple-100 text-purple-800`;
-      case "DELIVERED":
-        return `${baseClass} bg-green-100 text-green-800`;
-      case "CANCELLED":
-        return `${baseClass} bg-red-100 text-red-800`;
-      default:
-        return `${baseClass} bg-gray-100 text-gray-800`;
+  // Helper function to check if order can be cancelled (within 24 hours)
+  const canCancelOrder = () => {
+    if (!order) return false;
+
+    // Don't show cancel option for these statuses
+    if (
+      ["CANCELLED", "SHIPPED", "DELIVERED", "UNPLACED"].includes(order.status)
+    ) {
+      return false;
     }
+
+    // Only allow cancellation for PENDING and CONFIRMED orders
+    if (!["PENDING", "CONFIRMED"].includes(order.status)) {
+      return false;
+    }
+
+    // Check if order is within 24 hours of creation
+    const orderTime = new Date(order.createdAt).getTime();
+    const currentTime = new Date().getTime();
+    const hoursDifference = (currentTime - orderTime) / (1000 * 60 * 60);
+
+    return hoursDifference <= 24;
   };
 
+  // Helper function to check if order is too old to cancel
+  const isOrderTooOldToCancel = () => {
+    if (!order) return false;
+
+    // Only show this message for PENDING and CONFIRMED orders that are over 24 hours old
+    if (!["PENDING", "CONFIRMED"].includes(order.status)) {
+      return false;
+    }
+
+    const orderTime = new Date(order.createdAt).getTime();
+    const currentTime = new Date().getTime();
+    const hoursDifference = (currentTime - orderTime) / (1000 * 60 * 60);
+
+    return hoursDifference > 24;
+  };
+
+  const getCurrentStepIndex = (status: string) => {
+    return PROGRESS_STEPS.findIndex((step) => step.key === status);
+  };
+
+  const renderProgressBar = () => {
+    if (!order) return null;
+
+    // Handle special cases
+    if (order.status === "CANCELLED") {
+      return (
+        <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+          <div className="text-center">
+            <div className="inline-flex items-center px-4 py-2 rounded-full bg-red-100 text-red-800 font-medium">
+              Order Cancelled
+            </div>
+            <p className="text-gray-600 mt-2">This order has been cancelled.</p>
+          </div>
+        </div>
+      );
+    }
+
+    if (order.status === "UNPLACED") {
+      return (
+        <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+          <div className="text-center">
+            <div className="inline-flex items-center px-4 py-2 rounded-full bg-gray-100 text-gray-800 font-medium">
+              Order Not Placed
+            </div>
+            <p className="text-gray-600 mt-2">
+              Payment was not completed for this order.
+            </p>
+          </div>
+        </div>
+      );
+    }
+
+    const currentStepIndex = getCurrentStepIndex(order.status);
+
+    return (
+      <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-6">
+          Order Progress
+        </h2>
+        <div className="flex items-start justify-between">
+          {PROGRESS_STEPS.map((step, index) => {
+            const isActive = index <= currentStepIndex;
+            const isCurrent = index === currentStepIndex;
+
+            return (
+              <div key={step.key} className="flex items-center flex-1 relative">
+                <div className="flex flex-col items-center w-full">
+                  <div
+                    className={`w-10 h-10 rounded-full flex items-center justify-center font-medium text-sm relative z-10 ${
+                      isActive
+                        ? "bg-emerald-600 text-white"
+                        : "bg-gray-200 text-gray-500"
+                    }`}
+                  >
+                    {index + 1}
+                  </div>
+                  <span
+                    className={`mt-2 text-sm font-medium text-center ${
+                      isCurrent
+                        ? "text-emerald-600"
+                        : isActive
+                        ? "text-gray-900"
+                        : "text-gray-500"
+                    }`}
+                  >
+                    {step.label}
+                  </span>
+                </div>
+                {index < PROGRESS_STEPS.length - 1 && (
+                  <div
+                    className={`absolute top-5 left-1/2 w-full h-1 -translate-y-1/2 ${
+                      index < currentStepIndex
+                        ? "bg-emerald-600"
+                        : "bg-gray-200"
+                    }`}
+                    style={{ zIndex: 1 }}
+                  />
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
   const getStatusMessage = (status: string) => {
     switch (status) {
       case "PENDING":
         return "Your order is being processed and will be confirmed soon.";
-      case "PROCESSING":
-        return "Your order is being prepared for shipment.";
+      case "CONFIRMED":
+        return "Your order has been confirmed and is being prepared for shipment.";
       case "SHIPPED":
         return "Your order is on the way to your delivery address.";
       case "DELIVERED":
         return "Your order has been successfully delivered.";
       case "CANCELLED":
         return "This order has been cancelled.";
+      case "UNPLACED":
+        return "Payment was not completed for this order.";
       default:
         return "";
     }
@@ -145,7 +265,7 @@ const OrderDetails: React.FC = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 p-4">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-300 rounded w-48 mb-6"></div>
             <div className="bg-white rounded-lg p-6 mb-6">
@@ -162,7 +282,7 @@ const OrderDetails: React.FC = () => {
   if (error || !order) {
     return (
       <div className="min-h-screen bg-gray-50 p-4">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           <div className="text-center py-12">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
               Order Not Found
@@ -184,12 +304,12 @@ const OrderDetails: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto p-4 py-6">
+      <div className="max-w-6xl mx-auto p-4 py-6">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="mb-6">
           <button
             onClick={handleBackToOrders}
-            className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
+            className="flex items-center text-gray-600 hover:text-gray-900 transition-colors mb-4"
           >
             <svg
               className="w-5 h-5 mr-2"
@@ -206,69 +326,74 @@ const OrderDetails: React.FC = () => {
             </svg>
             Back to Orders
           </button>
-          <button className="flex items-center px-4 py-2 text-emerald-600 border border-emerald-300 rounded-lg hover:bg-emerald-50 transition-colors">
-            <svg
-              className="w-4 h-4 mr-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-              />
-            </svg>
-            Download Invoice
-          </button>
-        </div>
 
-        {/* Order Info Card */}
-        <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
-          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between mb-4">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900 mb-2">
-                Order #{order.id.slice(-8).toUpperCase()}
-              </h1>
-              <p className="text-gray-600 mb-3">
-                Placed on{" "}
-                {order.createdAt.toLocaleDateString("en-IN", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
-              </p>
-              <div className="flex items-center gap-3 mb-3">
-                <span className={getStatusBadge(order.status)}>
-                  {order.status.charAt(0) + order.status.slice(1).toLowerCase()}
-                </span>
+          <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <div className="flex flex-col md:flex-row md:items-start md:justify-between">
+              <div className="mb-4 md:mb-0">
+                <h1 className="text-2xl font-bold text-gray-900 mb-2">
+                  Order {order.orderNumber}
+                </h1>
+                <p className="text-gray-600 mb-2">
+                  Placed on{" "}
+                  {order.createdAt.toLocaleDateString("en-IN", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </p>
+                <p className="text-sm text-gray-600">
+                  {getStatusMessage(order.status)}
+                </p>
               </div>
-              <p className="text-sm text-gray-600">
-                {getStatusMessage(order.status)}
-              </p>
+              <div className="text-left md:text-right">
+                <p className="text-2xl md:text-3xl font-bold text-gray-900">
+                  ₹{convertToNumber(order.totalAmount).toFixed(2)}
+                </p>
+                <p className="text-sm text-gray-500">Total Amount</p>
+              </div>
             </div>
-            <div className="mt-4 lg:mt-0 text-right">
-              <p className="text-3xl font-bold text-gray-900">
-                ₹{convertToNumber(order.totalAmount).toFixed(2)}
-              </p>
-              <p className="text-sm text-gray-500">Total Amount</p>
-            </div>
-          </div>
 
-          {/* Action Buttons */}
-          {(order.status === "PENDING" || order.status === "CONFIRMED") && (
-            <div className="border-t border-gray-100 pt-4">
-              <button
-                onClick={() => setShowCancelModal(true)}
-                className="px-4 py-2 text-red-600 border border-red-300 rounded-lg hover:bg-red-50 transition-colors"
-              >
-                Cancel Order
-              </button>
-            </div>
-          )}
+            {/* Cancel Button or Message */}
+            {canCancelOrder() && (
+              <div className="border-t border-gray-100 pt-4 mt-4">
+                <button
+                  onClick={() => setShowCancelModal(true)}
+                  className="px-4 py-2 text-red-600 border border-red-300 rounded-lg hover:bg-red-50 transition-colors"
+                >
+                  Cancel Order
+                </button>
+              </div>
+            )}
+
+            {isOrderTooOldToCancel() && (
+              <div className="border-t border-gray-100 pt-4 mt-4">
+                <div className="flex items-center text-gray-500">
+                  <svg
+                    className="w-4 h-4 mr-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  <span className="text-sm">
+                    Orders can only be cancelled within 24 hours of placement
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
+        {/* Progress Bar */}
+        {renderProgressBar()}
+
+        {/* Main Content */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Order Items */}
           <div className="lg:col-span-2">
@@ -287,24 +412,31 @@ const OrderDetails: React.FC = () => {
                       <img
                         src={`${S3_BASE_URL}${item.productImageUrl}`}
                         alt={item.productName}
-                        className="w-16 h-16 object-cover rounded-lg mr-4 flex-shrink-0"
+                        className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-lg mr-4 flex-shrink-0"
                       />
                     )}
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-gray-900 truncate">
+                      <h3 className="font-semibold text-gray-900 mb-1">
                         {item.productName}
                       </h3>
                       {item.productDescription && (
-                        <p className="text-sm text-gray-600 mt-1 line-clamp-2">
+                        <p className="text-sm text-gray-600 mb-2 line-clamp-2">
                           {item.productDescription}
                         </p>
                       )}
-                      {item.productCategory && (
-                        <span className="inline-block text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full mt-2">
-                          {item.productCategory}
-                        </span>
-                      )}
-                      <div className="flex items-center justify-between mt-3">
+                      <div className="flex flex-wrap items-center gap-2 mb-2">
+                        {item.productCategory && (
+                          <span className="inline-block text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                            {item.productCategory}
+                          </span>
+                        )}
+                        {item.stockName && (
+                          <span className="inline-block text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                            Size: {item.stockName}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center justify-between">
                         <span className="text-sm text-gray-600">
                           Qty: {item.quantity}
                         </span>
@@ -319,12 +451,12 @@ const OrderDetails: React.FC = () => {
             </div>
           </div>
 
-          {/* Delivery Details & Payment */}
+          {/* Sidebar */}
           <div className="space-y-6">
             {/* Delivery Details */}
             <div className="bg-white rounded-lg border border-gray-200 p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                Delivery Details
+                Delivery Address
               </h2>
               <div className="space-y-3">
                 <div>
@@ -417,7 +549,7 @@ const OrderDetails: React.FC = () => {
           </div>
         </div>
 
-        {/* Cancel Order Modal using WarningModal */}
+        {/* Cancel Order Modal */}
         <WarningModal
           isOpen={showCancelModal}
           onClose={() => setShowCancelModal(false)}

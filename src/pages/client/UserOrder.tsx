@@ -2,33 +2,22 @@ import React, { useState, useEffect } from "react";
 import { orderService } from "../../services/order.services";
 import { useNavigate } from "react-router-dom";
 
-// Updated interfaces to match your backend structure
 interface Order {
   id: string;
   createdAt: Date;
   totalAmount: number;
-  status: "PENDING" | "CONFIRMED" | "SHIPPED" | "DELIVERED" | "CANCELLED";
+  status:
+    | "PENDING"
+    | "CONFIRMED"
+    | "SHIPPED"
+    | "DELIVERED"
+    | "CANCELLED"
+    | "UNPLACED";
   payment: {
     status: string;
     method: string;
   };
   orderNumber?: string;
-  items?: OrderItem[];
-  shippingAddress?: {
-    street: string;
-    city: string;
-    state: string;
-    zipCode: string;
-  };
-}
-
-interface OrderItem {
-  id: string;
-  productId: string;
-  productName: string;
-  quantity: number;
-  price: number;
-  image?: string;
 }
 
 // Helper function to safely convert Decimal to number
@@ -55,7 +44,6 @@ const Orders: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [filter, setFilter] = useState<"all" | Order["status"]>("all");
 
   useEffect(() => {
     fetchOrders();
@@ -86,37 +74,9 @@ const Orders: React.FC = () => {
     navigate(`/orders/${orderId}`);
   };
 
-  // const handleCancelOrder = async (
-  //   orderId: string,
-  //   event: React.MouseEvent
-  // ) => {
-  //   event.stopPropagation();
-  //   if (!confirm("Are you sure you want to cancel this order?")) return;
-
-  //   try {
-  //     setActionLoading(orderId);
-  //     const response = await orderService.cancelOrder(orderId);
-  //     if (response.success) {
-  //       setOrders((prev) =>
-  //         prev.map((order) =>
-  //           order.id === orderId
-  //             ? { ...order, status: "CANCELLED" as const }
-  //             : order
-  //         )
-  //       );
-  //       setError(null);
-  //       alert("Order cancelled successfully");
-  //     }
-  //   } catch (err: any) {
-  //     setError(err.message || "Failed to cancel order");
-  //   } finally {
-  //     setActionLoading(null);
-  //   }
-  // };
-
-  const getStatusBadge = (status: Order["status"]) => {
+  const getOrderStatusBadge = (status: Order["status"]) => {
     const baseClass =
-      "inline-flex items-center px-3 py-1 rounded-full text-sm font-medium";
+      "inline-flex items-center px-3 py-1 rounded-full text-xs font-medium";
     switch (status) {
       case "PENDING":
         return `${baseClass} bg-yellow-100 text-yellow-800`;
@@ -128,6 +88,8 @@ const Orders: React.FC = () => {
         return `${baseClass} bg-green-100 text-green-800`;
       case "CANCELLED":
         return `${baseClass} bg-red-100 text-red-800`;
+      case "UNPLACED":
+        return `${baseClass} bg-gray-100 text-gray-800`;
       default:
         return `${baseClass} bg-gray-100 text-gray-800`;
     }
@@ -135,7 +97,7 @@ const Orders: React.FC = () => {
 
   const getPaymentStatusBadge = (status: string) => {
     const baseClass =
-      "inline-flex items-center px-3 py-1 rounded-full text-sm font-medium";
+      "inline-flex items-center px-3 py-1 rounded-full text-xs font-medium";
     switch (status.toLowerCase()) {
       case "completed":
       case "paid":
@@ -149,9 +111,24 @@ const Orders: React.FC = () => {
     }
   };
 
-  const filteredOrders = orders.filter(
-    (order) => filter === "all" || order.status === filter
-  );
+  const getOrderStatusText = (status: Order["status"]) => {
+    switch (status) {
+      case "PENDING":
+        return "Pending";
+      case "CONFIRMED":
+        return "Confirmed";
+      case "SHIPPED":
+        return "Shipped";
+      case "DELIVERED":
+        return "Delivered";
+      case "CANCELLED":
+        return "Cancelled";
+      case "UNPLACED":
+        return "Not Placed";
+      default:
+        return status;
+    }
+  };
 
   if (loading) {
     return (
@@ -193,46 +170,9 @@ const Orders: React.FC = () => {
           </div>
         )}
 
-        {/* Filter Tabs */}
-        <div className="mb-6">
-          <div className="border-b border-gray-200">
-            <nav className="-mb-px flex space-x-8">
-              {(
-                [
-                  "all",
-                  "PENDING",
-                  "CONFIRMED",
-                  "SHIPPED",
-                  "DELIVERED",
-                  "CANCELLED",
-                ] as const
-              ).map((status) => (
-                <button
-                  key={status}
-                  onClick={() => setFilter(status)}
-                  className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                    filter === status
-                      ? "border-emerald-500 text-emerald-600"
-                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                  }`}
-                >
-                  {status === "all"
-                    ? "All Orders"
-                    : status.charAt(0) + status.slice(1).toLowerCase()}
-                  {status !== "all" && (
-                    <span className="ml-2 bg-gray-100 text-gray-600 py-0.5 px-2 rounded-full text-xs">
-                      {orders.filter((o) => o.status === status).length}
-                    </span>
-                  )}
-                </button>
-              ))}
-            </nav>
-          </div>
-        </div>
-
         {/* Orders List */}
         <div className="space-y-4">
-          {filteredOrders.length === 0 ? (
+          {orders.length === 0 ? (
             <div className="text-center py-12">
               <div className="text-gray-400 mb-4">
                 <svg
@@ -253,108 +193,109 @@ const Orders: React.FC = () => {
                 No orders found
               </h3>
               <p className="text-gray-500">
-                {filter === "all"
-                  ? "You haven't placed any orders yet."
-                  : `No ${filter.toLowerCase()} orders found.`}
+                You haven't placed any orders yet.
               </p>
             </div>
           ) : (
-            filteredOrders.map((order) => (
+            orders.map((order) => (
               <div
                 key={order.id}
-                className="bg-white border border-gray-100 rounded-lg hover:border-gray-200 hover:shadow-sm transition-colors cursor-pointer"
+                className="bg-white border border-gray-100 rounded-lg hover:border-gray-200 hover:shadow-sm transition-all cursor-pointer"
                 onClick={() => handleOrderClick(order.id)}
               >
                 <div className="p-6">
                   {/* Order Header */}
                   <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-4">
                     <div className="flex-1">
-                      <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-3">
-                        <h3 className="text-lg font-semibold text-gray-900">
-                          Order #
+                      <div className="mb-3">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                          Order{" "}
                           {order.orderNumber ||
-                            order.id.slice(-8).toUpperCase()}
+                            `#${order.id.slice(-8).toUpperCase()}`}
                         </h3>
-                        <div className="flex gap-2">
-                          <span className={getStatusBadge(order.status)}>
-                            {order.status.charAt(0) +
-                              order.status.slice(1).toLowerCase()}
-                          </span>
-                          <span
-                            className={getPaymentStatusBadge(
-                              order.payment.status
-                            )}
-                          >
-                            {order.payment.status}
-                          </span>
+
+                        <div className="flex flex-wrap gap-2 mb-3">
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm text-gray-500">
+                              Order:
+                            </span>
+                            <span className={getOrderStatusBadge(order.status)}>
+                              {getOrderStatusText(order.status)}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm text-gray-500">
+                              Payment:
+                            </span>
+                            <span
+                              className={getPaymentStatusBadge(
+                                order.payment.status
+                              )}
+                            >
+                              {order.payment.status}
+                            </span>
+                          </div>
                         </div>
                       </div>
 
                       <div className="text-sm text-gray-600 space-y-1">
                         <p>
                           Placed on{" "}
-                          {order.createdAt.toLocaleDateString("en-US", {
+                          {order.createdAt.toLocaleDateString("en-IN", {
                             year: "numeric",
                             month: "long",
                             day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
                           })}
                         </p>
                         <p>Payment Method: {order.payment.method}</p>
-                        {order.items && (
-                          <p>
-                            {order.items.length}{" "}
-                            {order.items.length === 1 ? "item" : "items"}
-                          </p>
-                        )}
                       </div>
                     </div>
 
-                    <div className="mt-4 sm:mt-0 text-right">
-                      <p className="text-xl font-bold text-gray-900">
-                        ₹{convertToNumber(order.totalAmount).toFixed(2)}
+                    <div className="mt-4 sm:mt-0 text-left sm:text-right">
+                      <p className="text-2xl font-bold text-gray-900">
+                        ₹{order.totalAmount.toFixed(2)}
                       </p>
+                      <p className="text-sm text-gray-500">Total Amount</p>
                     </div>
                   </div>
 
-                  {/* Order Items */}
-                  {order.items && order.items.length > 0 && (
-                    <div className="border-t border-gray-100 pt-4 mb-4">
-                      <div className="space-y-3">
-                        {order.items.slice(0, 2).map((item) => (
-                          <div key={item.id} className="flex items-center">
-                            {item.image && (
-                              <img
-                                src={item.image}
-                                alt={item.productName}
-                                className="w-12 h-12 object-cover rounded-lg mr-4"
-                              />
-                            )}
-                            <div className="flex-1">
-                              <p className="font-medium text-gray-900 truncate">
-                                {item.productName}
-                              </p>
-                              <p className="text-sm text-gray-500">
-                                Qty: {item.quantity}
-                              </p>
-                            </div>
-                            <p className="font-medium text-gray-900">
-                              ₹{item.price.toFixed(2)}
-                            </p>
-                          </div>
-                        ))}
-                        {order.items.length > 2 && (
-                          <p className="text-sm text-gray-500">
-                            +{order.items.length - 2} more items
-                          </p>
-                        )}
-                      </div>
+                  {/* View Details Link */}
+                  <div className="border-t border-gray-100 pt-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-500">
+                        Click to view order details
+                      </span>
+                      <svg
+                        className="w-5 h-5 text-gray-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M9 5l7 7-7 7"
+                        />
+                      </svg>
                     </div>
-                  )}
+                  </div>
                 </div>
               </div>
             ))
           )}
         </div>
+
+        {/* Load More or Pagination can be added here if needed */}
+        {orders.length > 0 && (
+          <div className="text-center mt-8">
+            <p className="text-sm text-gray-500">
+              Showing {orders.length} order{orders.length !== 1 ? "s" : ""}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

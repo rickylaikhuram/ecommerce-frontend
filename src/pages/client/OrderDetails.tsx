@@ -3,6 +3,7 @@ import { orderService } from "../../services/order.services";
 import WarningModal from "../../components/common/WarningModal";
 import { useNavigate } from "react-router-dom";
 import type { OrderDetails as OrderDetailsType } from "../../types/order.types";
+import toast from "react-hot-toast";
 
 const S3_BASE_URL = import.meta.env.VITE_S3_BASE_URL;
 
@@ -105,10 +106,10 @@ const OrderDetails: React.FC = () => {
       if (response.success) {
         setOrder((prev) => (prev ? { ...prev, status: "CANCELLED" } : null));
         setShowCancelModal(false);
-        alert("Order cancelled successfully");
+        toast.success("Order cancelled successfully")
       }
     } catch (err: any) {
-      alert(err.message || "Failed to cancel order");
+      toast.error("Failed to cancel order")
     } finally {
       setCancelLoading(false);
     }

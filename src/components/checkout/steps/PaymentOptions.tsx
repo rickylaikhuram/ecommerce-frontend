@@ -93,22 +93,24 @@ const PaymentOptions: React.FC<PaymentOptionsProps> = ({
 
   return (
     <div className="bg-white rounded-xl shadow-lg border border-emerald-100">
-      <div className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white p-4 rounded-t-xl">
-        <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-            <span className="text-sm text-emerald-600 font-bold">4</span>
+      <div className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white p-3 sm:p-4 rounded-t-xl">
+        <div className="flex items-center space-x-2 sm:space-x-3">
+          <div className="w-6 h-6 sm:w-8 sm:h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+            <span className="text-xs sm:text-sm text-emerald-600 font-bold">
+              4
+            </span>
           </div>
-          <h2 className="text-xl font-semibold">Payment Method</h2>
+          <h2 className="text-lg sm:text-xl font-semibold">Payment Method</h2>
         </div>
       </div>
 
-      <div className="p-6">
-        <div className="mb-4 flex items-center space-x-2 text-sm text-gray-600">
-          <Lock className="h-4 w-4 text-green-600" />
+      <div className="p-3 sm:p-6">
+        <div className="mb-3 sm:mb-4 flex items-center space-x-2 text-xs sm:text-sm text-gray-600">
+          <Lock className="h-3 w-3 sm:h-4 sm:w-4 text-green-600" />
           <span>All payments are secured with 256-bit SSL encryption</span>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           {paymentMethods.map((method) => {
             const Icon = method.icon;
             const ButtonIcon = method.buttonIcon;
@@ -125,7 +127,7 @@ const PaymentOptions: React.FC<PaymentOptionsProps> = ({
                     ? () => handleSelectMethod(method.id)
                     : undefined
                 }
-                className={`relative block p-5 border-2 rounded-xl transition-all duration-200 ${
+                className={`relative block p-3 sm:p-5 border-2 rounded-xl transition-all duration-200 ${
                   isDisabled
                     ? "border-gray-200 bg-gray-50 opacity-60"
                     : isSelected
@@ -134,14 +136,14 @@ const PaymentOptions: React.FC<PaymentOptionsProps> = ({
                 } ${isProcessing && !isSelected ? "pointer-events-none" : ""}`}
               >
                 {method.popular && !isDisabled && (
-                  <div className="absolute -top-2 left-4">
-                    <span className="bg-gradient-to-r from-orange-400 to-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">
+                  <div className="absolute -top-2 left-2 sm:left-4">
+                    <span className="bg-gradient-to-r from-orange-400 to-orange-500 text-white text-xs font-bold px-2 sm:px-3 py-1 rounded-full shadow-sm">
                       POPULAR
                     </span>
                   </div>
                 )}
 
-                <div className="flex items-center space-x-4">
+                <div className="flex items-start sm:items-center space-x-3 sm:space-x-4">
                   <input
                     type="radio"
                     name="payment"
@@ -149,14 +151,14 @@ const PaymentOptions: React.FC<PaymentOptionsProps> = ({
                     checked={isSelected}
                     onChange={() => handleSelectMethod(method.id)}
                     disabled={isProcessing}
-                    className={`scale-125 ${
+                    className={`scale-110 sm:scale-125 mt-1 sm:mt-0 ${
                       isDisabled ? "text-gray-400" : "text-emerald-600"
                     }`}
                     style={{ pointerEvents: "none" }}
                   />
 
                   <div
-                    className={`p-3 rounded-lg ${
+                    className={`p-2 sm:p-3 rounded-lg ${
                       isDisabled
                         ? "bg-gray-200"
                         : isSelected
@@ -165,7 +167,7 @@ const PaymentOptions: React.FC<PaymentOptionsProps> = ({
                     }`}
                   >
                     <Icon
-                      className={`h-6 w-6 ${
+                      className={`h-5 w-5 sm:h-6 sm:w-6 ${
                         isDisabled
                           ? "text-gray-400"
                           : isSelected
@@ -175,10 +177,10 @@ const PaymentOptions: React.FC<PaymentOptionsProps> = ({
                     />
                   </div>
 
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2 mb-1">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center space-x-1 sm:space-x-2 mb-1">
                       <h3
-                        className={`font-semibold ${
+                        className={`font-semibold text-sm sm:text-base ${
                           isDisabled
                             ? "text-gray-400"
                             : isSelected
@@ -190,14 +192,14 @@ const PaymentOptions: React.FC<PaymentOptionsProps> = ({
                       </h3>
                       {method.secure && (
                         <Shield
-                          className={`h-4 w-4 ${
+                          className={`h-3 w-3 sm:h-4 sm:w-4 ${
                             isDisabled ? "text-gray-400" : "text-green-600"
                           }`}
                         />
                       )}
                     </div>
                     <p
-                      className={`text-sm ${
+                      className={`text-xs sm:text-sm ${
                         isDisabled
                           ? "text-gray-400"
                           : isSelected
@@ -209,16 +211,16 @@ const PaymentOptions: React.FC<PaymentOptionsProps> = ({
                     </p>
                   </div>
 
-                  <div className="flex items-center space-x-3">
+                  <div className="flex flex-col sm:flex-row items-end sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
                     {isSelected && !isDisabled && (
-                      <CheckCircle className="h-6 w-6 text-green-600" />
+                      <CheckCircle className="h-5 w-5 sm:h-6 sm:w-6 text-green-600" />
                     )}
 
                     {isSelected && (
                       <button
                         onClick={(e) => handleActionClick(method.id, e)}
                         disabled={isProcessing}
-                        className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium text-sm transition-colors min-w-[140px] justify-center ${
+                        className={`flex items-center space-x-1 sm:space-x-2 px-3 sm:px-4 py-2 rounded-lg font-medium text-xs sm:text-sm transition-colors min-w-[100px] sm:min-w-[140px] justify-center ${
                           isCurrentlyProcessing
                             ? "bg-gray-400 cursor-not-allowed"
                             : isProcessing
@@ -232,13 +234,25 @@ const PaymentOptions: React.FC<PaymentOptionsProps> = ({
                       >
                         {isCurrentlyProcessing ? (
                           <>
-                            <Loader2 className="h-4 w-4 animate-spin" />
-                            <span>Processing...</span>
+                            <Loader2 className="h-3 w-3 sm:h-4 sm:w-4 animate-spin" />
+                            <span className="hidden sm:inline">
+                              Processing...
+                            </span>
+                            <span className="sm:hidden">...</span>
                           </>
                         ) : (
                           <>
-                            <ButtonIcon className="h-4 w-4" />
-                            <span>{method.buttonText}</span>
+                            <ButtonIcon className="h-3 w-3 sm:h-4 sm:w-4" />
+                            <span className="hidden sm:inline">
+                              {method.buttonText}
+                            </span>
+                            <span className="sm:hidden">
+                              {method.id === "upi"
+                                ? "QR"
+                                : method.id === "cod"
+                                ? "Order"
+                                : "Pay"}
+                            </span>
                           </>
                         )}
                       </button>
@@ -248,32 +262,32 @@ const PaymentOptions: React.FC<PaymentOptionsProps> = ({
 
                 {/* Additional info for selected method */}
                 {isSelected && !isDisabled && (
-                  <div className="mt-4 pt-4 border-t border-emerald-200">
+                  <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-emerald-200">
                     {method.id === "card" && (
-                      <div className="bg-white rounded-lg p-4 border border-emerald-200">
-                        <p className="text-sm text-gray-700 mb-2">
+                      <div className="bg-white rounded-lg p-3 sm:p-4 border border-emerald-200">
+                        <p className="text-xs sm:text-sm text-gray-700 mb-2">
                           <strong>Accepted Cards:</strong>
                         </p>
                         <div className="flex space-x-2">
-                          <div className="w-8 h-6 bg-emerald-600 rounded text-white text-xs flex items-center justify-center font-bold">
-                            VISA
+                          <div className="w-6 h-4 sm:w-8 sm:h-6 bg-emerald-600 rounded text-white text-xs flex items-center justify-center font-bold">
+                            <span className="text-xs sm:text-xs">VISA</span>
                           </div>
-                          <div className="w-8 h-6 bg-red-500 rounded text-white text-xs flex items-center justify-center font-bold">
-                            MC
+                          <div className="w-6 h-4 sm:w-8 sm:h-6 bg-red-500 rounded text-white text-xs flex items-center justify-center font-bold">
+                            <span className="text-xs sm:text-xs">MC</span>
                           </div>
-                          <div className="w-8 h-6 bg-orange-500 rounded text-white text-xs flex items-center justify-center font-bold">
-                            RU
+                          <div className="w-6 h-4 sm:w-8 sm:h-6 bg-orange-500 rounded text-white text-xs flex items-center justify-center font-bold">
+                            <span className="text-xs sm:text-xs">RU</span>
                           </div>
                         </div>
                       </div>
                     )}
 
                     {method.id === "upi" && (
-                      <div className="bg-white rounded-lg p-4 border border-emerald-200">
-                        <p className="text-sm text-gray-700 mb-2">
+                      <div className="bg-white rounded-lg p-3 sm:p-4 border border-emerald-200">
+                        <p className="text-xs sm:text-sm text-gray-700 mb-2">
                           <strong>Popular UPI Apps:</strong>
                         </p>
-                        <div className="flex space-x-3">
+                        <div className="flex flex-wrap gap-2 sm:gap-3">
                           <div className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded">
                             PhonePe
                           </div>
@@ -288,9 +302,9 @@ const PaymentOptions: React.FC<PaymentOptionsProps> = ({
                     )}
 
                     {method.id === "cod" && (
-                      <div className="bg-orange-50 rounded-lg p-4 border border-orange-200">
+                      <div className="bg-orange-50 rounded-lg p-3 sm:p-4 border border-orange-200">
                         <div className="flex items-start space-x-2">
-                          <div className="w-5 h-5 bg-orange-500 rounded-full flex items-center justify-center mt-0.5">
+                          <div className="w-4 h-4 sm:w-5 sm:h-5 bg-orange-500 rounded-full flex items-center justify-center mt-0.5">
                             <span className="text-white text-xs font-bold">
                               !
                             </span>
@@ -313,21 +327,21 @@ const PaymentOptions: React.FC<PaymentOptionsProps> = ({
 
         {/* Security notice */}
         <div
-          className={`mt-6 p-4 rounded-lg border transition-all duration-200 ${
+          className={`mt-4 sm:mt-6 p-3 sm:p-4 rounded-lg border transition-all duration-200 ${
             isProcessing
               ? "bg-gray-50 border-gray-200"
               : "bg-green-50 border-green-200"
           }`}
         >
-          <div className="flex items-start space-x-3">
+          <div className="flex items-start space-x-2 sm:space-x-3">
             <Shield
-              className={`h-5 w-5 mt-0.5 ${
+              className={`h-4 w-4 sm:h-5 sm:w-5 mt-0.5 ${
                 isProcessing ? "text-gray-400" : "text-green-600"
               }`}
             />
             <div>
               <p
-                className={`text-sm font-medium ${
+                className={`text-xs sm:text-sm font-medium ${
                   isProcessing ? "text-gray-600" : "text-green-800"
                 }`}
               >

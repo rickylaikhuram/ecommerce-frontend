@@ -3,7 +3,7 @@ import instance from "../utils/axios";
 import type { SearchResponse } from "../types/search.types";
 
 class SearchService {
-  private baseUrl = "/api/product/search";
+  private baseUrl = "/product/search";
 
   async getAutocomplete(query: string, limit = 8): Promise<SearchResponse> {
     try {

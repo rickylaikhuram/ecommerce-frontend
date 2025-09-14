@@ -58,7 +58,7 @@ const Banners: React.FC = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await instance.get("/api/admin/banner");
+      const response = await instance.get("/admin/banner");
       const data = response.data.banner || [];
       setBanners(data);
     } catch (error) {
@@ -106,7 +106,7 @@ const Banners: React.FC = () => {
     setDeleteModal(prev => ({ ...prev, isDeleting: true }));
 
     try {
-      await instance.delete(`/api/admin/banner/${deleteModal.banner.id}`);
+      await instance.delete(`/admin/banner/${deleteModal.banner.id}`);
       showNotification("success", "Banner deleted successfully");
       fetchBanners();
       closeDeleteModal();

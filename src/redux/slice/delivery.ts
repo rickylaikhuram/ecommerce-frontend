@@ -26,7 +26,7 @@ const initialState: DeliverySetting = {
 export const fetchDeliverySetting = createAsyncThunk(
   "delivery/fetchDeliverySetting", 
   async () => {
-    const response = await instance.get("/api/product/delivery");
+    const response = await instance.get("/product/delivery");
     return response.data.setting;
   }
 );

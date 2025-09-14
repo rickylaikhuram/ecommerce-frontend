@@ -51,7 +51,7 @@ const ForgotPassword = () => {
     setLoading(true);
     try {
       const response = await instance.post(
-        "/api/auth/forgot-password/initiate",
+        "/auth/forgot-password/initiate",
         {
           phone: data.phone,
         }
@@ -76,7 +76,7 @@ const ForgotPassword = () => {
   const handleOTPVerify = async (otp: string) => {
     try {
       const response = await instance.post(
-        "/api/auth/forgot-password/verify-otp",
+        "/auth/forgot-password/verify-otp",
         {
           phone: phoneNumber,
           otp,
@@ -101,7 +101,7 @@ const ForgotPassword = () => {
 
   const handleResendOTP = async () => {
     try {
-      const response = await instance.post("/api/auth/forgot-password/resend", {
+      const response = await instance.post("/auth/forgot-password/resend", {
         phone: phoneNumber,
       });
 
@@ -123,7 +123,7 @@ const ForgotPassword = () => {
     try {
       const resetToken = sessionStorage.getItem("resetToken");
 
-      const response = await instance.post("/api/auth/forgot-password/reset", {
+      const response = await instance.post("/auth/forgot-password/reset", {
         resetToken,
         newPassword,
       });
@@ -169,7 +169,7 @@ const ForgotPassword = () => {
   // OTP Screen
   if (currentStep === "otp") {
     return (
-      <div className="flex items-center justify-center bg-white px-4 py-8">
+      <div className="flex items-center justify-center bg-white px-4 py-8 pb-10">
         <div className="w-full max-w-md">
           <div className="bg-white backdrop-blur-sm rounded-3xl shadow-2xl shadow-gray-100/50 p-8 border border-gray-200">
             <OTPVerification
@@ -189,7 +189,7 @@ const ForgotPassword = () => {
   // Set New Password Screen
   if (currentStep === "password") {
     return (
-      <div className="flex items-center justify-center bg-white px-4 py-8">
+      <div className="flex items-center justify-center bg-white px-4 py-8 pb-10">
         <div className="w-full max-w-md">
           <div className="bg-white backdrop-blur-sm rounded-3xl shadow-2xl shadow-gray-100/50 p-8 border border-gray-200">
             <SetNewPassword
@@ -204,7 +204,7 @@ const ForgotPassword = () => {
 
   // Phone Input Screen (default)
   return (
-    <div className="flex items-center justify-center bg-white px-4 py-8">
+    <div className="flex items-center justify-center bg-white px-4 py-8 pb-10">
       <div className="w-full max-w-md">
         <div className="flex justify-center mb-8">
           <div className="relative">

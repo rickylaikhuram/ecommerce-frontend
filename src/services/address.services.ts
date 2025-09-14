@@ -19,13 +19,13 @@ export interface CreateAddressPayload {
 class AddressService {
   // Create a new address
   async createAddress(data: CreateAddressPayload): Promise<Address> {
-    const response = await axios.post("api/user/address",  { address: data });
+    const response = await axios.post("/user/address",  { address: data });
     return response.data.address;
   }
 
   // Get all addresses of the logged-in user
   async getAddresses(): Promise<Address[]> {
-    const response = await axios.get("api/user/address");
+    const response = await axios.get("/user/address");
     return response.data.addresses;
   }
 
@@ -34,19 +34,19 @@ class AddressService {
     addressId: string,
     data: Partial<CreateAddressPayload>
   ): Promise<Address> {
-    const response = await axios.put(`api/user/address/${addressId}`, { address: data });
+    const response = await axios.put(`/user/address/${addressId}`, { address: data });
     return response.data.address;
   }
 
   // Delete an address
   async deleteAddress(addressId: string): Promise<{ message: string }> {
-    const response = await axios.delete(`api/user/address/${addressId}`);
+    const response = await axios.delete(`/user/address/${addressId}`);
     return response.data;
   }
 
   // Set default address
   async setDefaultAddress(addressId: string): Promise<{ message: string }> {
-    const response = await axios.patch(`api/user/address/${addressId}/default`);
+    const response = await axios.patch(`/user/address/${addressId}/default`);
     return response.data;
   }
 }

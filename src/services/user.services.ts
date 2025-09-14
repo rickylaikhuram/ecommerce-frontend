@@ -35,7 +35,7 @@ class UserService {
   // Get user profile
   async getUserProfile(): Promise<User> {
     try {
-      const response = await instance.get("/api/user/profile");
+      const response = await instance.get("/user/profile");
       return response.data.user;
     } catch (error: any) {
       throw new Error(
@@ -47,7 +47,7 @@ class UserService {
   // Update personal information (name)
   async updatePersonalInfo(data: UpdatePersonalInfoData): Promise<User> {
     try {
-      const response = await instance.patch("/api/user/profile/name", data);
+      const response = await instance.patch("/user/profile/name", data);
       return response.data.user;
     } catch (error: any) {
       throw new Error(
@@ -59,7 +59,7 @@ class UserService {
   // Send OTP for email update
   async sendEmailUpdateOtp(data: UpdateEmailData): Promise<string> {
     try {
-      const response = await instance.patch("/api/user/profile/email", data);
+      const response = await instance.patch("/user/profile/email", data);
       return response.data.message;
     } catch (error: any) {
       const errorMessage =
@@ -77,7 +77,7 @@ class UserService {
   async verifyEmailUpdateOtp(data: VerifyOtpData): Promise<User> {
     try {
       const response = await instance.patch(
-        "/api/user/profile/email/verify",
+        "/user/profile/email/verify",
         data
       );
       return response.data.user;
@@ -89,7 +89,7 @@ class UserService {
   // Send OTP for phone update
   async sendPhoneUpdateOtp(data: UpdatePhoneData): Promise<string> {
     try {
-      const response = await instance.patch("/api/user/profile/phone", data);
+      const response = await instance.patch("/user/profile/phone", data);
       return response.data.message;
     } catch (error: any) {
       const errorMessage =
@@ -107,7 +107,7 @@ class UserService {
   async verifyPhoneUpdateOtp(data: VerifyOtpData): Promise<User> {
     try {
       const response = await instance.patch(
-        "/api/user/profile/phone/verify",
+        "/user/profile/phone/verify",
         data
       );
       return response.data.user;
@@ -120,7 +120,7 @@ class UserService {
   async changePassword(data: ChangePasswordData): Promise<string> {
     try {
       const response = await instance.patch(
-        "/api/user/profile/change-password",
+        "/user/profile/change-password",
         data
       );
       return response.data.message; // backend should return { message: "Password updated successfully" }

@@ -186,7 +186,7 @@ const ProductDetails: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await instance.get(`api/product/${productId}`);
+      const response = await instance.get(`/product/${productId}`);
 
       if (!response.data?.product) {
         throw new Error("Product not found");

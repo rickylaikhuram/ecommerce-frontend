@@ -306,7 +306,7 @@ const BannerForm: React.FC<BannerFormProps> = ({
 
       // Step 1: Get presigned URL from backend
       const presignedResponse = await instance.post(
-        "/api/admin/add/images/presigned-urls",
+        "/admin/add/images/presigned-urls",
         {
           files: [
             {
@@ -394,7 +394,7 @@ const BannerForm: React.FC<BannerFormProps> = ({
         };
 
         // Submit to backend
-        await instance.post("/api/admin/banner", submitData);
+        await instance.post("/admin/banner", submitData);
       } else {
         // For edit mode - must match editbannerSchema
         setSubmitStatus("saving");
@@ -424,7 +424,7 @@ const BannerForm: React.FC<BannerFormProps> = ({
         }
 
         // Submit to backend
-        await instance.put(`/api/admin/banner/${initialData?.id}`, submitData);
+        await instance.put(`/admin/banner/${initialData?.id}`, submitData);
       }
 
       setSubmitStatus("success");

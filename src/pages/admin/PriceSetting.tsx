@@ -54,7 +54,7 @@ const PriceSetting: React.FC = () => {
     setLoading(true);
     try {
       const response = await instance.get<ApiGetResponse>(
-        "/api/admin/pricesetting"
+        "/admin/pricesetting"
       );
       if (response.data.success && response.data.priceSetting) {
         // Convert string values to numbers for deliveryFee and freeDeliveryThreshold
@@ -91,7 +91,7 @@ const PriceSetting: React.FC = () => {
     setSaving(true);
     try {
       const response = await instance.put<ApiResponse>(
-        "/api/admin/pricesetting",
+        "/admin/pricesetting",
         settings
       );
       setMessage({

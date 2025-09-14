@@ -52,7 +52,7 @@ const Dashboard = () => {
         setLoading(true);
         setError(null);
 
-        const response = await instance.get("/api/admin/dashboard");
+        const response = await instance.get("/admin/dashboard");
 
         if (response.data.success) {
           setData(response.data.data);

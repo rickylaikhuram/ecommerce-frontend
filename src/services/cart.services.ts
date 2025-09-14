@@ -4,7 +4,7 @@ import type { CheckoutItem, CartCheckoutResponse } from '../types/checkout.types
 import instance from '../utils/axios';
 
 class CartService {
-  private baseUrl = '/api/user/cart';
+  private baseUrl = '/user/cart';
 
   async getCart(): Promise<CartResponse> {
     const response = await instance.get(this.baseUrl);

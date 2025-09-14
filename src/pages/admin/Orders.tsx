@@ -127,7 +127,7 @@ const Orders: React.FC = () => {
 
   const fetchAllOrders = async () => {
     try {
-      const response = await instance.get("/api/admin/orders");
+      const response = await instance.get("/admin/orders");
       setOrders(response.data.orders);
     } catch (error) {
       console.error("Error fetching orders:", error);
@@ -139,7 +139,7 @@ const Orders: React.FC = () => {
   const fetchOrderDetails = async (orderId: string) => {
     setDetailsLoading(true);
     try {
-      const response = await instance.get(`/api/admin/orders/${orderId}`);
+      const response = await instance.get(`/admin/orders/${orderId}`);
       setSelectedOrder(response.data.order);
       setSelectedStatus(response.data.order.status);
       setIsDetailsModalOpen(true);
@@ -155,7 +155,7 @@ const Orders: React.FC = () => {
 
     setUpdating(true);
     try {
-      await instance.patch(`/api/admin/orders/${selectedOrder.id}`, {
+      await instance.patch(`/admin/orders/${selectedOrder.id}`, {
         status: selectedStatus,
       });
 

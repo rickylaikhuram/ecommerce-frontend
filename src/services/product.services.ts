@@ -11,7 +11,7 @@ export const productService = {
   async getCategories(): Promise<CategoryResponse> {
     try {
       const response = await instance.get<CategoryResponse>(
-        "/api/product/categories"
+        "/product/categories"
       );
       return response.data;
     } catch (error) {
@@ -25,7 +25,7 @@ export const productService = {
     filters: ProductFilters = {}
   ): Promise<ProductResponse> {
     try {
-      const response = await instance.get<ProductResponse>("/api/product", {
+      const response = await instance.get<ProductResponse>("/product", {
         params: filters,
       });
       return response.data;

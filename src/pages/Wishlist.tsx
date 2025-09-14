@@ -148,7 +148,7 @@ const Wishlist: React.FC = () => {
                 className="flex-shrink-0 w-24 h-24 md:w-32 md:h-32 mr-4"
               >
                 <img
-                  src={item.mainImage?.imageUrl ? `${S3_BASE_URL}${item.mainImage.imageUrl}` : "/api/placeholder/128/128"}
+                  src={item.mainImage?.imageUrl ? `${S3_BASE_URL}${item.mainImage.imageUrl}` : "/placeholder/128/128"}
                   alt={item.mainImage?.altText || item.name}
                   className="w-full h-full object-cover rounded-lg"
                 />

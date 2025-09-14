@@ -66,7 +66,7 @@ const Products: React.FC = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await instance.get("/api/product");
+      const response = await instance.get("/product");
       const data = response.data;
 
       if (data && data.products && Array.isArray(data.products)) {
@@ -143,7 +143,7 @@ const Products: React.FC = () => {
 
     setIsDeleting(true);
     try {
-      await instance.delete(`/api/admin/delete/product/${productToDelete.id}`);
+      await instance.delete(`/admin/delete/product/${productToDelete.id}`);
 
       // Remove product from local state
       setProducts(products.filter((p) => p.id !== productToDelete.id));

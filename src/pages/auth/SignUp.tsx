@@ -61,7 +61,7 @@ const SignUp = () => {
       setUserPhone(data.phone);
 
       // Send OTP to phone number
-      const response = await instance.post("/api/auth/signup/initiate", {
+      const response = await instance.post("/auth/signup/initiate", {
         email: data.email,
         phone: data.phone,
         name: data.fullName,
@@ -88,7 +88,7 @@ const SignUp = () => {
     if (!formData) return;
 
     try {
-      const response = await instance.post("/api/auth/signup/confirm", {
+      const response = await instance.post("/auth/signup/confirm", {
         phone: formData.phone,
         otp,
       });
@@ -113,7 +113,7 @@ const SignUp = () => {
     if (!userPhone) return;
 
     try {
-      const response = await instance.post("/api/auth/signup/resend", {
+      const response = await instance.post("/auth/signup/resend", {
         phone: userPhone,
       });
 
@@ -153,7 +153,7 @@ const SignUp = () => {
   // Show OTP verification screen
   if (showOTPScreen) {
     return (
-      <div className="flex items-center justify-center bg-gradient-to-br from-emerald-50 via-sky-50 to-cyan-50 px-4 py-8">
+      <div className="flex items-center justify-center bg-gradient-to-br from-emerald-50 via-sky-50 to-cyan-50 px-4 py-8 pb-10">
         <div className="w-full max-w-md">
           <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl shadow-emerald-100/50 p-8 sm:p-10 border border-white/50">
             <OTPVerification
@@ -170,7 +170,7 @@ const SignUp = () => {
     );
   }
   return (
-    <div className="flex items-center justify-center bg-gradient-to-br from-emerald-50 via-sky-50 to-cyan-50 px-4 py-8">
+    <div className="flex items-center justify-center bg-gradient-to-br from-emerald-50 via-sky-50 to-cyan-50 px-4 py-8 pb-10">
       <div className="w-full max-w-md">
         {/* Decorative element */}
         <div className="flex justify-center mb-8">

@@ -26,7 +26,7 @@ const HeroBanner: React.FC = () => {
     const fetchBanners = async (): Promise<void> => {
       try {
         setLoading(true);
-        const response = await instance.get("/api/product/banners");
+        const response = await instance.get("/product/banners");
 
         // Handle the specific API response structure
         let bannersData: Banner[] = [];

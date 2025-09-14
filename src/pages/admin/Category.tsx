@@ -60,7 +60,7 @@ const Categories: React.FC = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await instance.get("/api/admin/categories");
+      const response = await instance.get("/admin/categories");
       const data = response.data.categories || response.data.category || [];
 
       // Build hierarchy from flat list

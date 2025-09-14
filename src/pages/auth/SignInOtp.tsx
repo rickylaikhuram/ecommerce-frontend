@@ -44,7 +44,7 @@ const SignInOTP = () => {
     setLoading(true);
     try {
       // Send OTP to phone number
-      const response = await instance.post("/api/auth/signin/otp/initiate", {
+      const response = await instance.post("/auth/signin/otp/initiate", {
         phone: data.phone,
       });
 
@@ -68,7 +68,7 @@ const SignInOTP = () => {
   const handleOTPVerify = async (otp: string) => {
     try {
       // Verify OTP with backend
-      const response = await instance.post("/api/auth/signin/otp/verify", {
+      const response = await instance.post("/auth/signin/otp/verify", {
         phone: phoneNumber,
         otp,
       });
@@ -91,7 +91,7 @@ const SignInOTP = () => {
 
   const handleResendOTP = async () => {
     try {
-      const response = await instance.post("/api/auth/signin/otp/initiate", {
+      const response = await instance.post("/auth/signin/otp/initiate", {
         phone: phoneNumber,
       });
 
@@ -111,7 +111,7 @@ const SignInOTP = () => {
 
   if (showOTPScreen) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-50 via-sky-50 to-cyan-50 px-4 py-8">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-50 via-sky-50 to-cyan-50 px-4 py-8 pb-10">
         <div className="w-full max-w-md">
           <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl shadow-emerald-100/50 p-8 border border-white/50">
             <OTPVerification
@@ -128,7 +128,7 @@ const SignInOTP = () => {
 
   return (
     <>
-      <div className=" flex items-center justify-center bg-white px-4 py-8">
+      <div className=" flex items-center justify-center bg-white px-4 py-8 pb-10">
         <div className="w-full max-w-md">
           <div className="flex justify-center mb-8">
             <div className="relative">

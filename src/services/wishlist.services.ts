@@ -6,7 +6,7 @@ export const wishlistService = {
   async toggleWishlist(productId: string): Promise<{ removed: boolean }> {
     try {
       const response = await instance.post<{ removed: boolean }>(
-        `/api/user/wishlist/toggle/${productId}`
+        `/user/wishlist/toggle/${productId}`
       );
       return response.data; // { removed: true } or { removed: false }
     } catch (error) {
@@ -18,7 +18,7 @@ export const wishlistService = {
   // Get all wishlist products for logged-in user
   async getUserWishlistedIds(): Promise<WishlistIdsResponse> {
     try {
-      const response = await instance.get<WishlistIdsResponse>("/api/user/wishlist/ids");
+      const response = await instance.get<WishlistIdsResponse>("/user/wishlist/ids");
       return response.data;
     } catch (error) {
       console.error("Error fetching wishlist:", error);
@@ -29,7 +29,7 @@ export const wishlistService = {
   // Get all wishlist products for logged-in user
   async getUserWishlist(): Promise<WishlistResponse> {
     try {
-      const response = await instance.get<WishlistResponse>("/api/user/wishlist");
+      const response = await instance.get<WishlistResponse>("/user/wishlist");
       return response.data;
     } catch (error) {
       console.error("Error fetching wishlist:", error);

@@ -198,7 +198,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
 
   const fetchCategories = async () => {
     try {
-      const response = await instance.get("/api/admin/lowcategories");
+      const response = await instance.get("/admin/lowcategories");
       setCategories(response.data.categories);
     } catch (error) {
       console.error("Error fetching categories:", error);
@@ -448,7 +448,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
 
       // Step 2: Get presigned URLs from backend
       const presignedResponse = await instance.post(
-        "/api/admin/add/images/presigned-urls",
+        "/admin/add/images/presigned-urls",
         {
           files: filesData,
           folderName: "products",
@@ -562,7 +562,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
         };
 
         // Submit to backend
-        await instance.post("/api/admin/add/product", submitData);
+        await instance.post("/admin/add/product", submitData);
       } else {
         // For edit mode, handle image changes separately
         const changes = prepareImageChanges();
@@ -589,7 +589,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
 
         // Submit to backend
         await instance.put(
-          `/api/admin/edit/product/${initialData?.id}`,
+          `/admin/edit/product/${initialData?.id}`,
           submitData
         );
       }

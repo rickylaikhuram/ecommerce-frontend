@@ -20,18 +20,18 @@ const Customers: React.FC = () => {
   const { data, loading, error, fetchData } = useUserData();
 
   const tabs: TabConfig[] = [
-    { key: "users", label: "Users", icon: Users, endpoint: "/api/admin/users" },
+    { key: "users", label: "Users", icon: Users, endpoint: "/admin/users" },
     {
       key: "customers",
       label: "Customers",
       icon: ShoppingBag,
-      endpoint: "/api/admin/customers",
+      endpoint: "/admin/customers",
     },
     {
       key: "admins",
       label: "Admins",
       icon: Shield,
-      endpoint: "/api/admin/admins",
+      endpoint: "/admin/admins",
     },
   ];
 

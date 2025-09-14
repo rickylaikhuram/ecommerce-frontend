@@ -176,7 +176,7 @@ const SubCategoryForm: React.FC<SubCategoryFormProps> = ({
   const fetchCategories = async () => {
     setIsLoadingCategories(true);
     try {
-      const response = await instance.get("/api/admin/topcategories");
+      const response = await instance.get("/admin/topcategories");
       const data = response.data.categories;
       setCategories(data);
     } catch (error) {
@@ -321,7 +321,7 @@ const SubCategoryForm: React.FC<SubCategoryFormProps> = ({
 
       // Step 1: Get presigned URL from backend
       const presignedResponse = await instance.post(
-        "/api/admin/add/images/presigned-urls",
+        "/admin/add/images/presigned-urls",
         {
           files: [
             {
@@ -405,7 +405,7 @@ const SubCategoryForm: React.FC<SubCategoryFormProps> = ({
         };
 
         // Submit to backend
-        await instance.post("/api/admin/add/category", submitData);
+        await instance.post("/admin/add/category", submitData);
       } else {
         // For edit mode, prepare data according to new backend format
         let updatedImages: any[] = [];
@@ -433,7 +433,7 @@ const SubCategoryForm: React.FC<SubCategoryFormProps> = ({
 
         // Submit to backend
         await instance.put(
-          `/api/admin/update/subcategory/${initialData?.id}`,
+          `/admin/update/subcategory/${initialData?.id}`,
           submitData
         );
       }

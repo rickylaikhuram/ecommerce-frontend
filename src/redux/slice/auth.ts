@@ -23,14 +23,14 @@ const initialState: AuthState = {
 
 // Fetch auth details
 export const fetchAuth = createAsyncThunk("auth/fetchAuth", async () => {
-  const response = await instance.get("/api/auth/me");
+  const response = await instance.get("/auth/me");
   localStorage.setItem("authToken", response.data.token);
   return response.data.user;
 });
 
 // Logout user
 export const logoutUser = createAsyncThunk("auth/logout", async () => {
-  const response = await instance.post("/api/auth/logout");
+  const response = await instance.post("/auth/logout");
   localStorage.removeItem("authToken");
   return response.data.message;
 });

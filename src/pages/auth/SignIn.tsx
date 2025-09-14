@@ -86,7 +86,7 @@ const SignIn = () => {
       };
 
       const response = await instance.post(
-        "/api/auth/signin/password",
+        "/auth/signin/password",
         payload
       );
 
@@ -155,7 +155,7 @@ const SignIn = () => {
   };
 
   return (
-    <div className=" flex items-center justify-center bg-gradient-to-br from-emerald-50 via-sky-50 to-cyan-50 px-4 py-8">
+    <div className=" flex items-center justify-center bg-gradient-to-br from-emerald-50 via-sky-50 to-cyan-50 px-4 py-8 pb-20">
       <div className="w-full max-w-md">
         {/* Decorative element */}
         <div className="flex justify-center mb-6 sm:mb-8">

@@ -38,19 +38,19 @@ export const useUserDetail = (): UseUserDetailReturn => {
       let endpoint = '';
       switch (tab) {
         case 'profile':
-          endpoint = `/api/admin/users/${userId}`;
+          endpoint = `/admin/users/${userId}`;
           break;
         case 'orders':
-          endpoint = `/api/admin/users-order/${userId}`;
+          endpoint = `/admin/users-order/${userId}`;
           break;
         case 'addresses':
-          endpoint = `/api/admin/users-address/${userId}`;
+          endpoint = `/admin/users-address/${userId}`;
           break;
         case 'wishlist':
-          endpoint = `/api/admin/users-wishlist/${userId}`;
+          endpoint = `/admin/users-wishlist/${userId}`;
           break;
         case 'cart':
-          endpoint = `/api/admin/users-cart/${userId}`;
+          endpoint = `/admin/users-cart/${userId}`;
           break;
       }
 

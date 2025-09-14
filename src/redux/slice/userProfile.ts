@@ -20,7 +20,7 @@ const initialState: UserState = {
 };
 // Fetch user details
 export const fetchProfile = createAsyncThunk("user/fetchProfile", async () => {
-  const response = await instance.get("/api/user/profile");
+  const response = await instance.get("/user/profile");
   return response.data.user;
 });
 

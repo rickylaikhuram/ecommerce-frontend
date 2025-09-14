@@ -7,7 +7,7 @@ import type { CreateOrderRequest } from "../types/order.types";
 import instance from "../utils/axios";
 
 class OrderService {
-  private baseUrl = "/api/user";
+  private baseUrl = "/user";
 
   async createUpiQrOrder(
     orderData: CreateOrderRequest,

@@ -44,12 +44,12 @@ const CategoryForm: React.FC<CategoryFormProps> = ({
     try {
       if (mode === "edit" && initialData?.id) {
         // For edit mode - only send the name as per your backend expects
-        await instance.put(`/api/admin/update/category/${initialData.id}`, {
+        await instance.put(`/admin/update/category/${initialData.id}`, {
           name: data.name,
         });
       } else {
         // For add mode - send name and parentId as null for top-level category
-        await instance.post("/api/admin/add/category", {
+        await instance.post("/admin/add/category", {
           name: data.name,
           parentId: null,
         });

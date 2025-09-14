@@ -102,14 +102,13 @@ const Footer = () => {
             </h3>
             <ul className="space-y-2 sm:space-y-3 ml-5 sm:ml-6">
               {[
-                "Contact Us",
-                "Shipping Info",
-                "Returns",
-                "Size Guide",
+                { path: "/contact-us", name: "Contact Us" },
+                { path: "/shipping-info", name: "Shipping Info" },
+                { path: "/return-policy", name: "Returns" },
               ].map((item, index) => (
-                <li key={item}>
+                <li key={item.name}>
                   <Link
-                    to="#"
+                    to={item.path}
                     className="group text-gray-600 hover:text-emerald-600 transition-all duration-200 text-sm flex items-center"
                   >
                     <span
@@ -119,7 +118,7 @@ const Footer = () => {
                           : "bg-gradient-to-r from-emerald-400 to-cyan-400"
                       } rounded-full mr-2 sm:mr-3 group-hover:scale-150 transition-transform flex-shrink-0`}
                     ></span>
-                    <span className="break-words">{item}</span>
+                    <span className="break-words">{item.name}</span>
                   </Link>
                 </li>
               ))}
@@ -172,14 +171,14 @@ const Footer = () => {
 
             <div className="flex flex-wrap justify-center gap-3 sm:gap-6">
               <Link
-                to="#"
+                to="privacy-policy"
                 className="text-gray-600 hover:text-emerald-600 transition-colors duration-200 text-xs sm:text-sm relative group"
               >
                 Privacy Policy
                 <span className="absolute -bottom-0.5 left-0 w-0 h-0.5 bg-gradient-to-r from-emerald-400 to-green-400 group-hover:w-full transition-all duration-300"></span>
               </Link>
               <Link
-                to="#"
+                to="terms-service"
                 className="text-gray-600 hover:text-emerald-600 transition-colors duration-200 text-xs sm:text-sm relative group"
               >
                 Terms of Service

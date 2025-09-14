@@ -16,7 +16,12 @@ import ProductsPage from "../pages/Products";
 import OrderDetails from "../pages/client/OrderDetails";
 import OrderConfirmation from "../pages/client/OrderConfirmation";
 import CategoryPage from "../pages/CategoryPage";
-
+import PrivacyPolicyPage from "../pages/static/PrivacyPolicyPage";
+import ReturnPolicyPage from "../pages/static/ReturnPolicyPage";
+import AboutUsPage from "../pages/static/AboutUsPage";
+import ShippingPage from "../pages/static/ShippingPage";
+import TermsPage from "../pages/static/TermsPage";
+import ContactUsPage from "../pages/static/ContactUsPage";
 
 const UserRoutes = (
   <Route element={<MainLayout />}>
@@ -45,6 +50,13 @@ const UserRoutes = (
     <Route path="/wishlist" element={<Wishlist />} />
     <Route path="/checkout" element={<Checkout />} />
 
+    {/* Static Routes */}
+    <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+    <Route path="/return-policy" element={<ReturnPolicyPage />} />
+    <Route path="/shipping-info" element={<ShippingPage />} />
+    <Route path="/terms-service" element={<TermsPage />} />
+    <Route path="/contact-us" element={<ContactUsPage />} />
+    <Route path="/about-us" element={<AboutUsPage />} />
     {/* Routes to Navigate to home */}
     <Route path="/signin" element={<Navigate to="/" replace />} />
     <Route path="/signinwithotp" element={<Navigate to="/" replace />} />

@@ -13,6 +13,12 @@ import Checkout from "../pages/Checkout";
 import ProductsPage from "../pages/Products";
 import CategoryPage from "../pages/CategoryPage";
 import ForgotPassword from "../pages/auth/ForgotPassword";
+import PrivacyPolicyPage from "../pages/static/PrivacyPolicyPage";
+import ReturnPolicyPage from "../pages/static/ReturnPolicyPage";
+import AboutUsPage from "../pages/static/AboutUsPage";
+import ShippingPage from "../pages/static/ShippingPage";
+import TermsPage from "../pages/static/TermsPage";
+import ContactUsPage from "../pages/static/ContactUsPage";
 
 const GuestRoutes = (
   <Route element={<MainLayout />}>
@@ -28,6 +34,12 @@ const GuestRoutes = (
     <Route path="/signinwithotp" element={<SignInOTP />} />
     <Route path="/forgot-password" element={<ForgotPassword />} />
     <Route path="/signup" element={<SignUp />} />
+    <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+    <Route path="/return-policy" element={<ReturnPolicyPage />} />
+    <Route path="/shipping-info" element={<ShippingPage />} />
+    <Route path="/terms-service" element={<TermsPage />} />
+    <Route path="/contact-us" element={<ContactUsPage />} />
+    <Route path="/about-us" element={<AboutUsPage />} />
     <Route path="*" element={<Error />} />
   </Route>
 );

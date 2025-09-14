@@ -1,5 +1,5 @@
 // components/layout/AdminSidebar.tsx
-import React from "react";
+import React, { useState } from "react";
 import {
   LayoutDashboard,
   Package,
@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useAppDispatch } from "../../redux/hook";
 import { logoutUser } from "../../redux/slice/auth";
+import WarningModal from "../../components/common/WarningModal";
 
 interface SidebarProps {
   activeTab: string;
@@ -28,6 +29,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   onToggle,
 }) => {
   const dispatch = useAppDispatch();
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+
   const menuItems = [
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
     { id: "products", label: "Products", icon: Package },
@@ -37,9 +40,23 @@ const Sidebar: React.FC<SidebarProps> = ({
     { id: "banner", label: "Banner", icon: GalleryHorizontalEnd },
     { id: "pricesetting", label: "Price Setting", icon: TruckElectric },
   ];
-  const handleLogout = async () => {
-    await dispatch(logoutUser()).unwrap();
-    window.location.href = "/signin";
+
+  const handleLogoutClick = () => {
+    setIsLogoutModalOpen(true);
+  };
+
+  const handleConfirmLogout = async () => {
+    try {
+      await dispatch(logoutUser()).unwrap();
+      window.location.href = "/signin";
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+    setIsLogoutModalOpen(false);
+  };
+
+  const handleCancelLogout = () => {
+    setIsLogoutModalOpen(false);
   };
 
   return (
@@ -115,7 +132,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         {/* Bottom Section - Fixed at bottom */}
         <div className="p-4 border-t border-slate-800">
           <button
-            onClick={handleLogout}
+            onClick={handleLogoutClick}
             className="w-full flex items-center px-4 py-3 text-slate-400 hover:bg-slate-800 hover:text-white rounded-xl transition-all duration-200 group"
           >
             <LogOut className="w-5 h-5 mr-3 text-slate-500 group-hover:text-slate-300" />
@@ -123,6 +140,41 @@ const Sidebar: React.FC<SidebarProps> = ({
           </button>
         </div>
       </div>
+
+      {/* Logout Confirmation Modal */}
+      <WarningModal
+        isOpen={isLogoutModalOpen}
+        onClose={handleCancelLogout}
+        title="Confirm Logout"
+        size="sm"
+      >
+        <div className="text-center">
+          <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+            <LogOut className="h-6 w-6 text-red-600" />
+          </div>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">
+            Are you sure you want to logout?
+          </h3>
+          <p className="text-sm text-gray-500 mb-6">
+            You will be signed out of the admin panel and redirected to the
+            login page.
+          </p>
+          <div className="flex space-x-3 justify-center">
+            <button
+              onClick={handleCancelLogout}
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors duration-200"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleConfirmLogout}
+              className="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-200"
+            >
+              Yes, Logout
+            </button>
+          </div>
+        </div>
+      </WarningModal>
     </>
   );
 };

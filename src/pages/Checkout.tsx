@@ -469,8 +469,8 @@ const Checkout: React.FC = () => {
       );
 
       if (result.success) {
-        // Navigate to order success page with real order data
         navigate(`/orders-success/${result.orderId}`, {
+          replace: true,
           state: {
             paymentMethod: "cod",
             amount: result.amount,
@@ -574,7 +574,7 @@ const Checkout: React.FC = () => {
 
   // Calculate derived state
   const totalItems = cartItems.reduce(
-    (sum, item) => sum + item.cartDetails.quantity,
+    (sum, item) => sum + (item?.cartDetails?.quantity ?? 0),
     0
   );
   const validItems = cartItems.filter((item) => item.canProceedToCheckout);

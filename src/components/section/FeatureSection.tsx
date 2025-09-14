@@ -20,7 +20,7 @@ import { Shield, Truck, HeartHandshake, Star } from "lucide-react";
     {
       icon: Star,
       title: "Quality Guaranteed",
-      description: "30-day money-back guarantee",
+      description: "7-day exchange guarantee",
     },
   ];
   return (

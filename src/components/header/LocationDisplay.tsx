@@ -23,7 +23,7 @@ export const LocationDisplay: React.FC<LocationDisplayProps> = ({
   // Size configurations based on device type
   const iconSize = isMobile ? 14 : isCompact ? 16 : 18;
   const chevronSize = isMobile ? 12 : 14;
-  const textSize = isMobile ? "text-xs" : isCompact ? "text-sm" : "text-sm";
+  const textSize = isMobile ? "text-xs" : isCompact ? "text-sm" : "text-md";
   const maxWidth = isMobile ? "max-w-24" : isCompact ? "max-w-28" : "max-w-32";
   const { status } = useAppSelector((state) => state.address);
   const addressLoading = status === "loading";

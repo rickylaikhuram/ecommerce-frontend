@@ -77,7 +77,7 @@ export const Navigation: React.FC<NavigationProps> = ({
             <div className="flex items-center">
               <Link
                 to={item.path}
-                className={`px-4 py-2.5 text-sm font-medium transition-all duration-200 rounded-l-md ${
+                className={`px-4 py-2.5 text-md font-medium transition-all duration-200 rounded-l-md ${
                   isActive(item.path)
                     ? "bg-white/20 text-white shadow-sm backdrop-blur-sm"
                     : "text-white/90 hover:text-white hover:bg-white/10 backdrop-blur-sm"
@@ -88,7 +88,7 @@ export const Navigation: React.FC<NavigationProps> = ({
               </Link>
 
               <button
-                className={`px-3 py-2.5 text-sm font-medium transition-all duration-200 rounded-r-md border-l border-white/20 ${
+                className={`px-3 py-2.5 text-md font-medium transition-all duration-200 rounded-r-md border-l border-white/20 ${
                   isOpen
                     ? "bg-white/20 text-white shadow-sm backdrop-blur-sm"
                     : "text-white/90 hover:text-white hover:bg-white/10 backdrop-blur-sm"
@@ -181,11 +181,11 @@ export const Navigation: React.FC<NavigationProps> = ({
               <img
                 src="/logo_white_details.jpeg"
                 alt="Home"
-                className="h-10 w-auto transition-all duration-200 rounded-lg hover:shadow-lg hover:scale-105"
+                className="h-[70px] w-auto"
               />
             ) : (
               <span
-                className={`px-4 py-2.5 text-sm font-medium transition-all duration-200 rounded-md ${
+                className={`px-4 py-2.5 text-md font-medium transition-all duration-200 rounded-md ${
                   isActive(item.path)
                     ? "bg-white/20 text-white shadow-sm backdrop-blur-sm"
                     : "text-white/90 hover:text-white hover:bg-white/10 backdrop-blur-sm"

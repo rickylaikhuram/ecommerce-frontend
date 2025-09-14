@@ -39,14 +39,14 @@ export const DesktopHeader: React.FC<DesktopHeaderProps> = ({
       {shouldFixHeader && <div className="hidden sm:block h-[73px]" />}
 
       <header
-        className={`hidden sm:block w-full bg-emerald-800 transition-all duration-300 ${
+        className={`hidden sm:block w-full bg-emerald-800 transition-all duration-300 px-2 ${
           shouldFixHeader
             ? "fixed top-0 left-0 z-50 animate-slideDown"
             : "relative"
         } ${isScrolled ? "shadow-lg" : ""}`}
       >
         <div className="border-b border-white/10">
-          <div className="flex items-center justify-between py-4 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+          <div className="flex items-center justify-between py-4 px-4 sm:px-6 lg:px-8">
             {/* Left Section */}
             <div className="flex items-center gap-6">
               <Navigation
@@ -80,7 +80,7 @@ export const DesktopHeader: React.FC<DesktopHeaderProps> = ({
                 placeholder="Search products..."
                 onSearch={onSearch}
                 onSuggestionClick={onSuggestionClick}
-                className="w-64 xl:w-80"
+                className="w-70 xl:w-99"
               />
 
               {/* Icons */}

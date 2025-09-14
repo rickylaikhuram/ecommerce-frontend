@@ -8,6 +8,7 @@ import { fetchCategories } from "../../redux/slice/categories";
 import type { Category as Categories } from "../../types/products.types";
 import { CartIcon } from "./CartIcon";
 import type { NavItem } from "./Navigation";
+import { FaWhatsapp } from "react-icons/fa";
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -171,7 +172,7 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
                               {parent.children.map((child) => (
                                 <button
                                   key={child.id}
-                                  className="w-full text-left px-6 py-2.5 text-sm text-gray-600 hover:text-emerald-600 hover:bg-white transition-all duration-150 border-l-3 border-transparent hover:border-emerald-200"
+                                  className="w-full text-left px-6 py-2.5 text-sm text-gray-600 hover:text-emerald-600 hover:bg-white transition-all duration-150 border-0 border-l-[3px] border-transparent hover:border-emerald-200"
                                   onClick={() =>
                                     handleCategoryClick(child.name)
                                   }
@@ -204,7 +205,15 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
               </Link>
             )
           )}
-
+          <a
+            href="https://wa.me/+918416082998"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex gap-2 item-center  px-4 pt-3 text-sm font-medium rounded-lg transition-all duration-200"
+          >
+            <FaWhatsapp className="w-5 h-5 sm:w-5 sm:h-5 text-emerald-600 group-hover:text-emerald-700 transition-colors" />
+            24/7 Chat Support
+          </a>
           {/* User Actions Section */}
           <div className="pt-4 mt-6 border-t border-gray-200 space-y-2">
             <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-2 mb-3">

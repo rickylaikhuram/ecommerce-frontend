@@ -14,7 +14,7 @@ import {
 import { useAppDispatch } from "../../redux/hook";
 import { fetchAuth } from "../../redux/slice/auth";
 import instance from "../../utils/axios";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 type FormData = {
   emailOrPhone: string;
@@ -85,15 +85,12 @@ const SignIn = () => {
         password: data.password,
       };
 
-      const response = await instance.post(
-        "/auth/signin/password",
-        payload
-      );
+      const response = await instance.post("/auth/signin/password", payload);
 
       if (response.data.success) {
         localStorage.setItem("authToken", response.data.token);
         await dispatch(fetchAuth());
-        toast.success("Signed in successfully 🎉");
+        toast.success("Signed in successfully");
       } else {
         toast.error(response.data.message || "Invalid credentials");
       }

@@ -18,21 +18,21 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ steps, currentStep }) => {
   const progressPercentage = (currentStep / steps.length) * 100;
 
   return (
-    <div className="bg-white border-b border-blue-100">
+    <div className="bg-white border-b border-emerald-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Mobile Progress */}
         <div className="block md:hidden mb-4">
           <div className="flex justify-between items-center mb-2">
-            <span className="text-sm font-medium text-blue-600">
+            <span className="text-sm font-medium text-emerald-600">
               Step {currentStep} of {steps.length}
             </span>
             <span className="text-sm text-gray-500">
               {Math.round(progressPercentage)}% Complete
             </span>
           </div>
-          <div className="w-full bg-blue-100 rounded-full h-2">
+          <div className="w-full bg-emerald-100 rounded-full h-2">
             <div
-              className="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full transition-all duration-500 ease-out"
+              className="bg-gradient-to-r from-emerald-500 to-emerald-600 h-2 rounded-full transition-all duration-500 ease-out"
               style={{ width: `${progressPercentage}%` }}
             ></div>
           </div>
@@ -63,7 +63,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ steps, currentStep }) => {
                       step.id < currentStep
                         ? "bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg"
                         : step.id === currentStep
-                        ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg scale-110"
+                        ? "bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-lg scale-110"
                         : "bg-gray-100 text-gray-400"
                     }`}
                   >

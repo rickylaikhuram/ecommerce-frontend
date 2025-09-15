@@ -12,7 +12,7 @@ import {
 import { OTPVerification } from "./OTPVerification";
 import { SetNewPassword } from "./SetNewPassword";
 import instance from "../../utils/axios";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 type FormData = {
   phone: string;
@@ -50,12 +50,9 @@ const ForgotPassword = () => {
   const onSubmitPhone = async (data: FormData) => {
     setLoading(true);
     try {
-      const response = await instance.post(
-        "/auth/forgot-password/initiate",
-        {
-          phone: data.phone,
-        }
-      );
+      const response = await instance.post("/auth/forgot-password/initiate", {
+        phone: data.phone,
+      });
 
       if (response.data.success) {
         setPhoneNumber(data.phone);
@@ -75,16 +72,13 @@ const ForgotPassword = () => {
 
   const handleOTPVerify = async (otp: string) => {
     try {
-      const response = await instance.post(
-        "/auth/forgot-password/verify-otp",
-        {
-          phone: phoneNumber,
-          otp,
-        }
-      );
+      const response = await instance.post("/auth/forgot-password/verify-otp", {
+        phone: phoneNumber,
+        otp,
+      });
 
       if (response.data.success) {
-        toast.success("OTP verified ✅");
+        toast.success("OTP verified ");
         // Store reset token temporarily (in memory, not localStorage)
         sessionStorage.setItem("resetToken", response.data.resetToken);
         setCurrentStep("password");
@@ -106,7 +100,7 @@ const ForgotPassword = () => {
       });
 
       if (response.data.success) {
-        toast.success("OTP resent successfully 🚀");
+        toast.success("OTP resent successfully ");
         console.log("Resending OTP to:", `+91${phoneNumber}`);
       } else {
         toast.error(response.data.message || "Failed to resend OTP");
@@ -129,12 +123,12 @@ const ForgotPassword = () => {
       });
 
       if (response.data.success) {
-        toast.success("Password reset successful 🎉");
+        toast.success("Password reset successful");
 
         // Clear the reset token
         sessionStorage.removeItem("resetToken");
 
-        // Redirect to sign-in 
+        // Redirect to sign-in
         navigate("/signin");
       } else {
         toast.error(response.data.message || "Password reset failed");

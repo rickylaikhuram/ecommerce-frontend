@@ -43,6 +43,7 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
     "/account/profile",
     "/account/wishlist",
     "/account/orders",
+    "/products/",
   ];
   const isAuthPage = authPages.includes(location.pathname);
 

@@ -17,7 +17,7 @@ import instance from "../../utils/axios";
 
 import { useAppDispatch } from "../../redux/hook";
 import { fetchAuth } from "../../redux/slice/auth";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 type FormData = {
   fullName: string;
@@ -70,12 +70,11 @@ const SignUp = () => {
 
       if (response.data.success) {
         setShowOTPScreen(true);
-        toast.success("OTP sent to phone 📩");
+        toast.success("OTP sent to phone");
       } else {
         toast.error(response.data.message || "Failed to send OTP");
       }
     } catch (err: any) {
-      console.error("Failed to send OTP:", err);
       const message =
         err.response?.data?.message || err.message || "Something went wrong";
       toast.error(message);
@@ -96,13 +95,12 @@ const SignUp = () => {
       if (response.data.success) {
         localStorage.setItem("authToken", response.data.token);
         await dispatch(fetchAuth());
-        toast.success("Account created successfully 🎉");
+        toast.success("Account created successfully");
         // navigate("/dashboard") if needed
       } else {
         toast.error(response.data.message || "OTP verification failed");
       }
     } catch (err: any) {
-      console.error("Registration failed:", err);
       const message =
         err.response?.data?.message || err.message || "Something went wrong";
       toast.error(message);
@@ -118,13 +116,11 @@ const SignUp = () => {
       });
 
       if (response.data.success) {
-        toast.success("OTP resent successfully 🚀");
-        console.log("Resent OTP to:", `+91${userPhone}`);
+        toast.success("OTP resent successfully");
       } else {
         toast.error(response.data.message || "Failed to resend OTP");
       }
     } catch (err: any) {
-      console.error("❌ Failed to resend OTP:", err);
       const message =
         err.response?.data?.message || err.message || "Something went wrong";
       toast.error(message);
@@ -553,7 +549,10 @@ const SignUp = () => {
         {/* Terms and Privacy */}
         <p className="text-xs text-center text-gray-500 mt-6 px-4">
           By signing up, you agree to our{" "}
-          <Link to="/terms-service" className="text-emerald-600 hover:underline">
+          <Link
+            to="/terms-service"
+            className="text-emerald-600 hover:underline"
+          >
             Terms of Service
           </Link>{" "}
           and{" "}

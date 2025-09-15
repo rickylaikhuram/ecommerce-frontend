@@ -21,9 +21,11 @@ const AboutUsPage = () => {
         {/* Welcome Section */}
         <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-6 sm:p-8 lg:p-12 mb-8 sm:mb-12">
           <div className="flex flex-col sm:flex-row items-center mb-4 sm:mb-6 gap-3 sm:gap-4">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-emerald-600 rounded-full flex items-center justify-center flex-shrink-0">
-              <Heart className="text-white" size={20} />
-            </div>
+            <img
+              src="/logo.jpeg"
+              alt="logo"
+              className="w-10 h-10 sm:w-12 sm:h-12 bg-emerald-600 rounded-full flex items-center justify-center flex-shrink-0"
+            />
             <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-emerald-900 text-center sm:text-left">
               Welcome to Clover Arena
             </h2>

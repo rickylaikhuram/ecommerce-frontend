@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Lock, Eye, EyeOff, Check } from "lucide-react";
 import { userService } from "../../services/user.services";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 interface ChangePasswordForm {
   currentPassword: string;
@@ -52,17 +52,19 @@ const Security: React.FC = () => {
     if (!value) return "New password is required";
     if (value.length < 6) return "Password must be at least 6 characters long";
     if (value.length > 30) return "Password must be at most 30 characters long";
-    
+
     const currentPassword = getValues("currentPassword");
-    if (value === currentPassword) return "New password must be different from current password";
-    
+    if (value === currentPassword)
+      return "New password must be different from current password";
+
     return true;
   };
 
   const validateConfirmPassword = (value: string) => {
     if (!value) return "Please confirm your new password";
     const newPassword = getValues("newPassword");
-    if (value !== newPassword) return "New password and confirmation don't match";
+    if (value !== newPassword)
+      return "New password and confirmation don't match";
     return true;
   };
 
@@ -74,7 +76,7 @@ const Security: React.FC = () => {
         currentPassword: data.currentPassword,
         newPassword: data.newPassword,
       });
-      
+
       toast.success(response || "Password changed successfully!");
       reset();
       setShowPasswordForm(false);
@@ -101,7 +103,7 @@ const Security: React.FC = () => {
   // Password strength indicator
   const getPasswordStrength = (password: string) => {
     if (!password) return { strength: 0, text: "", color: "" };
-    
+
     let strength = 0;
     const checks = [
       password.length >= 6,
@@ -111,11 +113,12 @@ const Security: React.FC = () => {
       /[0-9]/.test(password),
       /[^A-Za-z0-9]/.test(password),
     ];
-    
+
     strength = checks.filter(Boolean).length;
-    
+
     if (strength <= 2) return { strength, text: "Weak", color: "text-red-500" };
-    if (strength <= 4) return { strength, text: "Medium", color: "text-yellow-500" };
+    if (strength <= 4)
+      return { strength, text: "Medium", color: "text-yellow-500" };
     return { strength, text: "Strong", color: "text-green-500" };
   };
 
@@ -154,7 +157,7 @@ const Security: React.FC = () => {
           </div>
 
           {showPasswordForm && (
-            <form 
+            <form
               onSubmit={handleSubmit(onSubmit)}
               className="mt-4 space-y-4 bg-gray-50 p-4 rounded-lg"
             >
@@ -163,8 +166,16 @@ const Security: React.FC = () => {
                 <div className="bg-red-50 border border-red-200 rounded-lg p-4">
                   <div className="flex items-center">
                     <div className="flex-shrink-0">
-                      <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                      <svg
+                        className="h-5 w-5 text-red-400"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                          clipRule="evenodd"
+                        />
                       </svg>
                     </div>
                     <div className="ml-3">
@@ -183,8 +194,16 @@ const Security: React.FC = () => {
                           className="inline-flex bg-red-50 rounded-md p-1.5 text-red-500 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-red-50 focus:ring-red-600"
                         >
                           <span className="sr-only">Dismiss</span>
-                          <svg className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                          <svg
+                            className="h-3 w-3"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                              clipRule="evenodd"
+                            />
                           </svg>
                         </button>
                       </div>
@@ -205,7 +224,9 @@ const Security: React.FC = () => {
                       validate: validateCurrentPassword,
                     })}
                     className={`w-full px-4 py-2 pr-10 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
-                      errors.currentPassword ? "border-red-300" : "border-gray-300"
+                      errors.currentPassword
+                        ? "border-red-300"
+                        : "border-gray-300"
                     }`}
                     placeholder="Enter your current password"
                   />
@@ -248,7 +269,7 @@ const Security: React.FC = () => {
                     {showPasswords.new ? <EyeOff /> : <Eye />}
                   </button>
                 </div>
-                
+
                 {/* Password Strength Indicator */}
                 {newPassword && (
                   <div className="mt-2">
@@ -267,13 +288,15 @@ const Security: React.FC = () => {
                           }}
                         />
                       </div>
-                      <span className={`text-xs font-medium ${passwordStrength.color}`}>
+                      <span
+                        className={`text-xs font-medium ${passwordStrength.color}`}
+                      >
                         {passwordStrength.text}
                       </span>
                     </div>
                   </div>
                 )}
-                
+
                 {errors.newPassword && (
                   <p className="mt-1 text-sm text-red-600">
                     {errors.newPassword.message}
@@ -293,7 +316,9 @@ const Security: React.FC = () => {
                       validate: validateConfirmPassword,
                     })}
                     className={`w-full px-4 py-2 pr-10 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
-                      errors.confirmPassword ? "border-red-300" : "border-gray-300"
+                      errors.confirmPassword
+                        ? "border-red-300"
+                        : "border-gray-300"
                     }`}
                     placeholder="Confirm your new password"
                   />
@@ -304,13 +329,15 @@ const Security: React.FC = () => {
                   >
                     {showPasswords.confirm ? <EyeOff /> : <Eye />}
                   </button>
-                  
+
                   {/* Check mark when passwords match */}
-                  {confirmPassword && newPassword && confirmPassword === newPassword && (
-                    <div className="absolute inset-y-0 right-8 pr-3 flex items-center text-green-500">
-                      <Check className="w-4 h-4" />
-                    </div>
-                  )}
+                  {confirmPassword &&
+                    newPassword &&
+                    confirmPassword === newPassword && (
+                      <div className="absolute inset-y-0 right-8 pr-3 flex items-center text-green-500">
+                        <Check className="w-4 h-4" />
+                      </div>
+                    )}
                 </div>
                 {errors.confirmPassword && (
                   <p className="mt-1 text-sm text-red-600">
@@ -326,19 +353,43 @@ const Security: React.FC = () => {
                 </h4>
                 <ul className="text-xs text-emerald-700 space-y-1">
                   <li className="flex items-center space-x-2">
-                    <span className={`w-2 h-2 rounded-full ${newPassword && newPassword.length >= 6 ? 'bg-green-500' : 'bg-gray-300'}`} />
+                    <span
+                      className={`w-2 h-2 rounded-full ${
+                        newPassword && newPassword.length >= 6
+                          ? "bg-green-500"
+                          : "bg-gray-300"
+                      }`}
+                    />
                     <span>At least 6 characters long</span>
                   </li>
                   <li className="flex items-center space-x-2">
-                    <span className={`w-2 h-2 rounded-full ${newPassword && newPassword.length <= 30 ? 'bg-green-500' : 'bg-gray-300'}`} />
+                    <span
+                      className={`w-2 h-2 rounded-full ${
+                        newPassword && newPassword.length <= 30
+                          ? "bg-green-500"
+                          : "bg-gray-300"
+                      }`}
+                    />
                     <span>Maximum 30 characters</span>
                   </li>
                   <li className="flex items-center space-x-2">
-                    <span className={`w-2 h-2 rounded-full ${newPassword && /[A-Z]/.test(newPassword) ? 'bg-green-500' : 'bg-gray-300'}`} />
+                    <span
+                      className={`w-2 h-2 rounded-full ${
+                        newPassword && /[A-Z]/.test(newPassword)
+                          ? "bg-green-500"
+                          : "bg-gray-300"
+                      }`}
+                    />
                     <span>Contains uppercase letter (recommended)</span>
                   </li>
                   <li className="flex items-center space-x-2">
-                    <span className={`w-2 h-2 rounded-full ${newPassword && /[0-9]/.test(newPassword) ? 'bg-green-500' : 'bg-gray-300'}`} />
+                    <span
+                      className={`w-2 h-2 rounded-full ${
+                        newPassword && /[0-9]/.test(newPassword)
+                          ? "bg-green-500"
+                          : "bg-gray-300"
+                      }`}
+                    />
                     <span>Contains number (recommended)</span>
                   </li>
                 </ul>
@@ -358,8 +409,8 @@ const Security: React.FC = () => {
                   type="submit"
                   disabled={isLoading}
                   className={`px-6 py-2 bg-emerald-600 text-white rounded-lg transition-colors ${
-                    isLoading 
-                      ? "opacity-50 cursor-not-allowed" 
+                    isLoading
+                      ? "opacity-50 cursor-not-allowed"
                       : "hover:bg-emerald-700"
                   }`}
                 >

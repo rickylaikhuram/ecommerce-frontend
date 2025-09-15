@@ -567,8 +567,8 @@ const ProductDetails: React.FC = () => {
                         }}
                       />
                       {discount > 0 && (
-                        <div className="absolute top-3 left-3 lg:top-4 lg:left-4 bg-red-500 text-white px-2 lg:px-3 py-1 rounded-full text-xs lg:text-sm font-semibold">
-                          -{discount}%
+                        <div className="absolute top-3 left-3 lg:top-4 lg:left-4 bg-emerald-500 text-white px-2 lg:px-3 py-1 rounded-full text-xs lg:text-sm font-semibold">
+                          {discount}% off
                         </div>
                       )}
                       {product.images.length > 1 && (

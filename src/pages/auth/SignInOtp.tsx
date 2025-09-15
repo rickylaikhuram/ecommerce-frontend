@@ -8,7 +8,7 @@ import instance from "../../utils/axios";
 
 import { useAppDispatch } from "../../redux/hook";
 import { fetchAuth } from "../../redux/slice/auth";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 type FormData = {
   phone: string;
@@ -51,12 +51,11 @@ const SignInOTP = () => {
       if (response.data.success) {
         setPhoneNumber(data.phone);
         setShowOTPScreen(true);
-        toast.success("OTP sent to phone 📩");
+        toast.success("OTP sent to phone");
       } else {
         toast.error(response.data.message || "Failed to send OTP");
       }
     } catch (err: any) {
-      console.error("Failed to send OTP:", err);
       const message =
         err.response?.data?.message || err.message || "Something went wrong";
       toast.error(message);
@@ -76,13 +75,12 @@ const SignInOTP = () => {
       if (response.data.success) {
         localStorage.setItem("authToken", response.data.token);
         await dispatch(fetchAuth());
-        toast.success("OTP verified ✅");
+        toast.success("OTP verified");
         // You can navigate to dashboard here
       } else {
         toast.error(response.data.message || "OTP verification failed");
       }
     } catch (err: any) {
-      console.error("OTP verification failed:", err);
       const message =
         err.response?.data?.message || err.message || "Something went wrong";
       toast.error(message);
@@ -96,13 +94,12 @@ const SignInOTP = () => {
       });
 
       if (response.data.success) {
-        toast.success("OTP resent successfully 🚀");
+        toast.success("OTP resent successfully");
         console.log("Resending OTP to:", `+91${phoneNumber}`);
       } else {
         toast.error(response.data.message || "Failed to resend OTP");
       }
     } catch (err: any) {
-      console.error("Resend OTP failed:", err);
       const message =
         err.response?.data?.message || err.message || "Something went wrong";
       toast.error(message);

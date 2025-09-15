@@ -1,6 +1,6 @@
 // hooks/useCart.ts
 import { useState, useCallback, useEffect } from 'react';
-import { toast } from 'react-hot-toast';
+import { toast } from 'sonner';
 import { cartService } from '../services/cart.services';
 import type{ CartResponse, CartItem } from '../types/cart.types';
 

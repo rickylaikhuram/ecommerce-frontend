@@ -3,7 +3,7 @@ import { orderService } from "../../services/order.services";
 import WarningModal from "../../components/common/WarningModal";
 import { useNavigate } from "react-router-dom";
 import type { OrderDetails as OrderDetailsType } from "../../types/order.types";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import { CheckCircle, Clock, Package, Truck } from "lucide-react";
 
 const S3_BASE_URL = import.meta.env.VITE_S3_BASE_URL;

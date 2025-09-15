@@ -10,7 +10,7 @@ import { getRoutesByRole } from "./routes/AppRoutes";
 import Loading from "./components/common/Loading";
 import { fetchCategories } from "./redux/slice/categories";
 import { fetchCart } from "./redux/slice/cart";
-import { Toaster } from "react-hot-toast";
+import { Toaster } from "sonner";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -66,7 +66,7 @@ function App() {
   return (
     <>
       <RouterProvider router={router} />
-      <Toaster position="top-right" />
+      <Toaster position="top-center" richColors/>
     </>
   );
 }

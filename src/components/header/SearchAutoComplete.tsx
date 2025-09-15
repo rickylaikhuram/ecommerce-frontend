@@ -232,7 +232,7 @@ export const SearchAutoComplete: React.FC<SearchAutocompleteProps> = ({
           placeholder={placeholder}
           className={`w-full pl-10 pr-10 py-2.5 bg-white/95 border border-white/30 rounded-lg text-gray-700 placeholder-gray-500
             focus:outline-none focus:ring-2 focus:ring-white/40 focus:border-white/50 focus:bg-white backdrop-blur-sm
-            transition-all ${isMobile ? "text-sm" : ""}`}
+            transition-all text-base ${isMobile ? "leading-none text-[0.9rem]" : ""}`}
         />
 
         <Search

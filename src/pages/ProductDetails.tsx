@@ -33,6 +33,7 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import GuestModal from "../components/common/GuestModal";
+import SizeGuideModal from "../components/common/SizeGuideModal";
 
 const S3_BASE_URL = import.meta.env.VITE_S3_BASE_URL;
 
@@ -102,6 +103,8 @@ const ProductDetails: React.FC = () => {
 
   // Modal state
   const [showGuestModal, setShowGuestModal] = useState(false);
+  const [showSizeGuide, setShowSizeGuide] = useState(false);
+
   const [guestReason, setGuestReason] = useState<"cart" | "wishlist">(
     "wishlist"
   );
@@ -460,7 +463,7 @@ const ProductDetails: React.FC = () => {
     <>
       <div className="min-h-screen bg-gray-50">
         {/* Mobile Header */}
-        <div className="lg:hidden sticky top-0 z-50 bg-white border-b shadow-sm">
+        <div className="lg:hidden sticky top-0 z-40 bg-white border-b shadow-sm">
           <div className="flex items-center justify-between px-4 py-3">
             <button
               onClick={handleBack}
@@ -520,7 +523,7 @@ const ProductDetails: React.FC = () => {
             >
               <button
                 onClick={() => navigate("/")}
-                className="text-gray-500 hover:text-emerald-600 transition-colors whitespace-nowrap"
+                className="text-gray-500 hover:text-emerald-600 transition-colors whitespace-nowrap cursor-pointer"
               >
                 Home
               </button>
@@ -531,7 +534,7 @@ const ProductDetails: React.FC = () => {
                     `/products?category=${product.category?.name}&sortBy=newest`
                   )
                 }
-                className="text-gray-500 hover:text-emerald-600 transition-colors whitespace-nowrap"
+                className="text-gray-500 hover:text-emerald-600 transition-colors whitespace-nowrap cursor-pointer"
               >
                 {product.category?.name || "Products"}
               </button>
@@ -695,6 +698,12 @@ const ProductDetails: React.FC = () => {
                 <div>
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="font-semibold text-gray-900">Select Size</h3>
+                    <button
+                      onClick={() => setShowSizeGuide(true)}
+                      className="font-semibold text-emerald-700 cursor-pointer hover:text-emerald-800 transition-colors"
+                    >
+                      Size Guide
+                    </button>
                   </div>
                   <div className="grid grid-cols-3 lg:grid-cols-4 gap-2 lg:gap-3">
                     {product.productSizes.map((size) => (
@@ -922,7 +931,6 @@ const ProductDetails: React.FC = () => {
 
               {/* Service Info Cards */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-
                 <div className="flex items-center gap-3 p-3 lg:p-4 bg-green-50 rounded-lg lg:rounded-xl">
                   <Shield className="w-5 h-5 lg:w-6 lg:h-6 text-green-600 flex-shrink-0" />
                   <div>
@@ -1013,35 +1021,108 @@ const ProductDetails: React.FC = () => {
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">
                     Shipping Information
                   </h3>
-                  <div className="space-y-4">
+                  <p className="text-gray-600 mb-6 text-sm lg:text-base">
+                    At Clover Arena, we strive to deliver your football jerseys
+                    quickly and safely to your doorstep.
+                  </p>
+
+                  <div className="space-y-6">
+                    {/* Processing Time */}
                     <div className="flex items-start gap-3">
-                      <MapPin className="w-5 h-5 text-gray-400 flex-shrink-0 mt-0.5" />
+                      <Clock className="w-5 h-5 text-gray-400 flex-shrink-0 mt-0.5" />
                       <div>
-                        <p className="font-medium text-gray-900">
-                          Standard Shipping
+                        <p className="font-medium text-gray-900 mb-2">
+                          Processing Time
                         </p>
-                        <p className="text-sm text-gray-600 mt-1">
-                          5-7 business days • Free on orders over ₹500
-                        </p>
+                        <ul className="text-sm text-gray-600 space-y-1">
+                          <li>
+                            • Orders are typically processed within 1–2 business
+                            days after payment confirmation
+                          </li>
+                          <li>
+                            • During high-demand periods, processing may take a
+                            little longer
+                          </li>
+                        </ul>
                       </div>
                     </div>
+
+                    {/* Delivery Time */}
                     <div className="flex items-start gap-3">
                       <Truck className="w-5 h-5 text-gray-400 flex-shrink-0 mt-0.5" />
                       <div>
-                        <p className="font-medium text-gray-900">
-                          Express Shipping
+                        <p className="font-medium text-gray-900 mb-2">
+                          Shipping Methods & Delivery Time
                         </p>
-                        <p className="text-sm text-gray-600 mt-1">
-                          2-3 business days • ₹150.00
-                        </p>
+                        <ul className="text-sm text-gray-600 space-y-1">
+                          <li>• Reliable shipping across India</li>
+                          <li>
+                            • Standard delivery: 3–7 business days (depending on
+                            location)
+                          </li>
+                          <li>
+                            • Remote areas may take up to 10 business days
+                          </li>
+                        </ul>
                       </div>
                     </div>
-                  </div>
-                  <div className="mt-6 p-4 bg-emerald-50 rounded-lg">
-                    <p className="text-sm text-emerald-800">
-                      <strong>Note:</strong> Delivery times may vary during peak
-                      seasons.
-                    </p>
+
+                    {/* Shipping Charges */}
+                    <div className="flex items-start gap-3">
+                      <MapPin className="w-5 h-5 text-gray-400 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <p className="font-medium text-gray-900 mb-2">
+                          Shipping Charges
+                        </p>
+                        <ul className="text-sm text-gray-600 space-y-1">
+                          <li>
+                            • Shipping charges calculated at checkout based on
+                            location and order size
+                          </li>
+                          <li>
+                            • Free shipping promotions may apply on qualifying
+                            orders
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+
+                    {/* Order Tracking */}
+                    <div className="bg-blue-50 rounded-lg p-4">
+                      <h4 className="font-medium text-blue-900 mb-2">
+                        Order Tracking
+                      </h4>
+                      <p className="text-sm text-blue-800">
+                        Track your order status directly on our website by
+                        visiting the Order Status page and entering your order
+                        details. No need to wait for emails – stay updated
+                        anytime!
+                      </p>
+                    </div>
+
+                    {/* Important Notes */}
+                    <div className="bg-amber-50 rounded-lg p-4">
+                      <h4 className="font-medium text-amber-900 mb-2">
+                        Important Notes
+                      </h4>
+                      <ul className="text-sm text-amber-800 space-y-1">
+                        <li>
+                          • Please ensure your shipping address is correct
+                          before placing the order
+                        </li>
+                        <li>
+                          • We are not responsible for delays due to incorrect
+                          addresses
+                        </li>
+                        <li>
+                          • Contact us at{" "}
+                          <span className="font-medium">
+                            cloverarena.cs@gmail.com
+                          </span>{" "}
+                          for delivery issues
+                        </li>
+                      </ul>
+                    </div>
                   </div>
                 </div>
               )}
@@ -1051,34 +1132,95 @@ const ProductDetails: React.FC = () => {
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">
                     Return Policy
                   </h3>
+                  <p className="text-gray-600 mb-6 text-sm lg:text-base">
+                    At Clover Arena, we want you to be completely satisfied with
+                    your purchase. Your satisfaction is our top priority.
+                  </p>
+
                   <div className="space-y-6">
-                    <div>
-                      <h4 className="font-medium text-gray-900 mb-2">
-                        30-Day Return Guarantee
+                    {/* 7-Day Return Guarantee */}
+                    <div className="bg-green-50 rounded-lg p-4">
+                      <h4 className="font-medium text-green-900 mb-2 flex items-center gap-2">
+                        <RotateCcw className="w-4 h-4" />
+                        7-Day Return Guarantee
                       </h4>
-                      <p className="text-sm text-gray-600">
-                        We want you to be completely satisfied with your
-                        purchase.
+                      <p className="text-sm text-green-800">
+                        Return your football jersey within 7 days from the date
+                        of delivery in its original condition and packaging for
+                        a full refund or exchange.
                       </p>
                     </div>
+
+                    {/* Return Process */}
                     <div>
-                      <h4 className="font-medium text-gray-900 mb-2">
+                      <h4 className="font-medium text-gray-900 mb-3">
+                        How to Return
+                      </h4>
+                      <div className="bg-gray-50 rounded-lg p-4">
+                        <ol className="text-sm text-gray-700 space-y-2">
+                          <li className="flex items-start gap-2">
+                            <span className="bg-emerald-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0 mt-0.5">
+                              1
+                            </span>
+                            Contact our customer support team to initiate the
+                            return process
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="bg-emerald-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0 mt-0.5">
+                              2
+                            </span>
+                            We'll guide you through every step of the return
+                            process
+                          </li>
+                          <li className="flex items-start gap-2">
+                            <span className="bg-emerald-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0 mt-0.5">
+                              3
+                            </span>
+                            Send the item back in original condition with all
+                            tags intact
+                          </li>
+                        </ol>
+                      </div>
+                    </div>
+
+                    {/* Return Conditions */}
+                    <div>
+                      <h4 className="font-medium text-gray-900 mb-3">
                         Return Conditions
                       </h4>
                       <ul className="space-y-2 text-sm text-gray-600">
                         <li className="flex items-start gap-2">
                           <span className="text-emerald-600 mt-0.5">•</span>
-                          Items must be unused and in original packaging
+                          Items must be unworn and unwashed
                         </li>
                         <li className="flex items-start gap-2">
                           <span className="text-emerald-600 mt-0.5">•</span>
-                          Include all tags and accessories
+                          Include all original tags and packaging
                         </li>
                         <li className="flex items-start gap-2">
                           <span className="text-emerald-600 mt-0.5">•</span>
-                          Return shipping is free for defective items
+                          Return must be initiated within 7 days of delivery
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-emerald-600 mt-0.5">•</span>
+                          Items must be in original condition and packaging
                         </li>
                       </ul>
+                    </div>
+
+                    {/* Contact Information */}
+                    <div className="bg-emerald-50 rounded-lg p-4">
+                      <h4 className="font-medium text-emerald-900 mb-2">
+                        Need Help?
+                      </h4>
+                      <p className="text-sm text-emerald-800">
+                        Our goal is to make your shopping experience smooth,
+                        safe, and worry-free. Contact us at{" "}
+                        <span className="font-medium">
+                          cloverarena.cs@gmail.com
+                        </span>{" "}
+                        for any return queries.
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -1195,6 +1337,7 @@ const ProductDetails: React.FC = () => {
             )}
           </button>
         </div>
+        <div className="lg:hidden h-20"></div>
       </div>
 
       {/* Guest Modal */}
@@ -1202,6 +1345,13 @@ const ProductDetails: React.FC = () => {
         isOpen={showGuestModal}
         onClose={() => setShowGuestModal(false)}
         reason={guestReason}
+      />
+      {/* Size Guide Modal */}
+      <SizeGuideModal
+        isOpen={showSizeGuide}
+        onClose={() => setShowSizeGuide(false)}
+        images={product?.images}
+        productName={product?.name}
       />
     </>
   );

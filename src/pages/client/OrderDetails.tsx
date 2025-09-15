@@ -4,6 +4,7 @@ import WarningModal from "../../components/common/WarningModal";
 import { useNavigate } from "react-router-dom";
 import type { OrderDetails as OrderDetailsType } from "../../types/order.types";
 import toast from "react-hot-toast";
+import { CheckCircle, Clock, Package, Truck } from "lucide-react";
 
 const S3_BASE_URL = import.meta.env.VITE_S3_BASE_URL;
 
@@ -29,10 +30,10 @@ const convertToNumber = (value: any): number => {
 
 // Progress steps for normal order flow
 const PROGRESS_STEPS = [
-  { key: "PENDING", label: "Pending" },
-  { key: "CONFIRMED", label: "Confirmed" },
-  { key: "SHIPPED", label: "Shipped" },
-  { key: "DELIVERED", label: "Delivered" },
+  { key: "PENDING", label: "Pending", icon: Clock },
+  { key: "CONFIRMED", label: "Confirmed", icon: CheckCircle },
+  { key: "SHIPPED", label: "Shipped", icon: Truck },
+  { key: "DELIVERED", label: "Delivered", icon: Package },
 ];
 
 const OrderDetails: React.FC = () => {
@@ -106,10 +107,10 @@ const OrderDetails: React.FC = () => {
       if (response.success) {
         setOrder((prev) => (prev ? { ...prev, status: "CANCELLED" } : null));
         setShowCancelModal(false);
-        toast.success("Order cancelled successfully")
+        toast.success("Order cancelled successfully");
       }
     } catch (err: any) {
-      toast.error("Failed to cancel order")
+      toast.error("Failed to cancel order");
     } finally {
       setCancelLoading(false);
     }
@@ -202,18 +203,19 @@ const OrderDetails: React.FC = () => {
           {PROGRESS_STEPS.map((step, index) => {
             const isActive = index <= currentStepIndex;
             const isCurrent = index === currentStepIndex;
+            const IconComponent = step.icon;
 
             return (
               <div key={step.key} className="flex items-center flex-1 relative">
                 <div className="flex flex-col items-center w-full">
                   <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center font-medium text-sm relative z-10 ${
+                    className={`w-10 h-10 rounded-full flex items-center justify-center relative z-10 ${
                       isActive
                         ? "bg-emerald-600 text-white"
                         : "bg-gray-200 text-gray-500"
                     }`}
                   >
-                    {index + 1}
+                    <IconComponent size={20} />
                   </div>
                   <span
                     className={`mt-2 text-sm font-medium text-center ${
@@ -244,6 +246,7 @@ const OrderDetails: React.FC = () => {
       </div>
     );
   };
+
   const getStatusMessage = (status: string) => {
     switch (status) {
       case "PENDING":

@@ -553,12 +553,12 @@ const SignUp = () => {
         {/* Terms and Privacy */}
         <p className="text-xs text-center text-gray-500 mt-6 px-4">
           By signing up, you agree to our{" "}
-          <Link to="terms-service" className="text-emerald-600 hover:underline">
+          <Link to="/terms-service" className="text-emerald-600 hover:underline">
             Terms of Service
           </Link>{" "}
           and{" "}
           <Link
-            to="privacy-policy"
+            to="/privacy-policy"
             className="text-emerald-600 hover:underline"
           >
             Privacy Policy

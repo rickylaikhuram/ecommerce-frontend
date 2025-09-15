@@ -1,7 +1,7 @@
 // components/AccountLayout.tsx
 import React, { useState, useEffect } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { FaArrowLeft } from "react-icons/fa";
+import { ArrowLeft } from "lucide-react";
 import UserSidebar from "../../pages/client/UserSidebar";
 
 const AccountLayout: React.FC = () => {
@@ -64,7 +64,7 @@ const AccountLayout: React.FC = () => {
                   onClick={handleBackToMenu}
                   className="flex items-center justify-center w-10 h-10 bg-white rounded-full shadow-md hover:shadow-lg transition-shadow duration-200"
                 >
-                  <FaArrowLeft className="w-4 h-4 text-gray-600" />
+                  <ArrowLeft className="w-4 h-4 text-gray-600" />
                 </button>
                 <h1 className="text-xl font-semibold text-gray-800">
                   {getPageTitle()}

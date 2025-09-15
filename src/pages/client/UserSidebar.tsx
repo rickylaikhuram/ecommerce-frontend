@@ -2,14 +2,14 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
-  FaUser,
-  FaMapMarkerAlt,
-  FaShoppingBag,
-  FaHeart,
-  FaShieldAlt,
-  FaSignOutAlt,
-  FaChevronRight,
-} from "react-icons/fa";
+  User,
+  MapPin,
+  ShoppingBag,
+  Heart,
+  Shield,
+  LogOut,
+  ChevronRight,
+} from "lucide-react";
 import { useAppDispatch } from "../../redux/hook";
 import { logoutUser } from "../../redux/slice/auth";
 import WarningModal from "../../components/common/WarningModal";
@@ -45,27 +45,27 @@ const UserSidebar: React.FC = () => {
 
   const sidebarItems: SidebarItem[] = [
     {
-      icon: <FaUser className="w-5 h-5" />,
+      icon: <User className="w-5 h-5" />,
       label: "Account Details",
       path: "/account/profile",
     },
     {
-      icon: <FaMapMarkerAlt className="w-5 h-5" />,
+      icon: <MapPin className="w-5 h-5" />,
       label: "Addresses",
       path: "/account/addresses",
     },
     {
-      icon: <FaShoppingBag className="w-5 h-5" />,
+      icon: <ShoppingBag className="w-5 h-5" />,
       label: "Orders",
       path: "/account/orders",
     },
     {
-      icon: <FaHeart className="w-5 h-5" />,
+      icon: <Heart className="w-5 h-5" />,
       label: "Wishlist",
       path: "/account/wishlist",
     },
     {
-      icon: <FaShieldAlt className="w-5 h-5" />,
+      icon: <Shield className="w-5 h-5" />,
       label: "Security",
       path: "/account/security",
     },
@@ -95,7 +95,7 @@ const UserSidebar: React.FC = () => {
                 <span className="font-medium">{item.label}</span>
               </div>
               {/* Show chevron on mobile for better UX indication */}
-              <FaChevronRight className="w-4 h-4 md:hidden text-gray-400 group-hover:text-gray-600 transition-colors duration-200" />
+              <ChevronRight className="w-4 h-4 md:hidden text-gray-400 group-hover:text-gray-600 transition-colors duration-200" />
             </Link>
           ))}
         </nav>
@@ -105,12 +105,12 @@ const UserSidebar: React.FC = () => {
             onClick={handleLogoutClick}
             className="w-full flex items-center justify-center space-x-3 px-4 py-3 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors duration-200"
           >
-            <FaSignOutAlt className="w-5 h-5" />
+            <LogOut className="w-5 h-5" />
             <span className="font-medium">Logout</span>
           </button>
         </div>
       </div>
-
+      <div className="lg:hidden h-10"></div>
       {/* Logout Confirmation Modal */}
       <WarningModal
         isOpen={isLogoutModalOpen}
@@ -120,7 +120,7 @@ const UserSidebar: React.FC = () => {
       >
         <div className="text-center">
           <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
-            <FaSignOutAlt className="h-6 w-6 text-red-600" />
+            <LogOut className="h-6 w-6 text-red-600" />
           </div>
           <h3 className="text-lg font-medium text-gray-900 mb-2">
             Are you sure you want to logout?

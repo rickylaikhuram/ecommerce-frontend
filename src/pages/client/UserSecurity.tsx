@@ -1,7 +1,7 @@
 // pages/Security.tsx
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { FaLock, FaEye, FaEyeSlash, FaCheck } from "react-icons/fa";
+import { Lock, Eye, EyeOff, Check } from "lucide-react";
 import { userService } from "../../services/user.services";
 import toast from "react-hot-toast";
 
@@ -132,7 +132,7 @@ const Security: React.FC = () => {
         <div className="border-b pb-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-4">
             <div className="flex items-center space-x-3">
-              <FaLock className="w-6 h-6 text-gray-600" />
+              <Lock className="w-6 h-6 text-gray-600" />
               <div>
                 <h3 className="font-semibold text-lg">Password</h3>
                 <p className="text-gray-600 text-sm">
@@ -214,7 +214,7 @@ const Security: React.FC = () => {
                     onClick={() => togglePasswordVisibility("current")}
                     className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
                   >
-                    {showPasswords.current ? <FaEyeSlash /> : <FaEye />}
+                    {showPasswords.current ? <EyeOff /> : <Eye />}
                   </button>
                 </div>
                 {errors.currentPassword && (
@@ -245,7 +245,7 @@ const Security: React.FC = () => {
                     onClick={() => togglePasswordVisibility("new")}
                     className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
                   >
-                    {showPasswords.new ? <FaEyeSlash /> : <FaEye />}
+                    {showPasswords.new ? <EyeOff /> : <Eye />}
                   </button>
                 </div>
                 
@@ -302,13 +302,13 @@ const Security: React.FC = () => {
                     onClick={() => togglePasswordVisibility("confirm")}
                     className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
                   >
-                    {showPasswords.confirm ? <FaEyeSlash /> : <FaEye />}
+                    {showPasswords.confirm ? <EyeOff /> : <Eye />}
                   </button>
                   
                   {/* Check mark when passwords match */}
                   {confirmPassword && newPassword && confirmPassword === newPassword && (
                     <div className="absolute inset-y-0 right-8 pr-3 flex items-center text-green-500">
-                      <FaCheck className="w-4 h-4" />
+                      <Check className="w-4 h-4" />
                     </div>
                   )}
                 </div>

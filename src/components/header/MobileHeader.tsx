@@ -31,7 +31,7 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
   const location = useLocation();
   
   // Check if current page is an auth page
-  const authPages = ['/signin', '/signup', '/forgot-password', '/signinwithotp'];
+  const authPages = ['/signin', '/signup', '/forgot-password', '/signinwithotp','/account'];
   const isAuthPage = authPages.includes(location.pathname);
 
   return (

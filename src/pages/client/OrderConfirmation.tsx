@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { orderService } from "../../services/order.services";
 import type { OrderDetails } from "../../types/order.types";
 
-
 // Helper function to safely convert Decimal to number
 const convertToNumber = (value: any): number => {
   if (typeof value === "number") {
@@ -26,7 +25,7 @@ const convertToNumber = (value: any): number => {
 
 const OrderConfirmation: React.FC = () => {
   const navigate = useNavigate();
-  
+
   // Get orderId from URL
   const getOrderIdFromUrl = () => {
     const pathParts = window.location.pathname.split("/");
@@ -171,7 +170,8 @@ const OrderConfirmation: React.FC = () => {
               <div>
                 <p className="text-gray-600 mb-1">Items Ordered</p>
                 <p className="font-medium text-gray-900">
-                  {order.orderItems.length} item{order.orderItems.length !== 1 ? 's' : ''}
+                  {order.orderItems.length} item
+                  {order.orderItems.length !== 1 ? "s" : ""}
                 </p>
               </div>
               <div>
@@ -213,7 +213,9 @@ const OrderConfirmation: React.FC = () => {
               >
                 {item.productImageUrl && (
                   <img
-                    src={`${import.meta.env.VITE_S3_BASE_URL}${item.productImageUrl}`}
+                    src={`${import.meta.env.VITE_S3_BASE_URL}${
+                      item.productImageUrl
+                    }`}
                     alt={item.productName}
                     className="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded-lg mr-3 sm:mr-4 flex-shrink-0"
                   />
@@ -232,7 +234,8 @@ const OrderConfirmation: React.FC = () => {
                       Qty: {item.quantity}
                     </span>
                     <span className="font-semibold text-gray-900 text-sm sm:text-base">
-                      ₹{(convertToNumber(item.price) * item.quantity).toFixed(2)}
+                      ₹
+                      {(convertToNumber(item.price) * item.quantity).toFixed(2)}
                     </span>
                   </div>
                 </div>
@@ -251,7 +254,8 @@ const OrderConfirmation: React.FC = () => {
                   ₹
                   {order.orderItems
                     .reduce(
-                      (sum, item) => sum + convertToNumber(item.price) * item.quantity,
+                      (sum, item) =>
+                        sum + convertToNumber(item.price) * item.quantity,
                       0
                     )
                     .toFixed(2)}
@@ -264,7 +268,9 @@ const OrderConfirmation: React.FC = () => {
               <hr className="my-2" />
               <div className="flex justify-between font-semibold text-base sm:text-lg">
                 <span>Total Amount:</span>
-                <span className="text-emerald-600">₹{order.totalAmount.toFixed(2)}</span>
+                <span className="text-emerald-600">
+                  ₹{order.totalAmount.toFixed(2)}
+                </span>
               </div>
             </div>
           </div>
@@ -277,8 +283,13 @@ const OrderConfirmation: React.FC = () => {
           </p>
           <p className="text-emerald-600 text-sm px-4">
             Contact our support team at{" "}
-            <a href="mailto:support@company.com" className="underline">
-              support@company.com
+            <a
+              href="https://wa.me/+918416082998"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline"
+            >
+              +91-8416082998
             </a>
           </p>
         </div>

@@ -31,7 +31,7 @@ const AboutUsPage = () => {
 
           <div className="space-y-4 sm:space-y-6">
             <p className="text-sm sm:text-base lg:text-lg text-gray-700 leading-relaxed">
-              Welcome to Clover Arena – your go-to destination for high-quality
+              Welcome to Clover Arena - your go-to destination for high-quality
               football jerseys from Manipur! At Clover Arena, we are passionate
               about football and committed to providing sports enthusiasts with
               authentic, top-notch football jerseys that showcase the spirit of

@@ -192,9 +192,14 @@ const ReturnPolicyPage = () => {
             Our customer support team is here to guide you through every step of
             the return process.
           </p>
-          <button className="bg-white text-emerald-600 font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-lg hover:bg-emerald-50 transition-colors duration-300 text-base sm:text-lg shadow-md hover:shadow-lg">
+          <a
+            href="https://wa.me/+918416082998"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-white text-emerald-600 font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-lg hover:bg-emerald-50 transition-colors duration-300 text-base sm:text-lg shadow-md hover:shadow-lg"
+          >
             Contact Support
-          </button>
+          </a>
         </div>
       </div>
     </div>

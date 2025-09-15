@@ -26,9 +26,7 @@ const Footer = () => {
               />
             </Link>
             <p className="text-gray-600 text-sm leading-relaxed">
-              Your premier destination for quality products and exceptional
-              service. We're committed to bringing you the best shopping
-              experience.
+              Welcome to Clover Arena - your go-to destination for high-quality football jerseys from Manipur!
             </p>
             <div className="flex space-x-2 sm:space-x-3">
               <a
@@ -188,14 +186,14 @@ const Footer = () => {
 
             <div className="flex flex-wrap justify-center gap-3 sm:gap-6">
               <Link
-                to="privacy-policy"
+                to="/privacy-policy"
                 className="text-gray-600 hover:text-emerald-600 transition-colors duration-200 text-xs sm:text-sm relative group"
               >
                 Privacy Policy
                 <span className="absolute -bottom-0.5 left-0 w-0 h-0.5 bg-gradient-to-r from-emerald-400 to-green-400 group-hover:w-full transition-all duration-300"></span>
               </Link>
               <Link
-                to="terms-service"
+                to="/terms-service"
                 className="text-gray-600 hover:text-emerald-600 transition-colors duration-200 text-xs sm:text-sm relative group"
               >
                 Terms of Service

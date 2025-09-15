@@ -214,7 +214,7 @@ const SignIn = () => {
                 <input
                   id="emailOrPhone"
                   type="text"
-                  placeholder="you@example.com or 9876543210"
+                  placeholder="you@example.com or 1234567890"
                   className={`w-full ${
                     inputType === "phone" && watchedFields.emailOrPhone
                       ? "pl-20"

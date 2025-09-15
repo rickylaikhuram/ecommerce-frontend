@@ -190,8 +190,8 @@ const HeroBanner: React.FC = () => {
     <div className="relative w-full max-w-8xl mx-auto group">
       {/* Main banner container with consistent aspect ratio */}
       <div className="relative overflow-hidden shadow-lg bg-gray-900">
-        {/* Consistent aspect ratio across all devices - same crop on mobile and desktop */}
-        <div className="relative w-full aspect-[3/1] sm:aspect-[4/1]">
+        {/* Taller aspect ratio for mobile, same for desktop */}
+        <div className="relative w-full aspect-[7/4] sm:aspect-[9/2]">
           <div
             className="absolute inset-0 flex transition-transform duration-500 ease-in-out select-none"
             style={{ transform: `translateX(-${currentIndex * 100}%)` }}

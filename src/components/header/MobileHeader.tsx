@@ -1,4 +1,3 @@
-
 // components/Header/MobileHeader.tsx
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
@@ -29,9 +28,22 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
   onLocationClick,
 }) => {
   const location = useLocation();
-  
+
   // Check if current page is an auth page
-  const authPages = ['/signin', '/signup', '/forgot-password', '/signinwithotp','/account'];
+  const authPages = [
+    "/signin",
+    "/signup",
+    "/forgot-password",
+    "/signinwithotp",
+    "/account",
+    "/checkout",
+    "/orders-success/",
+    "/account/security",
+    "/account/addresses",
+    "/account/profile",
+    "/account/wishlist",
+    "/account/orders",
+  ];
   const isAuthPage = authPages.includes(location.pathname);
 
   return (
@@ -40,7 +52,11 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
         isScrolled && !isAuthPage
           ? "fixed top-0 left-0 z-50" // Only fixed when scrolled AND not on auth pages
           : "relative z-50"
-      } ${!showHeader && isScrolled && !isAuthPage ? "-translate-y-full" : "translate-y-0"}`}
+      } ${
+        !showHeader && isScrolled && !isAuthPage
+          ? "-translate-y-full"
+          : "translate-y-0"
+      }`}
     >
       <div className="border-b border-emerald-400/30">
         {/* Top row - Menu, Logo, and Location */}
@@ -61,7 +77,11 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
               onClick={(e) => onNavClick(e, "/")}
               className="hover:bg-white/10 transition-colors rounded-lg"
             >
-              <img src="/logo_white_details.jpeg" alt="Home" className="h-[70px]" />
+              <img
+                src="/logo_white_details.jpeg"
+                alt="Home"
+                className="h-[70px]"
+              />
             </Link>
           </div>
 

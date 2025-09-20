@@ -284,12 +284,12 @@ const OrderConfirmation: React.FC = () => {
           <p className="text-emerald-600 text-sm px-4">
             Contact our support team at{" "}
             <a
-              href="https://wa.me/+918416082998"
+              href="mailto:cloverarena.cs@gmail.com"
               target="_blank"
               rel="noopener noreferrer"
               className="underline"
             >
-              +91-8416082998
+              cloverarena.cs@gmail.com
             </a>
           </p>
         </div>

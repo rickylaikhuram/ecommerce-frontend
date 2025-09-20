@@ -65,7 +65,7 @@ const ShippingPage = () => {
                 Standard Processing
               </h4>
               <p className="text-gray-700 text-base sm:text-lg leading-relaxed">
-                Orders are typically processed within 1–2 business days after
+                Orders are typically processed within 1-2 business days after
                 payment confirmation.
               </p>
             </div>
@@ -179,7 +179,7 @@ const ShippingPage = () => {
               </p>
               <div className="bg-white rounded-lg p-4 sm:p-6 inline-block shadow-sm">
                 <p className="text-emerald-800 font-medium text-sm sm:text-base">
-                  No need to wait for emails – stay updated anytime!
+                  No need to wait for emails - stay updated anytime!
                 </p>
               </div>
             </div>

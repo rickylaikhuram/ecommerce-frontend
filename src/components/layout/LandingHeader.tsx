@@ -16,7 +16,7 @@ const LandingHeader = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { status } = useAppSelector((state) => state.categories);
-  
+
   useEffect(() => {
     if (status === "idle") {
       dispatch(fetchCategories());
@@ -32,6 +32,7 @@ const LandingHeader = () => {
     profileLabel,
     locationInfo,
     isDeliveryModalOpen,
+    isAuthPage, // Get this from the hook
     toggleMenu,
     handleNavClick,
     handleLocationClick,
@@ -82,23 +83,23 @@ const LandingHeader = () => {
         profileHref={profileHref}
         profileLabel={profileLabel}
         locationInfo={locationInfo}
-        
         onNavClick={handleNavClick}
         onSearch={handleSearch}
         onSuggestionClick={handleSuggestionClick}
-        onLocationClick={handleLocationClick} // Pass the location click handler
+        onLocationClick={handleLocationClick}
       />
 
       {/* Mobile Header */}
       <MobileHeader
         isScrolled={isScrolled}
         showHeader={showHeader}
+        isAuthPage={isAuthPage} // Pass the isAuthPage prop
         onMenuToggle={toggleMenu}
         onSearch={handleSearch}
         onSuggestionClick={handleSuggestionClick}
         onNavClick={handleNavClick}
         locationInfo={locationInfo}
-        onLocationClick={handleLocationClick} // Pass the location click handler
+        onLocationClick={handleLocationClick}
       />
 
       {/* Mobile Bottom Navigation */}
@@ -116,7 +117,6 @@ const LandingHeader = () => {
         onClose={() => setIsDeliveryModalOpen(false)}
         onDeliveryConfirmed={handleDeliveryConfirmed}
       />
-
     </>
   );
 };

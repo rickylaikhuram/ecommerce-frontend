@@ -57,3 +57,19 @@ jobs:
             VITE_S3_BASE_URL=${{ secrets.VITE_S3_BASE_URL }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      # Trigger infrastructure deployment
+      - name: Trigger deployment
+        if: github.ref == 'refs/heads/main'
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          token: ${{ secrets.INFRA_REPO_TOKEN }}
+          repository: rickylaikhuram/clover_infrastructure
+          event-type: service-updated
+          client-payload: |
+            {
+              "service": "frontend",
+              "tag": "${{ github.sha }}",
+              "repository": "${{ github.repository }}"
+            }
+          continue-on-error: true

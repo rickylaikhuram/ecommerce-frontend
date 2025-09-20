@@ -1,11 +1,13 @@
 // hooks/useHeaderState.ts
 import { useState, useEffect, useRef } from "react";
+import { useLocation } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "../redux/hook";
 import { fetchDeliverySetting } from "../redux/slice/delivery";
 import { fetchAddresses, clearAddresses } from "../redux/slice/address";
 
 export const useHeaderState = () => {
   const dispatch = useAppDispatch();
+  const location = useLocation();
   const { user, status } = useAppSelector((state) => state.auth);
   const { deliverySetting, status: deliveryStatus } = useAppSelector(
     (state) => state.delivery
@@ -27,6 +29,24 @@ export const useHeaderState = () => {
   const isGuest = user?.role === "guest";
   const profileHref = isGuest ? "/signin" : "/account";
   const profileLabel = isGuest ? "Sign in" : "Profile";
+
+  // Check if current page is an auth page
+  const authPages = [
+    "/signin",
+    "/signup",
+    "/forgot-password",
+    "/signinwithotp",
+    "/account",
+    "/checkout",
+    "/orders-success/",
+    "/account/security",
+    "/account/addresses",
+    "/account/profile",
+    "/account/wishlist",
+    "/account/orders",
+    "/products/",
+  ];
+  const isAuthPage = authPages.includes(location.pathname);
 
   // Fetch delivery settings once
   useEffect(() => {
@@ -74,15 +94,27 @@ export const useHeaderState = () => {
     };
   }, [isMenuOpen]);
 
-  // Handle scroll effects
+  // Improved scroll handling - fixes glitchy behavior
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
 
-      if (currentScrollY > lastScrollY && currentScrollY > 80) {
-        setShowHeader(false);
-      } else {
+      // Don't hide header on auth pages
+      if (isAuthPage) {
         setShowHeader(true);
+        setShouldFixHeader(currentScrollY > 150);
+        setIsScrolled(currentScrollY > 20);
+        setLastScrollY(currentScrollY);
+        return;
+      }
+
+      // Show header when scrolling up or at top
+      if (currentScrollY < lastScrollY || currentScrollY < 10) {
+        setShowHeader(true);
+      }
+      // Hide header when scrolling down (but only after scrolling past 100px)
+      else if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        setShowHeader(false);
       }
 
       setShouldFixHeader(currentScrollY > 150);
@@ -92,7 +124,15 @@ export const useHeaderState = () => {
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollY]);
+  }, [lastScrollY, isAuthPage]);
+
+  // Reset header visibility when route changes
+  useEffect(() => {
+    setShowHeader(true);
+    setLastScrollY(0);
+    setIsScrolled(false);
+    setShouldFixHeader(false);
+  }, [location.pathname]);
 
   // Get location display info with delivery logic
   const getLocationInfo = () => {
@@ -192,6 +232,7 @@ export const useHeaderState = () => {
     deliverySetting,
     deliveryStatus,
     addressStatus,
+    isAuthPage, // Add this for the MobileHeader component
     toggleMenu,
     handleNavClick,
     handleLocationClick,

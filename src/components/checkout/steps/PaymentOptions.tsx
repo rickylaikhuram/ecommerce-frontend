@@ -211,7 +211,8 @@ const PaymentOptions: React.FC<PaymentOptionsProps> = ({
                     </p>
                   </div>
 
-                  <div className="flex flex-col sm:flex-row items-end sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
+                  {/* Desktop button and check icon */}
+                  <div className="hidden sm:flex flex-col sm:flex-row items-end sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
                     {isSelected && !isDisabled && (
                       <CheckCircle className="h-5 w-5 sm:h-6 sm:w-6 text-green-600" />
                     )}
@@ -258,66 +259,161 @@ const PaymentOptions: React.FC<PaymentOptionsProps> = ({
                       </button>
                     )}
                   </div>
+
+                  {/* Mobile check icon only */}
+                  <div className="sm:hidden">
+                    {isSelected && !isDisabled && (
+                      <CheckCircle className="h-5 w-5 text-green-600" />
+                    )}
+                  </div>
                 </div>
 
                 {/* Additional info for selected method */}
                 {isSelected && !isDisabled && (
                   <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-emerald-200">
-                    {method.id === "card" && (
-                      <div className="bg-white rounded-lg p-3 sm:p-4 border border-emerald-200">
-                        <p className="text-xs sm:text-sm text-gray-700 mb-2">
-                          <strong>Accepted Cards:</strong>
-                        </p>
-                        <div className="flex space-x-2">
-                          <div className="w-6 h-4 sm:w-8 sm:h-6 bg-emerald-600 rounded text-white text-xs flex items-center justify-center font-bold">
-                            <span className="text-xs sm:text-xs">VISA</span>
-                          </div>
-                          <div className="w-6 h-4 sm:w-8 sm:h-6 bg-red-500 rounded text-white text-xs flex items-center justify-center font-bold">
-                            <span className="text-xs sm:text-xs">MC</span>
-                          </div>
-                          <div className="w-6 h-4 sm:w-8 sm:h-6 bg-orange-500 rounded text-white text-xs flex items-center justify-center font-bold">
-                            <span className="text-xs sm:text-xs">RU</span>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {method.id === "upi" && (
-                      <div className="bg-white rounded-lg p-3 sm:p-4 border border-emerald-200">
-                        <p className="text-xs sm:text-sm text-gray-700 mb-2">
-                          <strong>Popular UPI Apps:</strong>
-                        </p>
-                        <div className="flex flex-wrap gap-2 sm:gap-3">
-                          <div className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded">
-                            PhonePe
-                          </div>
-                          <div className="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded">
-                            Google Pay
-                          </div>
-                          <div className="text-xs bg-cyan-100 text-cyan-700 px-2 py-1 rounded">
-                            Paytm
+                    {/* Mobile: Compact details */}
+                    <div className="sm:hidden">
+                      {method.id === "card" && (
+                        <div className="bg-white rounded-lg p-2 border border-emerald-200 mb-3">
+                          <p className="text-xs text-gray-700 mb-1">
+                            <strong>Accepted Cards:</strong>
+                          </p>
+                          <div className="flex space-x-1">
+                            <div className="w-5 h-3 bg-emerald-600 rounded text-white text-[10px] flex items-center justify-center font-bold">
+                              VISA
+                            </div>
+                            <div className="w-5 h-3 bg-red-500 rounded text-white text-[10px] flex items-center justify-center font-bold">
+                              MC
+                            </div>
+                            <div className="w-5 h-3 bg-orange-500 rounded text-white text-[10px] flex items-center justify-center font-bold">
+                              RU
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    )}
+                      )}
 
-                    {method.id === "cod" && (
-                      <div className="bg-orange-50 rounded-lg p-3 sm:p-4 border border-orange-200">
-                        <div className="flex items-start space-x-2">
-                          <div className="w-4 h-4 sm:w-5 sm:h-5 bg-orange-500 rounded-full flex items-center justify-center mt-0.5">
-                            <span className="text-white text-xs font-bold">
-                              !
-                            </span>
+                      {method.id === "upi" && (
+                        <div className="bg-white rounded-lg p-2 border border-emerald-200 mb-3">
+                          <p className="text-xs text-gray-700 mb-1">
+                            <strong>UPI Apps:</strong>
+                          </p>
+                          <div className="flex flex-wrap gap-1">
+                            <div className="text-[10px] bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded">
+                              PhonePe
+                            </div>
+                            <div className="text-[10px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded">
+                              GPay
+                            </div>
+                            <div className="text-[10px] bg-cyan-100 text-cyan-700 px-1.5 py-0.5 rounded">
+                              Paytm
+                            </div>
                           </div>
-                          <div>
-                            <p className="text-xs text-orange-700 mt-1">
-                              Please have exact change ready for the delivery
-                              person
+                        </div>
+                      )}
+
+                      {method.id === "cod" && (
+                        <div className="bg-orange-50 rounded-lg p-2 border border-orange-200 mb-3">
+                          <div className="flex items-start space-x-1">
+                            <div className="w-3 h-3 bg-orange-500 rounded-full flex items-center justify-center mt-0.5">
+                              <span className="text-white text-[8px] font-bold">
+                                !
+                              </span>
+                            </div>
+                            <p className="text-[10px] text-orange-700 mt-0.5">
+                              Have exact change ready
                             </p>
                           </div>
                         </div>
-                      </div>
-                    )}
+                      )}
+
+                      {/* Mobile: Full-width button */}
+                      <button
+                        onClick={(e) => handleActionClick(method.id, e)}
+                        disabled={isProcessing}
+                        className={`w-full flex items-center space-x-2 px-4 py-3 rounded-lg font-semibold text-sm transition-colors justify-center ${
+                          isCurrentlyProcessing
+                            ? "bg-gray-400 cursor-not-allowed"
+                            : isProcessing
+                            ? "bg-gray-300 cursor-not-allowed text-gray-500"
+                            : method.id === "card"
+                            ? "bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer"
+                            : method.id === "upi"
+                            ? "bg-purple-600 hover:bg-purple-700 text-white cursor-pointer"
+                            : "bg-orange-600 hover:bg-orange-700 text-white cursor-pointer"
+                        }`}
+                      >
+                        {isCurrentlyProcessing ? (
+                          <>
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            <span>Processing...</span>
+                          </>
+                        ) : (
+                          <>
+                            <ButtonIcon className="h-4 w-4" />
+                            <span>{method.buttonText}</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+
+                    {/* Desktop: Original layout */}
+                    <div className="hidden sm:block">
+                      {method.id === "card" && (
+                        <div className="bg-white rounded-lg p-3 sm:p-4 border border-emerald-200">
+                          <p className="text-xs sm:text-sm text-gray-700 mb-2">
+                            <strong>Accepted Cards:</strong>
+                          </p>
+                          <div className="flex space-x-2">
+                            <div className="w-6 h-4 sm:w-8 sm:h-6 bg-emerald-600 rounded text-white text-xs flex items-center justify-center font-bold">
+                              <span className="text-xs sm:text-xs">VISA</span>
+                            </div>
+                            <div className="w-6 h-4 sm:w-8 sm:h-6 bg-red-500 rounded text-white text-xs flex items-center justify-center font-bold">
+                              <span className="text-xs sm:text-xs">MC</span>
+                            </div>
+                            <div className="w-6 h-4 sm:w-8 sm:h-6 bg-orange-500 rounded text-white text-xs flex items-center justify-center font-bold">
+                              <span className="text-xs sm:text-xs">RU</span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {method.id === "upi" && (
+                        <div className="bg-white rounded-lg p-3 sm:p-4 border border-emerald-200">
+                          <p className="text-xs sm:text-sm text-gray-700 mb-2">
+                            <strong>Popular UPI Apps:</strong>
+                          </p>
+                          <div className="flex flex-wrap gap-2 sm:gap-3">
+                            <div className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded">
+                              PhonePe
+                            </div>
+                            <div className="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded">
+                              Google Pay
+                            </div>
+                            <div className="text-xs bg-cyan-100 text-cyan-700 px-2 py-1 rounded">
+                              Paytm
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {method.id === "cod" && (
+                        <div className="bg-orange-50 rounded-lg p-3 sm:p-4 border border-orange-200">
+                          <div className="flex items-start space-x-2">
+                            <div className="w-4 h-4 sm:w-5 sm:h-5 bg-orange-500 rounded-full flex items-center justify-center mt-0.5">
+                              <span className="text-white text-xs font-bold">
+                                !
+                              </span>
+                            </div>
+                            <div>
+                              <p className="text-xs text-orange-700 mt-1">
+                                Please have exact change ready for the delivery
+                                person
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>

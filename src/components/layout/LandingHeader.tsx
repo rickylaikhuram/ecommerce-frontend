@@ -91,7 +91,6 @@ const LandingHeader = () => {
 
       {/* Mobile Header */}
       <MobileHeader
-        isScrolled={isScrolled}
         showHeader={showHeader}
         isAuthPage={isAuthPage} // Pass the isAuthPage prop
         onMenuToggle={toggleMenu}

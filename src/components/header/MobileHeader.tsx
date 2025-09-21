@@ -7,7 +7,6 @@ import { LocationDisplay } from "./LocationDisplay";
 import type { AutocompleteResult } from "../../types/search.types";
 
 interface MobileHeaderProps {
-  isScrolled: boolean;
   showHeader: boolean;
   isAuthPage: boolean;
   onMenuToggle: () => void;
@@ -19,7 +18,6 @@ interface MobileHeaderProps {
 }
 
 export const MobileHeader: React.FC<MobileHeaderProps> = ({
-  isScrolled,
   showHeader,
   isAuthPage,
   onMenuToggle,

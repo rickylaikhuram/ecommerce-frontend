@@ -152,7 +152,7 @@ const Footer = () => {
                   <Mail className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600" />
                 </div>
                 <span className="text-gray-600 text-xs sm:text-sm break-all">
-                  cloverarena.cs@gmail.com
+                  support@cloverarena.com
                 </span>
               </div>
               <div className="flex items-center space-x-2 sm:space-x-3 group">

@@ -292,7 +292,7 @@ const TermsPage = () => {
           </p>
           <div className="bg-white/10 rounded-lg p-4 sm:p-6 inline-block">
             <p className="text-emerald-100 text-sm sm:text-base break-all">
-              <strong>Email:</strong> cloverarena.cs@gmail.com
+              <strong>Email:</strong> support@cloverarena.com
             </p>
           </div>
         </div>

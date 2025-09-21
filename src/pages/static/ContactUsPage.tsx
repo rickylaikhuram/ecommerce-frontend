@@ -57,10 +57,10 @@ const ContactUsPage = () => {
                     Email Us
                   </h4>
                   <a
-                    href="mailto:cloverarena.cs@gmail.com"
+                    href="mailto:support@cloverarena.com"
                     className="text-emerald-600 hover:text-emerald-700 transition-colors text-sm sm:text-base break-all"
                   >
-                    cloverarena.cs@gmail.com
+                    support@cloverarena.com
                   </a>
                 </div>
               </div>

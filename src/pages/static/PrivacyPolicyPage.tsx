@@ -200,7 +200,7 @@ const PrivacyPolicyPage: React.FC = () => {
           </p>
           <div className="bg-white/10 rounded-lg p-4 inline-block">
             <p className="text-emerald-100">
-              <strong>Email:</strong> cloverarena.cs@gmail.com
+              <strong>Email:</strong> support@cloverarena.com
             </p>
           </div>
         </div>

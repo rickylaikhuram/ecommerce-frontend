@@ -600,14 +600,14 @@ const ProductDetails: React.FC = () => {
 
               {/* Thumbnail Images */}
               {product.images && product.images.length > 1 && (
-                <div className="flex gap-2 lg:gap-3 overflow-x-auto pb-2 scrollbar-thin">
+                <div className="flex gap-2 lg:gap-3 overflow-x-auto pb-2 scrollbar-thin p-1">
                   {product.images.map((image, index) => (
                     <button
                       key={index}
                       onClick={() => setSelectedImage(index)}
                       className={`
                         relative flex-shrink-0 w-16 h-16 lg:w-24 lg:h-24 rounded-lg lg:rounded-xl overflow-hidden 
-                        transition-all duration-200 transform hover:scale-105
+                        transition-all duration-200 transform 
                         ${
                           selectedImage === index
                             ? "ring-2 ring-emerald-600 ring-offset-2"
@@ -619,10 +619,10 @@ const ProductDetails: React.FC = () => {
                       <img
                         src={`${S3_BASE_URL}${image.imageUrl}`}
                         alt={image.altText || `Product image ${index + 1}`}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover hover:scale-105"
                       />
                       {selectedImage === index && (
-                        <div className="absolute inset-0 bg-emerald-600/10"></div>
+                        <div className="absolute inset-0 bg-emerald-600/10 hover:scale-150"></div>
                       )}
                     </button>
                   ))}
@@ -1117,7 +1117,7 @@ const ProductDetails: React.FC = () => {
                         <li>
                           • Contact us at{" "}
                           <span className="font-medium">
-                            cloverarena.cs@gmail.com
+                            support@cloverarena.com
                           </span>{" "}
                           for delivery issues
                         </li>
@@ -1217,7 +1217,7 @@ const ProductDetails: React.FC = () => {
                         Our goal is to make your shopping experience smooth,
                         safe, and worry-free. Contact us at{" "}
                         <span className="font-medium">
-                          cloverarena.cs@gmail.com
+                          support@cloverarena.com
                         </span>{" "}
                         for any return queries.
                       </p>

@@ -9,6 +9,8 @@ RUN npm ci
 
 COPY . . 
 
+ENV VITE_BACKEND_URL=/api
+
 # Then build TypeScript + Vite
 RUN npm run build
 

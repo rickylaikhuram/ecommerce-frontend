@@ -1,24 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { orderService } from "../../services/order.services";
 import { useNavigate } from "react-router-dom";
-// order": [
-//         {
-//             "id": "a5e0b60a-58a6-43c6-b272-03e6169f2df0",
-//             "orderNumber": "ORD-20250921-MFTDIAI4Z97",
-//             "status": "PENDING",
-//             "createdAt": "2025-09-21T07:25:52.686Z",
-//             "orderItems": [
-//                 {
-//                     "stockName": "A",
-//                     "price": "1099",
-//                     "productName": "dsfdsfdsfds",
-//                     "productImageUrl": "products/images/1758433418544-wallhaven-rd92qj1920x1080.png",
-//                     "productDescription": "fdsfdsfdsfs dfdsfdsf dsfds fdsf dsf dsfdss",
-//                     "productCategory": "Arsenal"
-//                 }
-//             ]
-//         }
-//     ]
+  
 interface Order {
   id: string;
   orderNumber?: string;

@@ -32,22 +32,31 @@ jobs:
           VITE_S3_BASE_URL: ${{ secrets.VITE_S3_BASE_URL }}
         run: npm run build
 
-      # Step 5: Set up Docker Buildx
+      # Step 5: Set up QEMU for multi-platform builds
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: all
+
+      # Step 6: Set up Docker Buildx
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+        with:
+          driver-opts: network=host
 
-      # Step 6: Log in to Docker Hub (only if build succeeded)
+      # Step 7: Log in to Docker Hub (only if build succeeded)
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_PASSWORD }}
 
-      # Step 7: Build and push Docker image (build already validated)
+      # Step 8: Build and push multi-architecture Docker image
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: |
             rickylyxon/ecom_clover_front:latest
@@ -72,4 +81,4 @@ jobs:
               "tag": "${{ github.sha }}",
               "repository": "${{ github.repository }}"
             }
-          continue-on-error: true
+        continue-on-error: true

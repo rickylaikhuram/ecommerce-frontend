@@ -10,6 +10,7 @@ RUN npm ci
 COPY . . 
 
 ENV VITE_BACKEND_URL=/api
+ENV VITE_S3_BASE_URL=https://clover-arena.s3.ap-south-1.amazonaws.com/
 
 # Then build TypeScript + Vite
 RUN npm run build

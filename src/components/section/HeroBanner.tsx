@@ -51,7 +51,7 @@ const HeroBanner: React.FC = () => {
 
     fetchBanners();
   }, []);
-
+  console.log("hello all works here")
   // Auto-scroll functionality
   useEffect(() => {
     if (!Array.isArray(banners) || banners.length <= 1) return;

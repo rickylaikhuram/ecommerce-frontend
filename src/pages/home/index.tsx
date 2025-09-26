@@ -8,10 +8,7 @@ import CategoryShowcase from "../../components/section/CategoryShowcase";
 import ProductSectionSkeleton from "../../components/common/ProductSectionSkeleton";
 import { productService } from "../../services/product.services";
 import type { Product, ProductResponse } from "../../types/products.types";
-import {
-  AlertCircle,
-  RefreshCw,
-} from "lucide-react";
+import { AlertCircle, RefreshCw } from "lucide-react";
 import Footer from "../../components/section/Footer";
 import { useAppSelector, useAppDispatch } from "../../redux/hook";
 import {
@@ -45,7 +42,7 @@ const ErrorSection: React.FC<{
 );
 
 // Lazy loaded section component
-const LazyProductSection: React.FC<{
+export const LazyProductSection: React.FC<{
   title: string;
   fetcher: () => Promise<ProductResponse>;
   onProductClick: (productId: string) => void;
@@ -209,7 +206,9 @@ const Home: React.FC = () => {
         />
       )}
 
-      <CategoryShowcase categoryIndex={0}/>
+      <CategoryShowcase categoryIndex={0} />
+
+      <CategoryShowcase categoryIndex={1} />
 
       {/* Best Sellers Section - Lazy load */}
       <LazyProductSection
@@ -218,18 +217,6 @@ const Home: React.FC = () => {
         onProductClick={handleProductClick}
         autoScroll={true}
         autoScrollInterval={5000}
-        cardCount={4}
-      />
-
-      <CategoryShowcase categoryIndex={1}/>
-
-      {/* Featured Products Section - Lazy load */}
-      <LazyProductSection
-        title="Featured Products"
-        fetcher={() => productService.getTrendingProducts(8)}
-        onProductClick={handleProductClick}
-        sectionClassName="bg-gradient-to-r from-emerald-50 to-purple-50"
-        containerClassName="container mx-auto px-4 py-12"
         cardCount={4}
       />
 
@@ -253,7 +240,7 @@ const Home: React.FC = () => {
           <p className="text-sm">{wishlistError}</p>
         </div>
       )}
-      <FeatureSection/>
+      <FeatureSection />
       <Footer />
     </div>
   );

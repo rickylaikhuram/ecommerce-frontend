@@ -22,7 +22,7 @@ const ProductListCard: React.FC<ProductListCardProps> = ({
 }) => {
   const dispatch = useAppDispatch();
   const [isHovered, setIsHovered] = useState(false);
-  const [showGuestModal, setShowGuestModal] = useState(false); // Add modal state
+  const [showGuestModal, setShowGuestModal] = useState(false);
 
   // Get auth state to check if user is logged in
   const { user, status } = useAppSelector((state) => state.auth);
@@ -32,7 +32,7 @@ const ProductListCard: React.FC<ProductListCardProps> = ({
   const isWishlisted = useAppSelector(selectIsProductWishlisted(product.id!));
   const wishlistLoading = useAppSelector((state) => state.wishlist.loading);
 
-  // Memoize expensive calculations - same as grid card
+  // Memoize expensive calculations
   const productData = useMemo(() => {
     const originalPrice = parseFloat(product.originalPrice.toString());
     const discountedPrice = parseFloat(product.discountedPrice.toString());
@@ -89,7 +89,9 @@ const ProductListCard: React.FC<ProductListCardProps> = ({
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <div className="flex">
+        <div className="flex min-h-0">
+          {" "}
+          {/* Added min-h-0 for better flex behavior */}
           {/* Image section - compact for list view */}
           <div className="w-48 flex-shrink-0 relative aspect-square overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100">
             {/* Wishlist Button */}
@@ -141,34 +143,56 @@ const ProductListCard: React.FC<ProductListCardProps> = ({
               </>
             )}
           </div>
-
-          {/* Content section - expanded for list view */}
-          <div className="flex-1 p-6 flex flex-col justify-between">
-            <div>
+          {/* Content section - expanded for list view with overflow control */}
+          <div className="flex-1 p-6 flex flex-col justify-between min-w-0 overflow-hidden">
+            <div className="min-w-0">
+              {" "}
+              {/* Added min-w-0 for text truncation */}
               {product.category && (
-                <p className="text-sm text-emerald-600 font-medium uppercase tracking-wider mb-2">
+                <p className="text-sm text-emerald-600 font-medium uppercase tracking-wider mb-2 truncate">
                   {product.category.name}
                 </p>
               )}
-
+              {/* Enhanced title truncation */}
               <h3
-                className={`font-bold text-lg text-gray-900 mb-2 line-clamp-2 transition-colors duration-200 ${
+                className={`font-bold text-lg text-gray-900 mb-2 transition-colors duration-200 overflow-hidden ${
                   isHovered ? "text-emerald-600" : ""
                 }`}
+                style={{
+                  display: "-webkit-box",
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: "vertical",
+                  wordBreak: "break-all",
+                  overflowWrap: "anywhere",
+                  hyphens: "auto",
+                  maxWidth: "100%",
+                }}
+                title={product.name} // Show full text on hover
               >
                 {product.name}
               </h3>
-
-              <p className="text-sm text-gray-600 mb-4 line-clamp-2">
+              {/* Enhanced description truncation */}
+              <p
+                className="text-sm text-gray-600 mb-4 overflow-hidden"
+                style={{
+                  display: "-webkit-box",
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: "vertical",
+                  wordBreak: "break-all",
+                  overflowWrap: "anywhere",
+                  hyphens: "auto",
+                  maxWidth: "100%",
+                }}
+                title={product.description} // Show full text on hover
+              >
                 {product.description}
               </p>
-
               {/* Available Sizes */}
               <div className="flex gap-2 mb-4 flex-wrap">
                 {availableSizes.map((size) => (
                   <span
                     key={size.stockName}
-                    className={`text-xs px-2 py-1 rounded ${
+                    className={`text-xs px-2 py-1 rounded whitespace-nowrap ${
                       size.stock > 0
                         ? "bg-green-100 text-green-700"
                         : "bg-gray-100 text-gray-400"
@@ -178,26 +202,25 @@ const ProductListCard: React.FC<ProductListCardProps> = ({
                   </span>
                 ))}
                 {product.productSizes.length > 6 && (
-                  <span className="text-xs px-2 py-1 rounded bg-gray-100 text-gray-500">
+                  <span className="text-xs px-2 py-1 rounded bg-gray-100 text-gray-500 whitespace-nowrap">
                     +{product.productSizes.length - 6} more
                   </span>
                 )}
               </div>
             </div>
           </div>
-
           {/* Price Section */}
-          <div className="flex p-8 items-center">
+          <div className="flex p-8 items-center flex-shrink-0">
             <div className="flex flex-col">
-              <span className="text-2xl font-bold text-gray-900">
+              <span className="text-2xl font-bold text-gray-900 whitespace-nowrap">
                 ₹{productData.discountedPrice.toFixed(2)}
               </span>
               {productData.discountPercentage > 0 && (
                 <div className="flex">
-                  <span className="text-sm text-gray-400 line-through font-medium">
+                  <span className="text-sm text-gray-400 line-through font-medium whitespace-nowrap">
                     ₹{productData.originalPrice.toFixed(2)}
                   </span>
-                  <div className="text-green-700 px-2 py-1 text-xs font-bold">
+                  <div className="text-green-700 px-2 py-1 text-xs font-bold whitespace-nowrap">
                     {productData.discountPercentage}% off
                   </div>
                 </div>

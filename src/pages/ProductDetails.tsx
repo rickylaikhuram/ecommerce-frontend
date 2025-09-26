@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import instance from "../utils/axios";
+// import { productService } from "../services/product.services";
 import { useAppDispatch, useAppSelector } from "../redux/hook";
 import {
   fetchCart,
@@ -34,6 +35,7 @@ import {
 } from "lucide-react";
 import GuestModal from "../components/common/GuestModal";
 import SizeGuideModal from "../components/common/SizeGuideModal";
+// import { LazyProductSection } from "./home";
 
 const S3_BASE_URL = import.meta.env.VITE_S3_BASE_URL;
 
@@ -390,6 +392,13 @@ const ProductDetails: React.FC = () => {
     }
   };
 
+  // const handleProductClick = useCallback(
+  //   (productId: string) => {
+  //     navigate(`/products/${productId}`);
+  //   },
+  //   [navigate]
+  // );
+
   const calculateDiscount = () => {
     if (!product?.discountedPrice || !product?.originalPrice) return 0;
     if (product.originalPrice <= product.discountedPrice) return 0;
@@ -463,7 +472,7 @@ const ProductDetails: React.FC = () => {
     <>
       <div className="min-h-screen bg-gray-50">
         {/* Mobile Header */}
-        <div className="lg:hidden sticky top-0 z-40 bg-white border-b shadow-sm">
+        <div className="lg:hidden sticky top-0 z-40 bg-white shadow-md">
           <div className="flex items-center justify-between px-4 py-3">
             <button
               onClick={handleBack}
@@ -650,8 +659,20 @@ const ProductDetails: React.FC = () => {
                     </span>
                   )}
                 </div>
-
-                <h1 className="text-xl lg:text-3xl xl:text-4xl font-bold text-gray-900 mb-2 lg:mb-3 leading-tight">
+                <h1
+                  className="text-xl lg:text-3xl xl:text-4xl font-bold text-gray-900 mb-2 lg:mb-3 leading-tight"
+                  style={
+                    {
+                      wordBreak: "break-word",
+                      overflowWrap: "break-word",
+                      hyphens: "auto",
+                      WebkitHyphens: "auto",
+                      MozHyphens: "auto",
+                      msHyphens: "auto",
+                    } as React.CSSProperties
+                  }
+                  lang="en"
+                >
                   {product.name}
                 </h1>
               </div>
@@ -705,7 +726,7 @@ const ProductDetails: React.FC = () => {
                       Size Guide
                     </button>
                   </div>
-                  <div className="grid grid-cols-3 lg:grid-cols-4 gap-2 lg:gap-3">
+                  <div className="grid grid-cols-4 lg:grid-cols-5 gap-2 lg:gap-3">
                     {product.productSizes.map((size) => (
                       <div
                         key={size.stockName}
@@ -731,10 +752,10 @@ const ProductDetails: React.FC = () => {
                           }}
                           disabled={size.stock === 0}
                           className={`
-                            relative p-2 rounded-xl font-medium text-sm transition-all duration-200 min-h-[48px] w-full
+                            relative p-1.5 rounded-lg font-medium text-xs transition-all duration-100 min-h-[40px] w-full
                             ${
                               selectedSize === size.stockName
-                                ? "bg-emerald-600 text-white shadow-lg transform scale-105"
+                                ? "bg-emerald-600 text-white shadow-lg"
                                 : size.stock === 0
                                 ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                                 : "bg-white border-2 border-gray-200 hover:border-emerald-600 text-gray-700"
@@ -745,7 +766,7 @@ const ProductDetails: React.FC = () => {
 
                           {/* Low stock indicator */}
                           {size.stock > 0 && size.stock < 10 && (
-                            <span className="absolute -top-1 -right-1 bg-red-400 text-white text-xs px-1.5 py-0.5 rounded-full font-normal">
+                            <span className="absolute -top-1 -right-1 bg-red-400 text-white text-xs px-2 py-0.5 rounded-full font-normal">
                               {size.stock} left
                             </span>
                           )}
@@ -974,7 +995,7 @@ const ProductDetails: React.FC = () => {
           </div>
 
           {/* Product Information Tabs */}
-          <div className="mt-8 lg:mt-12 bg-white rounded-lg lg:rounded-2xl shadow-sm overflow-hidden mb-20 lg:mb-0">
+          <div className="mt-8 lg:mt-12 bg-white rounded-lg lg:rounded-2xl shadow-sm overflow-hidden lg:mb-0">
             <div className="border-b">
               <div className="flex overflow-x-auto">
                 {(["description", "shipping", "returns"] as const).map(
@@ -1006,7 +1027,21 @@ const ProductDetails: React.FC = () => {
                   </h3>
                   <div className="text-gray-600 leading-relaxed text-sm lg:text-base">
                     {product.description ? (
-                      <p>{product.description}</p>
+                      <p
+                        style={
+                          {
+                            wordBreak: "break-word",
+                            overflowWrap: "break-word",
+                            hyphens: "auto",
+                            WebkitHyphens: "auto",
+                            MozHyphens: "auto",
+                            msHyphens: "auto",
+                          } as React.CSSProperties
+                        }
+                        lang="en"
+                      >
+                        {product.description}
+                      </p>
                     ) : (
                       <p className="text-gray-400 italic">
                         No description available for this product.
@@ -1231,7 +1266,7 @@ const ProductDetails: React.FC = () => {
         {/* Mobile Sticky Bottom Bar */}
         <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t-2 border-gray-100 shadow-2xl p-4 z-50 safe-area-padding-bottom">
           {/* Quantity controls when product is in cart */}
-          {isProductInCart && selectedSize && (
+          {/* {isProductInCart && selectedSize && (
             <div className="flex items-center justify-between mb-3 pb-3 border-b border-gray-200">
               <span className="text-sm font-medium text-gray-700">
                 Quantity in cart:
@@ -1258,7 +1293,7 @@ const ProductDetails: React.FC = () => {
                 </button>
               </div>
             </div>
-          )}
+          )} */}
 
           {/* Price and action section */}
           <div className="flex items-center justify-between mb-3">
@@ -1337,9 +1372,21 @@ const ProductDetails: React.FC = () => {
             )}
           </button>
         </div>
-        <div className="lg:hidden h-20"></div>
       </div>
-
+      {/* <LazyProductSection
+        title="You Might Also Like"
+        fetcher={() =>
+          productService.getFilteredProducts({
+            sortBy: "popular",
+            limit: 5,
+          })
+        }
+        onProductClick={handleProductClick}
+        sectionClassName="border-t border-gray-200 bg-gray-50"
+        containerClassName="container mx-auto px-4 py-8 mt-8"
+        cardCount={5}
+      /> */}
+      <div className="lg:hidden h-40"></div>
       {/* Guest Modal */}
       <GuestModal
         isOpen={showGuestModal}

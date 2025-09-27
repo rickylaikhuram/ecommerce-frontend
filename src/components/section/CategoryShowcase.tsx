@@ -31,10 +31,18 @@ const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({ categoryIndex }) =>
   };
 
   // Handle image error
-  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>): void => {
-    const target = e.target as HTMLImageElement;
-    target.src = `https://via.placeholder.com/400x400/f3f4f6/9ca3af?text=${target.alt?.charAt(0) || 'N'}`;
-  };
+  const handleImageError = (
+      e: React.SyntheticEvent<HTMLImageElement>
+    ): void => {
+      const target = e.target as HTMLImageElement;
+  
+      // Remove the error handler to avoid infinite loop
+      target.onerror = null;
+  
+      // Set fallback image
+      target.src =
+        "https://via.placeholder.com/1200x400/6b7280/ffffff?text=Image+Not+Found";
+    };
 
   // Get parent categories
   const getParentCategories = (): Categories[] => {

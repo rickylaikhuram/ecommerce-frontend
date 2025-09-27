@@ -41,12 +41,17 @@ const CategoryPage: React.FC = () => {
 
   // Handle image error
   const handleImageError = (
-    e: React.SyntheticEvent<HTMLImageElement>
-  ): void => {
-    const target = e.target as HTMLImageElement;
-    target.src =
-      "https://via.placeholder.com/200x200/6b7280/ffffff?text=No+Image";
-  };
+      e: React.SyntheticEvent<HTMLImageElement>
+    ): void => {
+      const target = e.target as HTMLImageElement;
+  
+      // Remove the error handler to avoid infinite loop
+      target.onerror = null;
+  
+      // Set fallback image
+      target.src =
+        "https://via.placeholder.com/1200x400/6b7280/ffffff?text=Image+Not+Found";
+    };
 
   // Get parent categories (they already have children populated)
   const getParentCategories = (): Categories[] => {

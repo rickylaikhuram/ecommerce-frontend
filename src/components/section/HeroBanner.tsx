@@ -51,7 +51,7 @@ const HeroBanner: React.FC = () => {
 
     fetchBanners();
   }, []);
-  console.log("hello all works here")
+
   // Auto-scroll functionality
   useEffect(() => {
     if (!Array.isArray(banners) || banners.length <= 1) return;
@@ -163,6 +163,11 @@ const HeroBanner: React.FC = () => {
     e: React.SyntheticEvent<HTMLImageElement>
   ): void => {
     const target = e.target as HTMLImageElement;
+
+    // Remove the error handler to avoid infinite loop
+    target.onerror = null;
+
+    // Set fallback image
     target.src =
       "https://via.placeholder.com/1200x400/6b7280/ffffff?text=Image+Not+Found";
   };
@@ -188,10 +193,10 @@ const HeroBanner: React.FC = () => {
 
   return (
     <div className="relative w-full max-w-8xl mx-auto group">
-      {/* Main banner container with consistent aspect ratio */}
+      {/* Main banner container - flexible height for desktop */}
       <div className="relative overflow-hidden shadow-lg bg-gray-900">
-        {/* Taller aspect ratio for mobile, same for desktop */}
-        <div className="relative w-full aspect-[7/4] sm:aspect-[9/2]">
+        {/* Fixed height for all screens */}
+        <div className="relative w-full aspect-[16/9] sm:aspect-[9/5] lg:aspect-[45/13]">
           <div
             className="absolute inset-0 flex transition-transform duration-500 ease-in-out select-none"
             style={{ transform: `translateX(-${currentIndex * 100}%)` }}
@@ -209,6 +214,19 @@ const HeroBanner: React.FC = () => {
                 className="w-full flex-shrink-0 relative cursor-pointer"
                 onClick={() => handleBannerClick(banner.redirectUrl)}
               >
+                {/* Background blurred image for desktop */}
+                {/* <div className="hidden sm:block absolute inset-0">
+                  <img
+                    src={
+                      banner.imageUrl ? `${S3_BASE_URL}${banner.imageUrl}` : ""
+                    }
+                    alt=""
+                    className="w-full h-full object-cover object-center blur-sm scale-110 opacity-30"
+                    draggable={false}
+                  />
+                </div> */}
+
+                {/* Main image */}
                 <img
                   src={
                     banner.imageUrl ? `${S3_BASE_URL}${banner.imageUrl}` : ""
@@ -256,9 +274,9 @@ const HeroBanner: React.FC = () => {
                   e.stopPropagation();
                   setCurrentIndex(index);
                 }}
-                className={` rounded-full transition-all duration-300 ${
+                className={`rounded-full transition-all duration-300 ${
                   index === currentIndex
-                    ? "bg-teal-800 scale-125  w-4 h-1 sm:w-4 sm:h-1"
+                    ? "bg-teal-800 scale-125 w-4 h-1 sm:w-4 sm:h-1"
                     : "bg-white bg-opacity-50 hover:bg-opacity-75 w-2 h-1 sm:w-3 sm:h-1"
                 }`}
                 aria-label={`Go to banner ${index + 1}`}

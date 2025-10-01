@@ -190,7 +190,7 @@ const Home: React.FC = () => {
 
       {/* New Arrivals Section - Load immediately */}
       {isInitialLoading ? (
-        <ProductSectionSkeleton sectionClassName="bg-gray-50" cardCount={4} />
+        <ProductSectionSkeleton sectionClassName="bg-gray-100" cardCount={4} />
       ) : initialError ? (
         <ErrorSection
           message={initialError}
@@ -202,11 +202,12 @@ const Home: React.FC = () => {
           title="New Arrivals"
           products={newArrivals}
           onProductClick={handleProductClick}
-          sectionClassName="bg-gray-50"
+          sectionClassName="bg-gray-100"
         />
       )}
-
+      <div className="container mx-auto mt-8"></div>
       <CategoryShowcase categoryIndex={0} />
+      <div className="container mx-auto mt-8"></div>
 
       <CategoryShowcase categoryIndex={1} />
 
@@ -215,6 +216,8 @@ const Home: React.FC = () => {
         title="Best Sellers"
         fetcher={() => productService.getBestsellers("week", 10)}
         onProductClick={handleProductClick}
+        sectionClassName="bg-gray-100"
+        containerClassName="container mx-auto px-4 py-8 mt-8"
         autoScroll={true}
         autoScrollInterval={5000}
         cardCount={4}
@@ -230,7 +233,7 @@ const Home: React.FC = () => {
           })
         }
         onProductClick={handleProductClick}
-        sectionClassName="border-t border-gray-200 bg-gray-50"
+        sectionClassName="bg-gray-100"
         containerClassName="container mx-auto px-4 py-8 mt-8"
         cardCount={5}
       />

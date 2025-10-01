@@ -61,7 +61,7 @@ const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({ categoryIndex }) =>
   // Loading state
   if (status === "loading") {
     return (
-      <section className="py-16 px-6 bg-gradient-to-b from-gray-50 to-white">
+      <section className="py-16 px-6 bg-gray-100">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Shop by Club</h2>
@@ -83,7 +83,7 @@ const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({ categoryIndex }) =>
   // Error state
   if (status === "failed") {
     return (
-      <section className="py-16 px-6 bg-gradient-to-b from-gray-50 to-white">
+      <section className="py-16 px-6 bg-gray-100">
         <div className="max-w-7xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Shop by Club</h2>
           <p className="text-red-600">{error}</p>
@@ -95,7 +95,7 @@ const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({ categoryIndex }) =>
   // If no selected category found
   if (!selectedCategory) {
     return (
-      <section className="py-16 px-6 bg-gradient-to-b from-gray-50 to-white">
+      <section className="py-16 px-6 bg-gray-100">
         <div className="max-w-7xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Shop by Club</h2>
           <p className="text-gray-600">Category not found at index {categoryIndex}</p>
@@ -107,7 +107,7 @@ const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({ categoryIndex }) =>
   // If no child categories
   if (childCategories.length === 0) {
     return (
-      <section className="py-16 px-6 bg-gradient-to-b from-gray-50 to-white">
+      <section className="py-16 px-6 bg-gray-100">
         <div className="max-w-7xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
             Shop by {selectedCategory.name}
@@ -120,7 +120,7 @@ const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({ categoryIndex }) =>
 
   return (
     <>
-      <section className="p-3 bg-gradient-to-b from-gray-50 to-white overflow-hidden">
+      <section className="p-3 bg-gray-100 overflow-hidden">
         <div className="max-w-7xl mx-auto">
           {/* Section Header */}
           <div className="text-center mb-2">

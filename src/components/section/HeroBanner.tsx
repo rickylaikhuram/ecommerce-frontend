@@ -195,10 +195,10 @@ const HeroBanner: React.FC = () => {
     <div className="relative w-full max-w-8xl mx-auto group">
       {/* Main banner container - flexible height for desktop */}
       <div className="relative overflow-hidden shadow-lg bg-gray-900">
-        {/* Fixed height for all screens */}
-        <div className="relative w-full aspect-[16/9] sm:aspect-[9/5] lg:aspect-[45/13]">
+        {/* Fixed aspect ratio for mobile, flexible for desktop */}
+        <div className="relative w-full aspect-[9/4] sm:aspect-auto">
           <div
-            className="absolute inset-0 flex transition-transform duration-500 ease-in-out select-none"
+            className="absolute inset-0 flex transition-transform duration-500 ease-in-out select-none sm:relative"
             style={{ transform: `translateX(-${currentIndex * 100}%)` }}
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
@@ -221,7 +221,7 @@ const HeroBanner: React.FC = () => {
                       banner.imageUrl ? `${S3_BASE_URL}${banner.imageUrl}` : ""
                     }
                     alt=""
-                    className="w-full h-full object-cover object-center blur-sm scale-110 opacity-30"
+                    className="w-full h-full object-cover object-center blur-sm scale-110 opacity-50"
                     draggable={false}
                   />
                 </div> */}
@@ -232,7 +232,7 @@ const HeroBanner: React.FC = () => {
                     banner.imageUrl ? `${S3_BASE_URL}${banner.imageUrl}` : ""
                   }
                   alt={banner.altText || "Banner"}
-                  className="w-full h-full object-cover object-center hover:scale-105 transition-transform duration-300 pointer-events-none"
+                  className="w-full h-full object-cover object-center sm:w-full sm:h-auto sm:object-contain sm:max-h-[50vh] sm:relative sm:z-10 hover:scale-105 transition-transform duration-300 pointer-events-none"
                   onError={handleImageError}
                   draggable={false}
                 />

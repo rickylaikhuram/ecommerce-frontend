@@ -581,7 +581,7 @@ const Checkout: React.FC = () => {
   const invalidItems = cartItems.filter((item) => !item.canProceedToCheckout);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-white">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-white max-w-7xl mx-auto mb-2">
       {/* Header */}
       <CheckoutHeader onBackClick={() => navigate("/cart")} />
       {/* Progress Bar */}

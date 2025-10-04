@@ -19,7 +19,7 @@ const ProductSection: React.FC<ProductSectionProps> = ({
   products,
   onProductClick,
   sectionClassName = "",
-  containerClassName = "container mx-auto px-4 py-8",
+  containerClassName = "container mx-auto px-4 py-8 max-w-7xl bg-white",
   autoScroll = false,
   autoScrollInterval = 5000,
   showNavigation = true

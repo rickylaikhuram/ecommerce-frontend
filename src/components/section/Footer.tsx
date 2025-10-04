@@ -13,7 +13,7 @@ const Footer = () => {
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 sm:w-48 sm:h-48 lg:w-64 lg:h-64 bg-emerald-200 rounded-full filter blur-3xl opacity-20"></div>
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+      <div className="relative max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
         {/* Modified grid for better mobile view */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-8 mb-12">
           {/* Company Info - Full width on mobile */}

@@ -1,6 +1,6 @@
 // components/sections/CategoryShowcase.tsx
-import { useAppSelector } from '../../redux/hook'; // Adjust path as needed
-import type { Category as Categories } from '../../types/products.types'; // Adjust path as needed
+import { useAppSelector } from "../../redux/hook"; // Adjust path as needed
+import type { Category as Categories } from "../../types/products.types"; // Adjust path as needed
 
 const S3_BASE_URL = import.meta.env.VITE_S3_BASE_URL;
 
@@ -17,7 +17,9 @@ interface CategoryShowcaseProps {
   categoryIndex: number; // The index of the parent category to display
 }
 
-const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({ categoryIndex }) => {
+const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({
+  categoryIndex,
+}) => {
   const { categories, status, error } = useAppSelector(
     (state: RootState) => state.categories
   );
@@ -32,17 +34,17 @@ const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({ categoryIndex }) =>
 
   // Handle image error
   const handleImageError = (
-      e: React.SyntheticEvent<HTMLImageElement>
-    ): void => {
-      const target = e.target as HTMLImageElement;
-  
-      // Remove the error handler to avoid infinite loop
-      target.onerror = null;
-  
-      // Set fallback image
-      target.src =
-        "https://via.placeholder.com/1200x400/6b7280/ffffff?text=Image+Not+Found";
-    };
+    e: React.SyntheticEvent<HTMLImageElement>
+  ): void => {
+    const target = e.target as HTMLImageElement;
+
+    // Remove the error handler to avoid infinite loop
+    target.onerror = null;
+
+    // Set fallback image
+    target.src =
+      "https://via.placeholder.com/1200x400/6b7280/ffffff?text=Image+Not+Found";
+  };
 
   // Get parent categories
   const getParentCategories = (): Categories[] => {
@@ -61,10 +63,12 @@ const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({ categoryIndex }) =>
   // Loading state
   if (status === "loading") {
     return (
-      <section className="py-16 px-6 bg-gray-100">
-        <div className="max-w-7xl mx-auto">
+      <section className="py-16 px-6 bg-white mt-4 ">
+        <div className="max-w-7xl mx-auto bg-white">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Shop by Club</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+              Shop by Club
+            </h2>
             <p className="text-gray-600">Loading clubs...</p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 justify-items-center">
@@ -83,9 +87,11 @@ const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({ categoryIndex }) =>
   // Error state
   if (status === "failed") {
     return (
-      <section className="py-16 px-6 bg-gray-100">
-        <div className="max-w-7xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Shop by Club</h2>
+      <section className="py-16 px-6 bg-gray-100 mt-4">
+        <div className="max-w-7xl mx-auto text-center bg-white">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+            Shop by Club
+          </h2>
           <p className="text-red-600">{error}</p>
         </div>
       </section>
@@ -95,10 +101,14 @@ const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({ categoryIndex }) =>
   // If no selected category found
   if (!selectedCategory) {
     return (
-      <section className="py-16 px-6 bg-gray-100">
-        <div className="max-w-7xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Shop by Club</h2>
-          <p className="text-gray-600">Category not found at index {categoryIndex}</p>
+      <section className="py-16 px-6 bg-gray-100 mt-4">
+        <div className="max-w-7xl mx-auto text-center bg-white">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+            Shop by Club
+          </h2>
+          <p className="text-gray-600">
+            Category not found at index {categoryIndex}
+          </p>
         </div>
       </section>
     );
@@ -107,8 +117,8 @@ const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({ categoryIndex }) =>
   // If no child categories
   if (childCategories.length === 0) {
     return (
-      <section className="py-16 px-6 bg-gray-100">
-        <div className="max-w-7xl mx-auto text-center">
+      <section className="py-16 px-6 bg-gray-100 mt-4">
+        <div className="max-w-7xl mx-auto text-center bg-white">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
             Shop by {selectedCategory.name}
           </h2>
@@ -117,18 +127,18 @@ const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({ categoryIndex }) =>
       </section>
     );
   }
-
   return (
     <>
-      <section className="p-3 bg-gray-100 overflow-hidden">
-        <div className="max-w-7xl mx-auto">
+      <section className="p-3 bg-gray-100 overflow-hidden mt-2">
+        <div className="max-w-7xl mx-auto bg-white ">
           {/* Section Header */}
-          <div className="text-center mb-2">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+          <div className="text-center py-2">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 ">
               Shop by {selectedCategory.name}
             </h2>
             <p className="text-gray-600 md:text-lg">
-              Authentic products from your favorite {selectedCategory.name.toLowerCase()}
+              Authentic products from your favorite{" "}
+              {selectedCategory.name.toLowerCase()}
             </p>
           </div>
 
@@ -159,7 +169,7 @@ const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({ categoryIndex }) =>
                           </span>
                         </div>
                       )}
-                      
+
                       {/* Overlay on hover */}
                       <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity duration-300" />
                     </div>
@@ -205,7 +215,7 @@ const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({ categoryIndex }) =>
                         </span>
                       </div>
                     )}
-                    
+
                     {/* Overlay on hover */}
                     <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity duration-300" />
                   </div>
@@ -225,8 +235,8 @@ const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({ categoryIndex }) =>
           </div>
 
           {/* View All Button */}
-          <div className="text-center mt-3">
-            <button 
+          <div className="text-center py-3">
+            <button
               onClick={() => handleCategoryClick(selectedCategory.name)}
               className="px-8 py-3 bg-gradient-to-r from-teal-600 to-teal-700 text-white font-semibold rounded-full shadow-lg transform transition-all duration-300 hover:scale-105 hover:from-teal-700 hover:to-teal-800"
             >

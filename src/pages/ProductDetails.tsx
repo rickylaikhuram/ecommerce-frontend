@@ -470,7 +470,7 @@ const ProductDetails: React.FC = () => {
 
   return (
     <>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 max-w-7xl mx-auto mb-2">
         {/* Mobile Header */}
         <div className="lg:hidden sticky top-0 z-40 bg-white shadow-md">
           <div className="flex items-center justify-between px-4 py-3">

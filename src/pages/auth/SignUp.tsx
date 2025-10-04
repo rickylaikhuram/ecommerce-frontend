@@ -166,7 +166,7 @@ const SignUp = () => {
     );
   }
   return (
-    <div className="flex items-center justify-center bg-gradient-to-br from-emerald-50 via-sky-50 to-cyan-50 px-4 py-8 pb-20">
+    <div className="flex items-center justify-center bg-gradient-to-br from-emerald-50 via-sky-50 to-cyan-50 px-4 py-8 pb-20 max-w-7xl mx-auto">
       <div className="w-full max-w-md">
         {/* Decorative element */}
         <div className="flex justify-center mb-8">

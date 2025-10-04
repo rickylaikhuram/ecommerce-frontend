@@ -277,186 +277,190 @@ const ProductsPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Header - Updated to use new pagination structure */}
-      <ProductsHeader
-        searchTerm={searchTerm}
-        sortBy={sortBy}
-        viewMode={viewMode}
-        totalProducts={pagination.totalCount} // Changed from pagination.total
-        onSortChange={handleSortChange}
-        onViewModeChange={setViewMode}
-      />
+    <>
+      <div className="min-h-screen bg-white max-w-7xl mx-auto mb-2">
+        {/* Header - Updated to use new pagination structure */}
+        <ProductsHeader
+          searchTerm={searchTerm}
+          sortBy={sortBy}
+          viewMode={viewMode}
+          totalProducts={pagination.totalCount} // Changed from pagination.total
+          onSortChange={handleSortChange}
+          onViewModeChange={setViewMode}
+        />
 
-      <div className="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Enhanced pagination info display */}
-        {!loading && products.length > 0 && (
-          <div className="mb-4 text-sm text-gray-600">
-            Showing {pagination.startItem}-{pagination.endItem} of{" "}
-            {pagination.totalCount} products
-            {pagination.totalPages > 1 && (
-              <span className="ml-2">
-                (Page {pagination.currentPage} of {pagination.totalPages})
-              </span>
-            )}
+        <div className="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Enhanced pagination info display */}
+          {!loading && products.length > 0 && (
+            <div className="mb-4 text-sm text-gray-600">
+              Showing {pagination.startItem}-{pagination.endItem} of{" "}
+              {pagination.totalCount} products
+              {pagination.totalPages > 1 && (
+                <span className="ml-2">
+                  (Page {pagination.currentPage} of {pagination.totalPages})
+                </span>
+              )}
+            </div>
+          )}
+
+          <div className="flex gap-8">
+            {/* Desktop Sidebar */}
+            <div className="hidden lg:block w-72 flex-shrink-0">
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-24">
+                {categoriesLoading ? (
+                  <div className="animate-pulse">
+                    <div className="h-4 bg-gray-200 rounded w-24 mb-4"></div>
+                    <div className="space-y-2">
+                      <div className="h-8 bg-gray-200 rounded"></div>
+                      <div className="h-8 bg-gray-200 rounded"></div>
+                      <div className="h-8 bg-gray-200 rounded"></div>
+                    </div>
+                  </div>
+                ) : (
+                  <FilterSidebar
+                    categories={categories}
+                    availableSizes={sizes}
+                    selectedCategory={selectedCategory}
+                    selectedSizes={selectedSizes}
+                    onCategoryChange={handleCategoryChange}
+                    onSizeToggle={handleSizeToggle}
+                    onClearFilters={handleClearAllFilters}
+                  />
+                )}
+              </div>
+            </div>
+
+            {/* Main Content */}
+            <div className="flex-1 min-w-0">
+              {/* Error State */}
+              {error && (
+                <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0">
+                      <X className="h-5 w-5 text-red-400" />
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-sm font-medium text-red-800">
+                        {error}
+                      </p>
+                    </div>
+                    <div className="ml-auto pl-3">
+                      <button
+                        onClick={handleRetryAfterError}
+                        className="inline-flex bg-red-50 rounded-md p-1.5 text-red-500 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-red-50 focus:ring-red-600 transition-colors"
+                      >
+                        <span className="text-xs">Retry</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Active Filters */}
+              <ActiveFilters
+                searchTerm={searchTerm}
+                selectedCategory={selectedCategory}
+                selectedSizes={selectedSizes}
+                priceRange={priceRange}
+                onRemoveSearch={() => handleSearchChange("")}
+                onRemoveCategory={() => handleCategoryChange("")}
+                onRemoveSize={handleSizeToggle}
+                onClearAll={handleClearAllFilters}
+              />
+
+              {/* Mobile Controls */}
+              <div className="md:hidden mb-6 flex justify-between items-center gap-4">
+                <button
+                  onClick={() => setShowMobileFilters(true)}
+                  className="flex items-center space-x-2 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
+                >
+                  <SlidersHorizontal className="w-4 h-4" />
+                  <span>Filters</span>
+                </button>
+
+                <select
+                  value={sortBy}
+                  onChange={(e) =>
+                    handleSortChange(e.target.value as ProductFilters["sortBy"])
+                  }
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                >
+                  {SORT_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Products Grid/List */}
+              <ProductsGrid
+                products={products}
+                viewMode={viewMode}
+                loading={loading}
+                onProductClick={handleProductClick}
+                onClearFilters={handleClearAllFilters}
+              />
+
+              {/* Enhanced Pagination Component */}
+              <div className="mt-8">
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={handlePageChange}
+                  loading={loading}
+                  // Additional pagination info
+                  hasMore={pagination.hasMore}
+                  hasPrevious={pagination.hasPrevious}
+                  totalItems={pagination.totalCount}
+                  itemsPerPage={pagination.itemsPerPage}
+                  startItem={pagination.startItem}
+                  endItem={pagination.endItem}
+                />
+              </div>
+            </div>
           </div>
-        )}
+        </div>
 
-        <div className="flex gap-8">
-          {/* Desktop Sidebar */}
-          <div className="hidden lg:block w-72 flex-shrink-0">
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-24">
+        {/* Mobile Filter Modal */}
+        {showMobileFilters && (
+          <div className="fixed inset-0 z-80 lg:hidden">
+            <div
+              className="fixed inset-0 bg-black/30"
+              onClick={() => setShowMobileFilters(false)}
+            />
+            <div className="fixed right-0 top-0 h-full w-full max-w-sm bg-white shadow-xl">
               {categoriesLoading ? (
-                <div className="animate-pulse">
-                  <div className="h-4 bg-gray-200 rounded w-24 mb-4"></div>
-                  <div className="space-y-2">
-                    <div className="h-8 bg-gray-200 rounded"></div>
-                    <div className="h-8 bg-gray-200 rounded"></div>
-                    <div className="h-8 bg-gray-200 rounded"></div>
+                <div className="p-6">
+                  <div className="animate-pulse">
+                    <div className="h-4 bg-gray-200 rounded w-24 mb-4"></div>
+                    <div className="space-y-2">
+                      <div className="h-8 bg-gray-200 rounded"></div>
+                      <div className="h-8 bg-gray-200 rounded"></div>
+                      <div className="h-8 bg-gray-200 rounded"></div>
+                    </div>
                   </div>
                 </div>
               ) : (
                 <FilterSidebar
                   categories={categories}
-                  availableSizes={sizes}
                   selectedCategory={selectedCategory}
                   selectedSizes={selectedSizes}
+                  availableSizes={sizes}
                   onCategoryChange={handleCategoryChange}
                   onSizeToggle={handleSizeToggle}
                   onClearFilters={handleClearAllFilters}
+                  onApplyFilters={handleApplyMobileFilters}
+                  isMobile={true}
+                  onClose={() => setShowMobileFilters(false)}
                 />
               )}
             </div>
           </div>
-
-          {/* Main Content */}
-          <div className="flex-1 min-w-0">
-            {/* Error State */}
-            {error && (
-              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <X className="h-5 w-5 text-red-400" />
-                  </div>
-                  <div className="ml-3">
-                    <p className="text-sm font-medium text-red-800">{error}</p>
-                  </div>
-                  <div className="ml-auto pl-3">
-                    <button
-                      onClick={handleRetryAfterError}
-                      className="inline-flex bg-red-50 rounded-md p-1.5 text-red-500 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-red-50 focus:ring-red-600 transition-colors"
-                    >
-                      <span className="text-xs">Retry</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Active Filters */}
-            <ActiveFilters
-              searchTerm={searchTerm}
-              selectedCategory={selectedCategory}
-              selectedSizes={selectedSizes}
-              priceRange={priceRange}
-              onRemoveSearch={() => handleSearchChange("")}
-              onRemoveCategory={() => handleCategoryChange("")}
-              onRemoveSize={handleSizeToggle}
-              onClearAll={handleClearAllFilters}
-            />
-
-            {/* Mobile Controls */}
-            <div className="md:hidden mb-6 flex justify-between items-center gap-4">
-              <button
-                onClick={() => setShowMobileFilters(true)}
-                className="flex items-center space-x-2 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
-              >
-                <SlidersHorizontal className="w-4 h-4" />
-                <span>Filters</span>
-              </button>
-
-              <select
-                value={sortBy}
-                onChange={(e) =>
-                  handleSortChange(e.target.value as ProductFilters["sortBy"])
-                }
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-              >
-                {SORT_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Products Grid/List */}
-            <ProductsGrid
-              products={products}
-              viewMode={viewMode}
-              loading={loading}
-              onProductClick={handleProductClick}
-              onClearFilters={handleClearAllFilters}
-            />
-
-            {/* Enhanced Pagination Component */}
-            <div className="mt-8">
-              <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={handlePageChange}
-                loading={loading}
-                // Additional pagination info
-                hasMore={pagination.hasMore}
-                hasPrevious={pagination.hasPrevious}
-                totalItems={pagination.totalCount}
-                itemsPerPage={pagination.itemsPerPage}
-                startItem={pagination.startItem}
-                endItem={pagination.endItem}
-              />
-            </div>
-          </div>
-        </div>
+        )}
       </div>
-
-      {/* Mobile Filter Modal */}
-      {showMobileFilters && (
-        <div className="fixed inset-0 z-80 lg:hidden">
-          <div
-            className="fixed inset-0 bg-black/30"
-            onClick={() => setShowMobileFilters(false)}
-          />
-          <div className="fixed right-0 top-0 h-full w-full max-w-sm bg-white shadow-xl">
-            {categoriesLoading ? (
-              <div className="p-6">
-                <div className="animate-pulse">
-                  <div className="h-4 bg-gray-200 rounded w-24 mb-4"></div>
-                  <div className="space-y-2">
-                    <div className="h-8 bg-gray-200 rounded"></div>
-                    <div className="h-8 bg-gray-200 rounded"></div>
-                    <div className="h-8 bg-gray-200 rounded"></div>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <FilterSidebar
-                categories={categories}
-                selectedCategory={selectedCategory}
-                selectedSizes={selectedSizes}
-                availableSizes={sizes}
-                onCategoryChange={handleCategoryChange}
-                onSizeToggle={handleSizeToggle}
-                onClearFilters={handleClearAllFilters}
-                onApplyFilters={handleApplyMobileFilters}
-                isMobile={true}
-                onClose={() => setShowMobileFilters(false)}
-              />
-            )}
-          </div>
-        </div>
-      )}
       <Footer />
-    </div>
+    </>
   );
 };
 

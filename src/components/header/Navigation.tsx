@@ -181,7 +181,7 @@ export const Navigation: React.FC<NavigationProps> = ({
               <img
                 src="/logo_white_details.jpeg"
                 alt="Home"
-                className="h-[70px] w-auto"
+                className="h-[60px] w-auto"
               />
             ) : (
               <span

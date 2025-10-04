@@ -24,8 +24,8 @@ import { Shield, Truck, HeartHandshake, Star } from "lucide-react";
     },
   ];
   return (
-    <section className="py-16 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-16 bg-white mt-8 w-full">
+      <div className="w-full  px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-slate-900 mb-4">
             Why Choose Clover Arena?

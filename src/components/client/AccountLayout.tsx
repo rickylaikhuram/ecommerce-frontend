@@ -51,7 +51,7 @@ const AccountLayout: React.FC = () => {
 
   if (isMobile) {
     return (
-      <div className=" bg-gray-50">
+      <div className=" bg-gray-100">
         <div className="container mx-auto px-4 py-8">
           {showSidebar ? (
             // Show sidebar as main menu on mobile
@@ -82,7 +82,7 @@ const AccountLayout: React.FC = () => {
 
   // Desktop layout (unchanged)
   return (
-    <div className=" bg-white">
+    <div className=" bg-gray-100 max-w-7xl mx-auto">
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="md:col-span-1">

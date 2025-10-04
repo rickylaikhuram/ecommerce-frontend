@@ -217,7 +217,7 @@ const HeroBanner: React.FC = () => {
   const extendedBanners = [banners[banners.length - 1], ...banners, banners[0]];
 
   return (
-    <div className="relative w-full max-w-8xl mx-auto group">
+    <div className="relative w-full max-w-7xl mx-auto group ">
       {/* Main banner container - flexible height for desktop */}
       <div className="relative overflow-hidden shadow-lg bg-gray-900">
         {/* Fixed aspect ratio for mobile, flexible for desktop */}
@@ -257,29 +257,30 @@ const HeroBanner: React.FC = () => {
             ))}
           </div>
         </div>
+        <div className="hidden sm:block">
+          {/* Navigation arrows - only show if more than 1 banner */}
+          {Array.isArray(banners) && banners.length > 1 && (
+            <>
+              <button
+                onClick={(e) => handleButtonClick(e, goToPrevious)}
+                className="absolute left-1 top-1/2 transform -translate-y-1/2 bg-white text-white px-3 py-7 rounded-sm transition-all duration-300 z-10"
+                aria-label="Previous banner"
+                type="button"
+              >
+                <ChevronLeft className="w-4 h-4 sm:w-6 sm:h-6 text-black" />
+              </button>
 
-        {/* Navigation arrows - only show if more than 1 banner */}
-        {Array.isArray(banners) && banners.length > 1 && (
-          <>
-            <button
-              onClick={(e) => handleButtonClick(e, goToPrevious)}
-              className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-75 text-white p-1.5 sm:p-2 rounded-full transition-all duration-300 opacity-0 group-hover:opacity-100 z-10"
-              aria-label="Previous banner"
-              type="button"
-            >
-              <ChevronLeft className="w-4 h-4 sm:w-6 sm:h-6" />
-            </button>
-
-            <button
-              onClick={(e) => handleButtonClick(e, goToNext)}
-              className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-75 text-white p-1.5 sm:p-2 rounded-full transition-all duration-300 opacity-0 group-hover:opacity-100 z-10"
-              aria-label="Next banner"
-              type="button"
-            >
-              <ChevronRight className="w-4 h-4 sm:w-6 sm:h-6" />
-            </button>
-          </>
-        )}
+              <button
+                onClick={(e) => handleButtonClick(e, goToNext)}
+                className="absolute right-1 top-1/2 transform -translate-y-1/2 bg-white text-white px-3 py-7 rounded-sm  transition-all duration-300 z-11"
+                aria-label="Next banner"
+                type="button"
+              >
+                <ChevronRight className="w-4 h-4 sm:w-6 sm:h-6 text-black" />
+              </button>
+            </>
+          )}
+        </div>
 
         {/* Dot indicators for better mobile UX */}
         {Array.isArray(banners) && banners.length > 1 && (

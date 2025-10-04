@@ -3,10 +3,10 @@ import { Outlet } from "react-router-dom";
 import ScrollToTop from "../components/common/ScrollToTop.tsx";
 const MainLayout = () => {
   return (
-    <div>
+    <div className="bg-gray-100 min-h-screen">
       <ScrollToTop />
       <LandingHeader />
-      <main>
+      <main >
         <Outlet />
       </main>
     </div>

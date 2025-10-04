@@ -6,7 +6,6 @@ const HeroSection = () => {
   return (
     <div>
       <HeroBanner />
-      {/* <CategoryShowcase /> */}
     </div>
   );
 };

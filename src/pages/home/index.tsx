@@ -185,12 +185,12 @@ const Home: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-gray-100">
       <HeroSection />
 
       {/* New Arrivals Section - Load immediately */}
       {isInitialLoading ? (
-        <ProductSectionSkeleton sectionClassName="bg-gray-100" cardCount={4} />
+        <ProductSectionSkeleton sectionClassName="bg-white" cardCount={4} />
       ) : initialError ? (
         <ErrorSection
           message={initialError}
@@ -205,24 +205,19 @@ const Home: React.FC = () => {
           sectionClassName="bg-gray-100"
         />
       )}
-      <div className="container mx-auto mt-8"></div>
       <CategoryShowcase categoryIndex={0} />
-      <div className="container mx-auto mt-8"></div>
-
       <CategoryShowcase categoryIndex={1} />
-
       {/* Best Sellers Section - Lazy load */}
       <LazyProductSection
         title="Best Sellers"
         fetcher={() => productService.getBestsellers("week", 10)}
         onProductClick={handleProductClick}
         sectionClassName="bg-gray-100"
-        containerClassName="container mx-auto px-4 py-8 mt-8"
+        containerClassName="container mx-auto px-4 py-8 mt-8 max-w-7xl bg-white"
         autoScroll={true}
         autoScrollInterval={5000}
         cardCount={4}
       />
-
       {/* You Might Also Like Section - Lazy load */}
       <LazyProductSection
         title="You Might Also Like"
@@ -234,7 +229,7 @@ const Home: React.FC = () => {
         }
         onProductClick={handleProductClick}
         sectionClassName="bg-gray-100"
-        containerClassName="container mx-auto px-4 py-8 mt-8"
+        containerClassName="container mx-auto px-4 py-8 mt-8 max-w-7xl bg-white"
         cardCount={5}
       />
 

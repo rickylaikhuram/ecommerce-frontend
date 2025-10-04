@@ -126,7 +126,7 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({
 
   return (
     <div 
-      className="product-carousel-container w-full"
+      className="product-carousel-container w-full bg-white"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >

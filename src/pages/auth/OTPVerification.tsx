@@ -82,7 +82,7 @@ export const OTPVerification = ({
   };
 
   return (
-    <div className="w-full">
+    <div className="max-w-7xl mx-auto">
       {onBack && (
         <button
           onClick={onBack}

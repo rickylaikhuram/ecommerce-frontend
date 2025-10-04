@@ -11,7 +11,7 @@ import { Link } from "react-router-dom";
 
 export const EmptyCart: React.FC = () => {
   return (
-    <div className="pt-10 bg-white flex items-center justify-center px-4">
+    <div className="pt-10 bg-gray-100 flex items-center justify-center px-4">
       <div className="max-w-md w-full">
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
           <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">

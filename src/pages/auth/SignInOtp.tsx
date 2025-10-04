@@ -125,7 +125,7 @@ const SignInOTP = () => {
 
   return (
     <>
-      <div className=" flex items-center justify-center bg-white px-4 py-8 pb-10">
+      <div className=" flex items-center justify-center bg-gray-100 px-4 py-8 pb-10 max-w-7xl mx-auto">
         <div className="w-full max-w-md">
           <div className="flex justify-center mb-8">
             <div className="relative">

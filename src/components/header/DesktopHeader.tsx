@@ -36,17 +36,21 @@ export const DesktopHeader: React.FC<DesktopHeaderProps> = ({
 
   return (
     <>
-      {shouldFixHeader && <div className="hidden sm:block h-[73px]" />}
+      {shouldFixHeader && <div className="hidden sm:block h-[70px]" />}
 
       <header
-        className={`hidden lg:block w-full bg-emerald-800 transition-all duration-300 px-2 ${
+        className={`hidden lg:block w-full  transition-all duration-300 ${
           shouldFixHeader
             ? "fixed top-0 left-0 z-50 animate-slideDown"
             : "relative"
-        } ${isScrolled ? "shadow-lg" : ""}`}
+        } `}
       >
-        <div className="border-b border-white/10">
-          <div className="flex items-center justify-between py-4 px-4 sm:px-6 lg:px-8">
+        <div
+          className={`border-b border-white/10 bg-emerald-800 max-w-7xl mx-auto ${
+            isScrolled ? "shadow-lg" : ""
+          }`}
+        >
+          <div className="flex items-center justify-between py-4 px-4 sm:px-6 lg:px-8 ">
             {/* Left Section */}
             <div className="flex items-center gap-6">
               <Navigation

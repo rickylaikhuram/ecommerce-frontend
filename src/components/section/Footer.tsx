@@ -152,17 +152,25 @@ const Footer = () => {
                 <div className="p-1.5 sm:p-2 bg-emerald-100 rounded-lg group-hover:bg-emerald-200 transition-colors flex-shrink-0">
                   <Mail className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600" />
                 </div>
-                <span className="text-gray-600 text-xs sm:text-sm break-all">
+                <a
+                  href="mailto:support@cloverarena.com"
+                  className="text-gray-600 text-xs sm:text-sm break-all"
+                >
                   support@cloverarena.com
-                </span>
+                </a>
               </div>
               <div className="flex items-center space-x-2 sm:space-x-3 group">
                 <div className="p-1.5 sm:p-2 bg-emerald-100 rounded-lg group-hover:bg-emerald-200 transition-colors flex-shrink-0">
                   <Phone className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600" />
                 </div>
-                <span className="text-gray-600 text-xs sm:text-sm">
+                <a
+                  href="https://wa.me/+918416082998"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-600 text-xs sm:text-sm"
+                >
                   +91 8416082998
-                </span>
+                </a>
               </div>
               <div className="flex items-center space-x-2 sm:space-x-3 group">
                 <div className="p-1.5 sm:p-2 bg-emerald-100 rounded-lg group-hover:bg-emerald-200 transition-colors flex-shrink-0">

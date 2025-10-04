@@ -2,7 +2,7 @@ import { RotateCcw, Clock, CheckCircle, Phone, Shield } from "lucide-react";
 
 const ReturnPolicyPage = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-emerald-25">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-emerald-25 max-w-7xl mx-auto">
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white py-12 sm:py-16 lg:py-20 relative overflow-hidden">
         {/* Background decoration */}

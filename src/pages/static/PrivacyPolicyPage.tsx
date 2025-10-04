@@ -3,7 +3,7 @@ import { Shield, Lock, Eye, UserCheck, Cookie, Mail } from 'lucide-react';
 
 const PrivacyPolicyPage: React.FC = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-white">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-white max-w-7xl mx-auto">
       {/* Hero Section */}
       <div className="bg-emerald-600 text-white py-16">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">

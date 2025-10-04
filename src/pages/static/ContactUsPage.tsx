@@ -2,7 +2,7 @@ import { Mail, Phone, MapPin, MessageSquare, Heart } from "lucide-react";
 
 const ContactUsPage = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-white">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 to-white max-w-7xl mx-auto">
       {/* Hero Section */}
       <div className="bg-emerald-600 text-white py-8 sm:py-12 lg:py-16 relative overflow-hidden">
         {/* Decorative background elements */}

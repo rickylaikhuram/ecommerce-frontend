@@ -1,88 +1,92 @@
-// components/Header/DesktopHeader.tsx
+// components/Header/TabletHeader.tsx
 import React from "react";
 import { Link } from "react-router-dom";
-import { User, Heart } from "lucide-react";
+import { Menu, User, Heart } from "lucide-react";
 import { SearchAutoComplete } from "./SearchAutoComplete";
 import { CartIcon } from "./CartIcon";
 import { LocationDisplay } from "./LocationDisplay";
-import { Navigation, type NavItem } from "./Navigation";
 import type { AutocompleteResult } from "../../types/search.types";
 
-interface DesktopHeaderProps {
+interface TabletHeaderProps {
   shouldFixHeader: boolean;
   isScrolled: boolean;
-  navItems: NavItem[];
   profileHref: string;
-  profileLabel: string;
   locationInfo: any;
+  onMenuToggle: () => void;
   onNavClick: (e: React.MouseEvent<HTMLAnchorElement>, path: string) => void;
   onSearch: (query: string) => void;
   onSuggestionClick: (suggestion: AutocompleteResult) => void;
-  onLocationClick?: () => void; // Add this prop for delivery check
+  onLocationClick?: () => void;
 }
 
-export const DesktopHeader: React.FC<DesktopHeaderProps> = ({
+export const TabletHeader: React.FC<TabletHeaderProps> = ({
   shouldFixHeader,
   isScrolled,
-  navItems,
   profileHref,
   locationInfo,
+  onMenuToggle,
   onNavClick,
   onSearch,
   onSuggestionClick,
-  onLocationClick, // Add this prop
+  onLocationClick,
 }) => {
   const isActive = (path: string) => window.location.pathname === path;
 
   return (
     <>
-      {shouldFixHeader && <div className="hidden sm:block h-[73px]" />}
+      {/* Spacer for fixed header */}
+      {shouldFixHeader && (
+        <div className="hidden sm:block lg:hidden h-[130px]" />
+      )}
 
       <header
-        className={`hidden lg:block w-full bg-emerald-800 transition-all duration-300 px-2 ${
+        className={`hidden sm:block lg:hidden w-full bg-emerald-800 transition-all duration-300 ${
           shouldFixHeader
             ? "fixed top-0 left-0 z-50 animate-slideDown"
             : "relative"
         } ${isScrolled ? "shadow-lg" : ""}`}
       >
         <div className="border-b border-white/10">
-          <div className="flex items-center justify-between py-4 px-4 sm:px-6 lg:px-8">
-            {/* Left Section */}
-            <div className="flex items-center gap-6">
-              <Navigation
-                items={navItems}
-                onNavClick={onNavClick}
-                className="hidden lg:flex"
-              />
-
-              {/* Location Display - Desktop (lg and above) */}
+          {/* Top row - Menu, Logo, Location, and Icons */}
+          <div className="flex items-center justify-between py-2 px-4">
+            {/* Left side - Menu and Logo */}
+            <div className="flex items-center gap-2">
               <button
-                onClick={onLocationClick}
-                className="hidden lg:flex hover:bg-white/10 p-2 rounded-lg transition-colors"
+                onClick={onMenuToggle}
+                className="p-2 hover:bg-white/10 rounded-lg transition-colors flex-shrink-0"
+                aria-label="Toggle menu"
               >
-                <LocationDisplay locationInfo={locationInfo} />
+                <Menu size={22} className="text-white" />
               </button>
+
+              <Link
+                to="/"
+                onClick={(e) => onNavClick(e, "/")}
+                className="hover:bg-white/10 transition-colors rounded-lg"
+              >
+                <img
+                  src="/logo_white_details.jpeg"
+                  alt="Home"
+                  className="h-[60px]"
+                />
+              </Link>
             </div>
 
-            {/* Middle Section - Location for md screens */}
-            <div className="hidden md:flex lg:hidden">
+            {/* Right side - Location and Icons */}
+            <div className="flex items-center gap-3">
+              {/* Location Display */}
               <button
                 onClick={onLocationClick}
                 className="hover:bg-white/10 p-2 rounded-lg transition-colors"
               >
                 <LocationDisplay locationInfo={locationInfo} isCompact />
               </button>
-            </div>
-
-            {/* Right Section */}
-            <div className="flex items-center gap-4">
-              <SearchAutoComplete
-                placeholder="Search products..."
-                onSearch={onSearch}
-                onSuggestionClick={onSuggestionClick}
-                className="w-70 xl:w-99"
-              />
-
+                <SearchAutoComplete
+                  placeholder="Search for products..."
+                  onSearch={onSearch}
+                  onSuggestionClick={onSuggestionClick}
+                  className="w-full"
+                />
               {/* Icons */}
               <div className="flex items-center gap-2">
                 <Link

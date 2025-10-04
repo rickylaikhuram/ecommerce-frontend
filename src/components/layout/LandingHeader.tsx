@@ -4,6 +4,7 @@ import { MobileMenu } from "../header/MobileMenu";
 import { MobileHeader } from "../header/MobileHeader";
 import { MobileBottomNav } from "../header/MobileBottomNav";
 import { DesktopHeader } from "../header/DesktopHeader";
+import { TabletHeader } from "../header/TabletHeader";
 import { useHeaderState } from "../../hooks/useHeaderState";
 import DeliveryCheckModal from "../common/DeliveryCheckModal";
 import type { NavItem } from "../header/Navigation";
@@ -32,7 +33,7 @@ const LandingHeader = () => {
     profileLabel,
     locationInfo,
     isDeliveryModalOpen,
-    isAuthPage, // Get this from the hook
+    isAuthPage,
     toggleMenu,
     handleNavClick,
     handleLocationClick,
@@ -75,7 +76,7 @@ const LandingHeader = () => {
         profileLabel={profileLabel}
       />
 
-      {/* Desktop Header */}
+      {/* Desktop Header (lg and above) */}
       <DesktopHeader
         shouldFixHeader={shouldFixHeader}
         isScrolled={isScrolled}
@@ -89,10 +90,23 @@ const LandingHeader = () => {
         onLocationClick={handleLocationClick}
       />
 
-      {/* Mobile Header */}
+      {/* Tablet Header (md to lg) */}
+      <TabletHeader
+        shouldFixHeader={shouldFixHeader}
+        isScrolled={isScrolled}
+        profileHref={profileHref}
+        locationInfo={locationInfo}
+        onMenuToggle={toggleMenu}
+        onNavClick={handleNavClick}
+        onSearch={handleSearch}
+        onSuggestionClick={handleSuggestionClick}
+        onLocationClick={handleLocationClick}
+      />
+
+      {/* Mobile Header (below md) */}
       <MobileHeader
         showHeader={showHeader}
-        isAuthPage={isAuthPage} // Pass the isAuthPage prop
+        isAuthPage={isAuthPage}
         onMenuToggle={toggleMenu}
         onSearch={handleSearch}
         onSuggestionClick={handleSuggestionClick}

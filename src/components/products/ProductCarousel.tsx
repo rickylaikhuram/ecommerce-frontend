@@ -192,12 +192,12 @@ const ProductCarousel: React.FC<ProductCarouselProps> = ({
         )}
 
         {/* Gradient Overlays - Adjusted for mobile */}
-        {canScrollLeft && (
+        {/* {canScrollLeft && (
           <div className="hidden sm:block absolute left-0 top-0 bottom-0 w-8 sm:w-12 md:w-20 bg-gradient-to-r from-white via-white/50 to-transparent z-10 pointer-events-none" />
         )}
         {canScrollRight && (
           <div className="hidden sm:block absolute right-0 top-0 bottom-0 w-8 sm:w-12 md:w-20 bg-gradient-to-l from-white via-white/50 to-transparent z-10 pointer-events-none" />
-        )}
+        )} */}
 
         {/* Products Container */}
         <div

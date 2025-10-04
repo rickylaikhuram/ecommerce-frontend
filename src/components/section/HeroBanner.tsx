@@ -20,6 +20,7 @@ const HeroBanner: React.FC = () => {
   const [touchStart, setTouchStart] = useState<number>(0);
   const [touchEnd, setTouchEnd] = useState<number>(0);
   const [isDragging, setIsDragging] = useState<boolean>(false);
+  const [isTransitioning, setIsTransitioning] = useState<boolean>(true);
 
   // Fetch banners from API
   useEffect(() => {
@@ -57,23 +58,44 @@ const HeroBanner: React.FC = () => {
     if (!Array.isArray(banners) || banners.length <= 1) return;
 
     const interval = setInterval(() => {
-      setCurrentIndex((prevIndex: number) =>
-        prevIndex === banners.length - 1 ? 0 : prevIndex + 1
-      );
+      setCurrentIndex((prevIndex: number) => prevIndex + 1);
     }, 4000); // Change every 4 seconds
 
     return () => clearInterval(interval);
   }, [banners.length]);
 
+  // Handle infinite loop reset
+  useEffect(() => {
+    if (!Array.isArray(banners) || banners.length <= 1) return;
+
+    if (currentIndex === banners.length) {
+      setTimeout(() => {
+        setIsTransitioning(false);
+        setCurrentIndex(0);
+      }, 500);
+      setTimeout(() => {
+        setIsTransitioning(true);
+      }, 550);
+    } else if (currentIndex === -1) {
+      setTimeout(() => {
+        setIsTransitioning(false);
+        setCurrentIndex(banners.length - 1);
+      }, 500);
+      setTimeout(() => {
+        setIsTransitioning(true);
+      }, 550);
+    }
+  }, [currentIndex, banners.length]);
+
   // Navigation functions
   const goToPrevious = (): void => {
     if (!Array.isArray(banners) || banners.length === 0) return;
-    setCurrentIndex(currentIndex === 0 ? banners.length - 1 : currentIndex - 1);
+    setCurrentIndex((prev) => prev - 1);
   };
 
   const goToNext = (): void => {
     if (!Array.isArray(banners) || banners.length === 0) return;
-    setCurrentIndex(currentIndex === banners.length - 1 ? 0 : currentIndex + 1);
+    setCurrentIndex((prev) => prev + 1);
   };
 
   // Handle banner click
@@ -191,6 +213,9 @@ const HeroBanner: React.FC = () => {
     return null;
   }
 
+  // Create extended banners array for infinite loop
+  const extendedBanners = [banners[banners.length - 1], ...banners, banners[0]];
+
   return (
     <div className="relative w-full max-w-8xl mx-auto group">
       {/* Main banner container - flexible height for desktop */}
@@ -198,8 +223,12 @@ const HeroBanner: React.FC = () => {
         {/* Fixed aspect ratio for mobile, flexible for desktop */}
         <div className="relative w-full aspect-[9/4] sm:aspect-auto">
           <div
-            className="absolute inset-0 flex transition-transform duration-500 ease-in-out select-none sm:relative"
-            style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+            className={`absolute inset-0 flex select-none sm:relative ${
+              isTransitioning
+                ? "transition-transform duration-500 ease-in-out"
+                : ""
+            }`}
+            style={{ transform: `translateX(-${(currentIndex + 1) * 100}%)` }}
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
@@ -208,24 +237,12 @@ const HeroBanner: React.FC = () => {
             onMouseUp={handleMouseUp}
             onMouseLeave={handleMouseUp}
           >
-            {banners.map((banner: Banner) => (
+            {extendedBanners.map((banner: Banner, index: number) => (
               <div
-                key={banner.id}
+                key={`${banner.id}-${index}`}
                 className="w-full flex-shrink-0 relative cursor-pointer"
                 onClick={() => handleBannerClick(banner.redirectUrl)}
               >
-                {/* Background blurred image for desktop */}
-                {/* <div className="hidden sm:block absolute inset-0">
-                  <img
-                    src={
-                      banner.imageUrl ? `${S3_BASE_URL}${banner.imageUrl}` : ""
-                    }
-                    alt=""
-                    className="w-full h-full object-cover object-center blur-sm scale-110 opacity-50"
-                    draggable={false}
-                  />
-                </div> */}
-
                 {/* Main image */}
                 <img
                   src={
@@ -275,7 +292,9 @@ const HeroBanner: React.FC = () => {
                   setCurrentIndex(index);
                 }}
                 className={`rounded-full transition-all duration-300 ${
-                  index === currentIndex
+                  index === currentIndex ||
+                  (currentIndex === -1 && index === banners.length - 1) ||
+                  (currentIndex === banners.length && index === 0)
                     ? "bg-teal-800 scale-125 w-4 h-1 sm:w-4 sm:h-1"
                     : "bg-white bg-opacity-50 hover:bg-opacity-75 w-2 h-1 sm:w-3 sm:h-1"
                 }`}

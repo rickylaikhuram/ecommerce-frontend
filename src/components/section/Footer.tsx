@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Mail, Phone, MapPin, ChevronRight, Heart } from "lucide-react";
+import { Mail, Phone, MapPin, ChevronRight } from "lucide-react";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -26,7 +26,8 @@ const Footer = () => {
               />
             </Link>
             <p className="text-gray-600 text-sm leading-relaxed">
-              Welcome to Clover Arena - your go-to destination for high-quality football jerseys from Manipur!
+              Welcome to Clover Arena - your go-to destination for high-quality
+              football jerseys from Manipur!
             </p>
             <div className="flex space-x-2 sm:space-x-3">
               <a
@@ -179,9 +180,9 @@ const Footer = () => {
         <div className="border-t border-emerald-100 pt-6 sm:pt-8">
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
             <div className="flex items-center space-x-1 sm:space-x-2 text-gray-600 text-xs sm:text-sm">
-              <span>© {currentYear} Clover Arena. Made with</span>
-              <Heart className="w-3 h-3 sm:w-4 sm:h-4 text-emerald-500 fill-current animate-pulse" />
-              <span>in India</span>
+              <span>
+                Copyright © {currentYear} Clover Arena. All Rights Reserved.
+              </span>
             </div>
 
             <div className="flex flex-wrap justify-center gap-3 sm:gap-6">

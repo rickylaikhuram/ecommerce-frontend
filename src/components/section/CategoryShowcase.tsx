@@ -129,7 +129,7 @@ const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({
   }
   return (
     <>
-      <section className="p-3 bg-gray-100 overflow-hidden mt-2">
+      <section className="bg-gray-100 overflow-hidden mt-4">
         <div className="max-w-7xl mx-auto bg-white ">
           {/* Section Header */}
           <div className="text-center py-2">
@@ -143,7 +143,7 @@ const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({
           </div>
 
           {/* Category Grid - Mobile horizontal scroll */}
-          <div className="md:hidden overflow-x-auto pb-4 -mx-6 px-6  py-2">
+          <div className="md:hidden overflow-x-auto pb-4 px-6 py-2">
             <div className="flex space-x-8 w-max">
               {childCategories.map((category) => (
                 <div

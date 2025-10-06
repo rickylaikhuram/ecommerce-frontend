@@ -1036,6 +1036,7 @@ const ProductDetails: React.FC = () => {
                             WebkitHyphens: "auto",
                             MozHyphens: "auto",
                             msHyphens: "auto",
+                            whiteSpace: "pre-wrap",
                           } as React.CSSProperties
                         }
                         lang="en"

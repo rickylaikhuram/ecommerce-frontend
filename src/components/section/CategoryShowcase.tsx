@@ -127,7 +127,7 @@ const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({
       </section>
     );
   }
-  return (
+return (
     <>
       <section className="bg-gray-100 overflow-hidden mt-4">
         <div className="max-w-7xl mx-auto bg-white ">
@@ -142,65 +142,18 @@ const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({
             </p>
           </div>
 
-          {/* Category Grid - Mobile horizontal scroll */}
-          <div className="md:hidden overflow-x-auto pb-4 px-6 py-2">
-            <div className="flex space-x-8 w-max">
-              {childCategories.map((category) => (
-                <div
-                  key={category.id}
-                  className="group cursor-pointer transform transition-all duration-300 hover:scale-110 flex-shrink-0"
-                  onClick={() => handleCategoryClick(category.name)}
-                >
-                  {/* Circular Image Container */}
-                  <div className="relative">
-                    {/* Image Container */}
-                    <div className="relative w-28 h-28 rounded-full overflow-hidden ring-2 ring-gray-200 group-hover:ring-4 group-hover:ring-teal-500 group-hover:ring-opacity-60 transition-all duration-300">
-                      {category.imageUrl ? (
-                        <img
-                          src={`${S3_BASE_URL}${category.imageUrl}`}
-                          alt={category.altText || category.name}
-                          className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
-                          onError={handleImageError}
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-gray-200 group-hover:bg-gray-300 transition-colors">
-                          <span className="text-gray-500 text-xs text-center px-2">
-                            {category.name}
-                          </span>
-                        </div>
-                      )}
-
-                      {/* Overlay on hover */}
-                      <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity duration-300" />
-                    </div>
-                  </div>
-
-                  {/* Category Name */}
-                  <div className="mt-4 text-center">
-                    <h3 className="text-sm font-semibold text-gray-800 group-hover:text-gray-900 transition-colors line-clamp-2">
-                      {category.name}
-                    </h3>
-                    <p className="text-xs text-gray-500 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      View Collection →
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Category Grid - Desktop */}
-          <div className="hidden md:grid grid-cols-3 lg:grid-cols-6 gap-8 justify-items-center">
+          {/* Category Grid - Responsive */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 sm:gap-6 md:gap-8 px-4 sm:px-4 py-4 justify-items-center">
             {childCategories.map((category) => (
               <div
                 key={category.id}
-                className="group cursor-pointer transform transition-all duration-300 hover:scale-102"
+                className="group cursor-pointer transform transition-all duration-300 hover:scale-110 flex-shrink-0"
                 onClick={() => handleCategoryClick(category.name)}
               >
                 {/* Circular Image Container */}
                 <div className="relative">
                   {/* Image Container */}
-                  <div className="relative w-32 h-32 rounded-full overflow-hidden ring-2 ring-gray-200 group-hover:ring-4 group-hover:ring-teal-500 group-hover:ring-opacity-60 transition-all duration-300">
+                  <div className="relative w-27 h-27  md:w-28 md:h-28 lg:w-32 lg:h-32 rounded-full overflow-hidden ring-2 ring-gray-200 group-hover:ring-4 group-hover:ring-teal-500 group-hover:ring-opacity-60 transition-all duration-300">
                     {category.imageUrl ? (
                       <img
                         src={`${S3_BASE_URL}${category.imageUrl}`}
@@ -222,8 +175,8 @@ const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({
                 </div>
 
                 {/* Category Name */}
-                <div className="mt-4 text-center">
-                  <h3 className="text-base font-semibold text-gray-800 group-hover:text-gray-900 transition-colors line-clamp-2">
+                <div className="mt-2 sm:mt-3 md:mt-4 text-center">
+                  <h3 className="text-xs sm:text-sm md:text-base font-semibold text-gray-800 group-hover:text-gray-900 transition-colors line-clamp-2">
                     {category.name}
                   </h3>
                   <p className="text-xs text-gray-500 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -245,6 +198,76 @@ const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({
           </div>
         </div>
       </section>
+
+      {/* 
+        MOBILE HORIZONTAL SCROLL VERSION (COMMENTED OUT)
+        Uncomment below to enable horizontal drag/scroll on mobile
+        
+      <section className="bg-gray-100 overflow-hidden mt-4">
+        <div className="max-w-7xl mx-auto bg-white ">
+          <div className="text-center py-2">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 ">
+              Shop by {selectedCategory.name}
+            </h2>
+            <p className="text-gray-600 md:text-lg">
+              Authentic products from your favorite{" "}
+              {selectedCategory.name.toLowerCase()}
+            </p>
+          </div>
+
+          <div className="md:hidden overflow-x-auto pb-4 px-6 py-2">
+            <div className="flex space-x-8 w-max">
+              {childCategories.map((category) => (
+                <div
+                  key={category.id}
+                  className="group cursor-pointer transform transition-all duration-300 hover:scale-110 flex-shrink-0"
+                  onClick={() => handleCategoryClick(category.name)}
+                >
+                  <div className="relative">
+                    <div className="relative w-28 h-28 rounded-full overflow-hidden ring-2 ring-gray-200 group-hover:ring-4 group-hover:ring-teal-500 group-hover:ring-opacity-60 transition-all duration-300">
+                      {category.imageUrl ? (
+                        <img
+                          src={`${S3_BASE_URL}${category.imageUrl}`}
+                          alt={category.altText || category.name}
+                          className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+                          onError={handleImageError}
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-gray-200 group-hover:bg-gray-300 transition-colors">
+                          <span className="text-gray-500 text-xs text-center px-2">
+                            {category.name}
+                          </span>
+                        </div>
+                      )}
+
+                      <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity duration-300" />
+                    </div>
+                  </div>
+
+                  <div className="mt-4 text-center">
+                    <h3 className="text-sm font-semibold text-gray-800 group-hover:text-gray-900 transition-colors line-clamp-2">
+                      {category.name}
+                    </h3>
+                    <p className="text-xs text-gray-500 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      View Collection →
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="text-center py-3">
+            <button
+              onClick={() => handleCategoryClick(selectedCategory.name)}
+              className="px-8 py-3 bg-gradient-to-r from-teal-600 to-teal-700 text-white font-semibold rounded-full shadow-lg transform transition-all duration-300 hover:scale-105 hover:from-teal-700 hover:to-teal-800"
+            >
+              View All {selectedCategory.name}
+            </button>
+          </div>
+        </div>
+      </section>
+      */}
     </>
   );
 };

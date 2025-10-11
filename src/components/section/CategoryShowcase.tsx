@@ -127,7 +127,7 @@ const CategoryShowcase: React.FC<CategoryShowcaseProps> = ({
       </section>
     );
   }
-return (
+  return (
     <>
       <section className="bg-gray-100 overflow-hidden mt-4">
         <div className="max-w-7xl mx-auto bg-white ">
@@ -147,41 +147,43 @@ return (
             {childCategories.map((category) => (
               <div
                 key={category.id}
-                className="group cursor-pointer transform transition-all duration-300 hover:scale-110 flex-shrink-0"
+                className="group cursor-pointer transform transition-all duration-300 hover:scale-110 flex flex-col items-center w-full"
                 onClick={() => handleCategoryClick(category.name)}
               >
                 {/* Circular Image Container */}
-                <div className="relative">
+                <div className="flex flex-col items-center w-full">
                   {/* Image Container */}
-                  <div className="relative w-22 h-22  md:w-28 md:h-28 lg:w-32 lg:h-32 rounded-full overflow-hidden ring-2 ring-gray-200 group-hover:ring-4 group-hover:ring-teal-500 group-hover:ring-opacity-60 transition-all duration-300">
-                    {category.imageUrl ? (
-                      <img
-                        src={`${S3_BASE_URL}${category.imageUrl}`}
-                        alt={category.altText || category.name}
-                        className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
-                        onError={handleImageError}
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-gray-200 group-hover:bg-gray-300 transition-colors">
-                        <span className="text-gray-500 text-xs text-center px-2">
-                          {category.name}
-                        </span>
-                      </div>
-                    )}
+                  <div className="relative flex justify-center">
+                    <div className="relative w-22 h-22 md:w-28 md:h-28 lg:w-32 lg:h-32 rounded-full overflow-hidden ring-2 ring-gray-200 group-hover:ring-4 group-hover:ring-teal-500 group-hover:ring-opacity-60 transition-all duration-300">
+                      {category.imageUrl ? (
+                        <img
+                          src={`${S3_BASE_URL}${category.imageUrl}`}
+                          alt={category.altText || category.name}
+                          className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+                          onError={handleImageError}
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-gray-200 group-hover:bg-gray-300 transition-colors">
+                          <span className="text-gray-500 text-xs text-center px-2">
+                            {category.name}
+                          </span>
+                        </div>
+                      )}
 
-                    {/* Overlay on hover */}
-                    <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity duration-300" />
+                      {/* Overlay on hover */}
+                      <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-20 transition-opacity duration-300" />
+                    </div>
                   </div>
-                </div>
 
-                {/* Category Name */}
-                <div className="mt-2 sm:mt-3 md:mt-4 text-center">
-                  <h3 className="text-xs sm:text-sm md:text-base font-semibold text-gray-800 group-hover:text-gray-900 transition-colors line-clamp-2">
-                    {category.name}
-                  </h3>
-                  <p className="text-xs text-gray-500 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    View Collection →
-                  </p>
+                  {/* Category Name */}
+                  <div className="mt-2 sm:mt-3 md:mt-4 w-full text-center">
+                    <h3 className="text-xs sm:text-sm md:text-base font-semibold text-gray-800 group-hover:text-gray-900 transition-colors line-clamp-2 break-words">
+                      {category.name}
+                    </h3>
+                    <p className="text-xs text-gray-500 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      View Collection →
+                    </p>
+                  </div>
                 </div>
               </div>
             ))}

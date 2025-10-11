@@ -143,7 +143,7 @@ return (
           </div>
 
           {/* Category Grid - Responsive */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 sm:gap-6 md:gap-8 px-4 sm:px-4 py-4 justify-items-center">
+          <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-4 xl:grid-cols-6 gap-4 sm:gap-6 md:gap-8 px-4 sm:px-4 py-4 justify-items-center">
             {childCategories.map((category) => (
               <div
                 key={category.id}
@@ -153,7 +153,7 @@ return (
                 {/* Circular Image Container */}
                 <div className="relative">
                   {/* Image Container */}
-                  <div className="relative w-27 h-27  md:w-28 md:h-28 lg:w-32 lg:h-32 rounded-full overflow-hidden ring-2 ring-gray-200 group-hover:ring-4 group-hover:ring-teal-500 group-hover:ring-opacity-60 transition-all duration-300">
+                  <div className="relative w-22 h-22  md:w-28 md:h-28 lg:w-32 lg:h-32 rounded-full overflow-hidden ring-2 ring-gray-200 group-hover:ring-4 group-hover:ring-teal-500 group-hover:ring-opacity-60 transition-all duration-300">
                     {category.imageUrl ? (
                       <img
                         src={`${S3_BASE_URL}${category.imageUrl}`}
